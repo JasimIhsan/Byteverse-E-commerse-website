@@ -11,6 +11,9 @@ router.post("/login", user.postHome);
 //==== get login page ====//
 router.get("/login", user.getLogin);
 
+//==== post login page ====//
+router.post("/", user.postLogin);
+
 //===== get OTP verify ======//
 router.get("/signup", user.getOTPVerify);
 

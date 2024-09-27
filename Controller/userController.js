@@ -73,6 +73,32 @@ const getLogin = async (req, res) => {
     }
 };
 
+const postLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        console.log(email);
+        console.log(password);
+
+        const user = await User.findOne({ email });
+
+        if (user) {
+            const isMatched = await bcrypt.compare(password, user.password);
+
+            if (isMatched) {
+                req.session.user = user;
+                res.redirect("/");
+            } else {
+                res.redirect("/login"); // error : incorect password or email
+            }
+        } else {
+            res.redirect("/login"); // error : user not exist
+        }
+    } catch (error) {
+        console.error("Error from post login page : \n", error);
+    }
+};
+
 const postHome = async (req, res) => {
     try {
         res.redirect("/login");
@@ -158,7 +184,7 @@ const varifyOTP = async (req, res) => {
                 password: hashedPassword,
             });
 
-            // await newUser.save();
+            await newUser.save();
 
             res.redirect("/");
         } else {
@@ -191,6 +217,7 @@ const resendOTP = async (req, res) => {
 module.exports = {
     getHome,
     getLogin,
+    postLogin,
     postHome,
     getOTPVerify,
     postSignup,
