@@ -119,11 +119,11 @@ const postSignup = async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        // let isUserExist = await User.findOne({ email });
+        let isUserExist = await User.findOne({ email });
 
-        // if (isUserExist) {
-        //     return res.send("User Exist");
-        // }
+        if (isUserExist) {
+            return res.send("User Exist");
+        }
 
         const otp = generateOTP(); // Generate a new OTP
         const hashedOTP = await securePassword(otp);

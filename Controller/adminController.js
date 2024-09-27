@@ -6,15 +6,31 @@ const getAdminLogin = async (req, res) => {
     }
 };
 
+const getAdminDashboard = async (req, res) => {
+    try {
+        console.log("get dashboard");
+
+        res.render("admin/dashboard");
+    } catch (error) {
+        console.error("Error from rendering admin dashboard : \n", error);
+    }
+};
+
 const postAdminLogin = async (req, res) => {
     try {
-        const adminUsername = "admin";
-        const adminPassword = 123456;
+        const username = "admin";
+        const password = 123456;
 
-        const { username, password } = req.body;
+        const { adminUsername, adminPassword } = req.body;
+        console.log(adminUsername);
+        console.log(adminPassword);
 
-        if (adminUsername == username && adminPassword === password) {
-            res.send("Admin dashboard rendered successfully");
+        if (adminUsername == username && adminPassword == password) {
+            console.log("keri");
+
+            res.redirect("/admin/dashboard");
+        } else {
+            res.send("Incorrect password and username");
         }
     } catch (error) {
         console.error("Error from posting admin Login page : \n", error);
@@ -23,5 +39,6 @@ const postAdminLogin = async (req, res) => {
 
 module.exports = {
     getAdminLogin,
+    getAdminDashboard,
     postAdminLogin,
 };
