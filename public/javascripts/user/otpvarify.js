@@ -90,19 +90,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (response.ok) {
                 const data = await response.text();
-                Swal.fire({
-                    title: "Success!",
-                    text: "OTP has been resent!",
-                    icon: "success",
-                    confirmButtonText: "OK",
-                });
+                alert("OTP has been resent!"); // Notify the user
             } else {
-                Swal.fire({
-                    title: "Error!",
-                    text: "Failed to resend OTP. Please try again.",
-                    icon: "error",
-                    confirmButtonText: "Try Again",
-                });
+                alert("Failed to resend OTP. Please try again.");
             }
         } catch (error) {
             console.error("Error resending OTP:", error);
