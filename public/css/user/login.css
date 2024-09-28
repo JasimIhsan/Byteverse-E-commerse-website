@@ -252,3 +252,47 @@ footer a {
     color: #3c97bf;
     text-decoration: none;
 }
+
+.error {
+    color: red;
+    font-size: 0.8em;
+}
+
+.input-error {
+    border-color: red;
+}
+
+.google-signin-button {
+    background-color: #ffffff;
+    border-color: #5c59e8;
+    color: #5c59e8;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    height: 42px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.google-signin-button:hover {
+    background-color: #5c59e8;
+    color: white;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 10px 0;
+    text-align: center;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}

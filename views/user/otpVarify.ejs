@@ -18,6 +18,11 @@
                 <i class="bx bxs-check-shield"></i>
             </header>
             <h4>Enter OTP Code</h4>
+
+            <% if (message) { %>
+            <p class="error-message"><%= message %></p>
+            <% } %>
+
             <form action="/login/enter-otp/verify-otp" method="post">
                 <div class="input-field">
                     <input type="number" maxlength="1" id="otp1" name="otp1" required />

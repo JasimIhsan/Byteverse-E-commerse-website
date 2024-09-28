@@ -5,6 +5,7 @@ const connectDB = require("./db/connectDB");
 const userRoutes = require("./routes/User/login");
 const adminRoutes = require("./routes/Admin/admin");
 const morgan = require("morgan");
+const passport = require("passport");
 require("dotenv").config();
 
 const app = express();
@@ -18,12 +19,12 @@ app.use(express.static("public"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use((req, res, next) => {
     res.set("Cache-Control", "no-store");
     next();
 });
 
+// Initialize session before Passport
 app.use(
     session({
         secret: "secretKey",
@@ -31,6 +32,10 @@ app.use(
         saveUninitialized: true,
     })
 );
+
+// Initialize Passport after session
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/", userRoutes);
 app.use("/admin", adminRoutes);

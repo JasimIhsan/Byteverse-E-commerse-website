@@ -26,8 +26,8 @@ function validateUsername() {
 
 // Function for validating email
 function validateEmail() {
-    const email = document.getElementById("email").value;
-    const emailError = document.getElementById("emailError");
+    const email = document.getElementById("email").value || document.getElementById("signinEmail").value;
+    const emailError = document.getElementById("emailError") || document.getElementById("signinEmailError");
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(email)) {
@@ -41,8 +41,8 @@ function validateEmail() {
 
 // Function for validating password
 function validatePassword() {
-    const password = document.getElementById("password").value;
-    const passwordError = document.getElementById("passwordError");
+    const password = document.getElementById("password").value || document.getElementById("signinPassword").value;
+    const passwordError = document.getElementById("passwordError") || document.getElementById("signinPasswordError");
 
     if (password.length < 6) {
         passwordError.textContent = "Password must be at least 6 characters long";
@@ -78,38 +78,17 @@ function validateSignupForm() {
     return isUsernameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
 }
 
+// Attach dynamic validation to the sign-in form fields
+document.getElementById("signinEmail").addEventListener("keyup", validateEmail);
+document.getElementById("signinPassword").addEventListener("keyup", validatePassword);
+
 // Function for validating the sign-in form
 function validateSignInForm(event) {
-    const email = document.getElementById("signinEmail").value;
-    const password = document.getElementById("signinPassword").value;
-    const emailError = document.getElementById("signinEmailError");
-    const passwordError = document.getElementById("signinPasswordError");
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = validateEmail();
+    const isPasswordValid = validatePassword();
 
-    let valid = true;
-
-    // Validate Email
-    if (!emailRegex.test(email)) {
-        emailError.textContent = "Please enter a valid email address";
-        valid = false;
-    } else {
-        emailError.textContent = "";
-    }
-
-    // Validate Password
-    if (password.length < 6) {
-        passwordError.textContent = "Password must be at least 6 characters long";
-        valid = false;
-    } else {
-        passwordError.textContent = "";
-    }
-
-    if (!valid) {
-        event.preventDefault(); // Prevent form submission if validation fails
-    }
-
-    return valid;
+    return isEmailValid && isPasswordValid;
 }
 
-// Attach the validate function to the sign-in form
+// Attach the validate function to the sign-in form submit event
 document.getElementById("signinForm").addEventListener("submit", validateSignInForm);

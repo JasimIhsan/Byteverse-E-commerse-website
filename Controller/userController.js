@@ -68,7 +68,9 @@ const getHome = async (req, res) => {
 
 const getLogin = async (req, res) => {
     try {
-        res.render("user/login");
+        const error = req.query.error;
+        // const success = req.query.success;
+        res.render("user/login", { message: error });
     } catch (error) {
         console.error("Error from rendering user login page : \n", error);
     }
@@ -90,10 +92,10 @@ const postLogin = async (req, res) => {
                 req.session.user = user;
                 res.redirect("/");
             } else {
-                res.redirect("/login"); // error : incorect password or email
+                res.redirect("/login?error=Incorrect email or password"); // error : incorect password or email
             }
         } else {
-            res.redirect("/login"); // error : user not exist
+            res.redirect("/login?error=User does not exist"); // error : user not exist
         }
     } catch (error) {
         console.error("Error from post login page : \n", error);
@@ -108,9 +110,10 @@ const postHome = async (req, res) => {
     }
 };
 
-const getOTPVerify = async (req, res) => {
+const getEnterOTP = async (req, res) => {
     try {
-        res.render("user/otpVarify");
+        const error = req.query.error;
+        res.render("user/otpVarify", { message: error });
     } catch (error) {
         console.error("Error from get otp verify page : \n", error);
     }
@@ -123,7 +126,7 @@ const postSignup = async (req, res) => {
         let isUserExist = await User.findOne({ email });
 
         if (isUserExist) {
-            return res.send("User Exist");
+            return res.redirect("/login?error=User already Exist");
         }
 
         const otp = generateOTP(); // Generate a new OTP
@@ -145,9 +148,6 @@ const postSignup = async (req, res) => {
 const varifyOTP = async (req, res) => {
     try {
         const { username, email, password } = req.session.userTemp;
-        // const { otp } = req.body;
-        // console.log(username, email, password, otp);
-        // console.log("req.body.otp : ", otp);
 
         const { otp1, otp2, otp3, otp4, otp5, otp6 } = req.body;
         const otp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
@@ -155,7 +155,7 @@ const varifyOTP = async (req, res) => {
         const otpRecord = await OTP.findOne({ email: email });
 
         if (!otpRecord) {
-            return res.send("NO OTP found");
+            return res.redirect("/login/enter-otp?error=OTP not found");
         }
 
         const currentTime = Date.now();
@@ -163,11 +163,8 @@ const varifyOTP = async (req, res) => {
         const otpAge = currentTime - otpCreatedAt;
         const otpDuration = Number(process.env.OTP_VALIDITY_DURATION) || 180000;
 
-        // console.log(otpAge);
-        // console.log(otpDuration);
-
         if (otpAge > otpDuration) {
-            return res.send("OTP has been expireed");
+            return res.redirect("/login/enter-otp?error=OTP has expired");
         }
 
         const isMatched = await bcrypt.compare(otp, otpRecord.otp);
@@ -183,13 +180,14 @@ const varifyOTP = async (req, res) => {
                 username: username,
                 email: email,
                 password: hashedPassword,
+                googleId: null,
             });
 
             await newUser.save();
 
             res.redirect("/");
         } else {
-            return res.send("Invalid OTP");
+            return res.redirect("/login/enter-otp?error=Invalid OTP");
         }
     } catch (error) {
         console.error("Error in varifiying OTP : \n", error);
@@ -215,13 +213,19 @@ const resendOTP = async (req, res) => {
     }
 };
 
+const handleGoogleAuth = async (req, res) => {
+    req.session.user = req.user;
+    res.redirect("/");
+};
+
 module.exports = {
     getHome,
     getLogin,
     postLogin,
     postHome,
-    getOTPVerify,
+    getEnterOTP,
     postSignup,
     varifyOTP,
     resendOTP,
+    handleGoogleAuth,
 };

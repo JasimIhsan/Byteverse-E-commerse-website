@@ -15,6 +15,10 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    googleId: {
+        type: String,
+        unique: true, //unique for users signing with google
+    },
     joinedDate: {
         type: Date,
         default: Date.now,
