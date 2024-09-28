@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const user = require("../../Controller/userController");
+const auth = require("../../middleware/userAuth");
 
 //==== get home page ====//
 router.get("/", user.getHome);
@@ -11,17 +12,17 @@ router.post("/login", user.postHome);
 //==== get login page ====//
 router.get("/login", user.getLogin);
 
-//==== post login page ====//
+//==== login (success) to home ====//
 router.post("/", user.postLogin);
 
-//===== get OTP verify ======//
-router.get("/signup", user.getOTPVerify);
+//===== get OTP entering page ======//
+router.get("/login/enter-otp", user.getOTPVerify);
 
-//==== post signup =====//
-router.post("/signup", user.postSignup);
+//==== post sign up to otp entering page =====//
+router.post("/login/enter-otp", user.postSignup);
 
 //==== OTP varifcaiton ====//
-router.post("/signup/verify-otp", user.varifyOTP);
+router.post("/login/enter-otp/verify-otp", user.varifyOTP);
 
 //===== resend otp =====//
 router.post("/signup/resend-otp", user.resendOTP);

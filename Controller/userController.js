@@ -4,6 +4,7 @@ const User = require("../model/user");
 const bcrypt = require("bcrypt");
 const OTP = require("../model/OTP");
 const session = require("express-session");
+const user = require("../model/user");
 require("dotenv").config();
 
 //======================================== functions ==========================================//
@@ -135,7 +136,7 @@ const postSignup = async (req, res) => {
 
         await sendOTPEmail(email, otp); // Send the OTP email
 
-        res.redirect("/signup");
+        res.redirect("/login/enter-otp");
     } catch (error) {
         res.status(500).json({ message: "Error sending OTP", error: error.message });
     }
@@ -173,7 +174,7 @@ const varifyOTP = async (req, res) => {
 
         if (isMatched) {
             //mark as varified to not to use again
-            req.session.user = true;
+            req.session.user = user;
             await otpRecord.save();
 
             const hashedPassword = await securePassword(password);

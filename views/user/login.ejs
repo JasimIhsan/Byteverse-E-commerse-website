@@ -5,12 +5,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Byteverse | Login Page</title>
         <link rel="stylesheet" href="/css/user/login.css" />
+        <style>
+            .error {
+                color: red;
+                font-size: 0.8em;
+                /* margin-top: 5px; */
+            }
+            .input-error {
+                border-color: red;
+            }
+        </style>
     </head>
-
     <body>
         <div class="container" id="container">
             <div class="form-container sign-up-container">
-                <form action="/signup" method="post">
+                <form action="/login/enter-otp" method="post" id="signupForm" onsubmit="return validateSignupForm()">
                     <h1>Create Account</h1>
                     <div class="social-container">
                         <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -18,15 +27,25 @@
                         <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                     <span>or use your email for registration</span>
-                    <input type="text" placeholder="Name" name="username" />
-                    <input type="email" placeholder="Email" name="email" />
-                    <input type="password" placeholder="Password" name="password" />
-                    <input type="password" placeholder="Confirm Password" name="confirm_password" />
-                    <button class="signup-button">Sign Up</button>
+
+                    <input type="text" placeholder="Name" name="username" id="username" onkeyup="validateUsername()" />
+                    <div class="error" id="usernameError"></div>
+
+                    <input type="email" placeholder="Email" name="email" id="email" onkeyup="validateEmail()" />
+                    <div class="error" id="emailError"></div>
+
+                    <input type="password" placeholder="Password" name="password" id="password" onkeyup="validatePassword()" />
+                    <div class="error" id="passwordError"></div>
+
+                    <input type="password" placeholder="Confirm Password" name="confirm_password" id="confirmPassword" onkeyup="validateConfirmPassword()" />
+                    <div class="error" id="confirmPasswordError"></div>
+
+                    <button type="submit" class="signup-button">Sign Up</button>
                 </form>
             </div>
+
             <div class="form-container sign-in-container">
-                <form action="/" method="post">
+                <form action="/" method="post" id="signinForm" onsubmit="return validateSignInForm()">
                     <h1>Sign in</h1>
                     <div class="social-container">
                         <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -34,17 +53,23 @@
                         <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                     <span>or use your account</span>
-                    <input type="email" placeholder="Email" name="email" />
-                    <input type="password" placeholder="Password" name="password" />
+
+                    <input type="email" placeholder="Email" name="email" id="signinEmail" onkeyup="validateEmail()" />
+                    <div class="error" id="signinEmailError"></div>
+
+                    <input type="password" placeholder="Password" name="password" id="signinPassword" onkeyup="validatePassword()" />
+                    <div class="error" id="signinPasswordError"></div>
+
                     <a href="#">Forgot your password?</a>
                     <button type="submit">Sign In</button>
                 </form>
             </div>
+
             <div class="overlay-container">
                 <div class="overlay">
                     <div class="overlay-panel overlay-left">
                         <h1>Hello, Friend!</h1>
-                        <p>Enter your personal details and start journey with us</p>
+                        <p>Enter your personal details and start your journey with us</p>
                         <button class="ghost" id="signIn">Sign In</button>
                     </div>
                     <div class="overlay-panel overlay-right">
