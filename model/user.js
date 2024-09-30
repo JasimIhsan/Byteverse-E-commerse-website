@@ -17,11 +17,24 @@ const userSchema = mongoose.Schema({
     },
     googleId: {
         type: String,
-        unique: true, //unique for users signing with google
+        unique: true,
     },
     joinedDate: {
         type: Date,
         default: Date.now,
+    },
+    orders: {
+        type: Number,
+        default: 0,
+    },
+    walletBalance: {
+        type: Number,
+        default: 0.0,
+    },
+    status: {
+        type: String,
+        enum: ["Unblocked", "Blocked"],
+        default: "Unblocked",
     },
 });
 

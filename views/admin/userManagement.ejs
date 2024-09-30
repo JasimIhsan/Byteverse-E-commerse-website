@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Byteverse | User-management</title>
+    <style>
+        /* CSS styles remain unchanged */
+        :root {
+            --primary-color: #5c59e8;
+            --secondary-color: #c21000;
+            --bg-color: #f8f9fa;
+            --sidebar-bg: #f0f1f7;
+            --table-bg: #ffffff;
+            --text-color: #333;
+            --header-bg: #ffffff;
+            --low-stock-color: #f39c12;
+            --active-status: #148800;
+            --blocked-status: #a40e00;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .unique-sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+        }
+
+        .unique-sidebar-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .unique-sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .unique-sidebar-menu li {
+            margin: 10px 0;
+        }
+
+        .unique-sidebar-menu li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: bold;
+            padding: 10px;
+            display: block;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .unique-sidebar-menu li a:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+        }
+
+        .unique-sidebar-menu li.active a {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Main Content */
+        .product-list-container {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .product-list-container h1 {
+            font-size: 1.8rem;
+            color: var(--text-color);
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .breadcrumbs a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-right: 5px;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            margin-right: 5px;
+        }
+
+        .product-search-filter {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 60%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-product-btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        .add-product-btn:hover {
+            background-color: #4e54d4;
+            transform: scale(1.05);
+        }
+
+        .product-table {
+            width: 100%;
+            background-color: var(--table-bg);
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .product-table th,
+        .product-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .product-table th {
+            background-color: #f0f4ff;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .product-table td {
+            color: var(--text-color);
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .edit-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #4e54d4;
+        }
+
+        .delete-btn {
+            background-color: red;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: rgb(203, 0, 0);
+            transform: scale(1.05);
+        }
+
+        .view-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .view-btn:hover {
+            background-color: #3e3cc1;
+            transform: scale(1.05);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pagination span {
+            color: var(--text-color);
+        }
+
+        .pagination-buttons {
+            display: flex;
+        }
+
+        .page-btn {
+            padding: 10px 15px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: var(--text-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .page-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .page-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Common styles for the status buttons */
+        .status-btn {
+            padding: 8px 16px;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Block button (red) */
+        .block-btn {
+            background-color: #c21000;
+        }
+
+        /* Unblock button (green) */
+        .unblock-btn {
+            background-color: #148800;
+        }
+
+        /* Hover effect for Block button */
+        .block-btn:hover {
+            background-color: #a40e00;
+            transform: scale(1.05);
+        }
+
+        /* Hover effect for Unblock button */
+        .unblock-btn:hover {
+            background-color: #0e6d00;
+            transform: scale(1.05);
+        }
+
+        /* Optional: Add a focus effect for better accessibility */
+        .status-btn:focus {
+            outline: 2px solid #5c59e8;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 25%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal Styles for Inputs and Labels */
+        .modal-header {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        /* Input fields in the modal */
+        .modal-content input[type="text"],
+        .modal-content input[type="email"],
+        .modal-content input[type="password"] {
+            width: 95%;
+            /* Full width for better alignment */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            /* Space between inputs */
+        }
+
+        /* Style for labels */
+        .modal-content label {
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 5px;
+            /* Space between label and input */
+            display: block;
+            /* Make labels block elements for better alignment */
+        }
+
+        /* Submit button in the modal */
+        .modal-content .btn-primary {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+            display: block;
+            /* Center button */
+            margin: 0 auto;
+            /* Center the button */
+        }
+
+        .modal-content .btn-primary:hover {
+            background-color: #4e54d4;
+            transform: scale(1.05);
+        }
+
+        /* Error message styling */
+        .error-message {
+            font-size: 0.9rem;
+            color: red;
+            margin-top: -10px;
+            /* Space above error message */
+            margin-bottom: 10px;
+            /* Space below error message */
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            padding: 8px 12px;
+            background-color: #5c59e8; /* Primary color */
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .pagination a.active {
+            background-color: #c21000; /* Secondary color */
+        }
+
+        .pagination a:hover {
+            background-color: #333; /* Darken on hover */
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="unique-sidebar">
+            <div class="unique-sidebar-header">
+                <h2>Byteverse</h2>
+            </div>
+            <ul class="unique-sidebar-menu">
+                <li><a href="/admin/dashboard">Dashboard</a></li>
+                <li class="active"><a href="#">Users</a></li>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Orders</a></li>
+                <li><a href="/admin/category">Categories</a></li>
+                <li><a href="#">Coupon</a></li>
+                <li><a href="#">Offers</a></li>
+                <li><a href="#">Support</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </aside>
+        <!-- Main Content -->
+        <div class="product-list-container">
+            <h1>User-Management</h1>
+
+            <!-- Breadcrumbs -->
+            <nav class="breadcrumbs">
+                <a href="/admin/dashboard">Dashboard</a>
+                <span>&gt;</span>
+                <a href="#">User-Management</a>
+            </nav>
+
+            <div class="product-search-filter">
+                <div style="display: flex">
+                    <form action="/admin/user-management" method="get">
+                        <input type="text" name="search" placeholder="Search customer..." class="search-input"
+                            value="<%= search %>" />
+                        <button class="add-product-btn" type="submit">Search</button>
+                    </form>
+                    <% if (search) { %>
+                        <form action="/admin/user-management" method="GET" style="margin-left: 10px">
+                            <input type="hidden" name="search" value="" />
+                            <button type="submit" class="add-product-btn">Show All</button>
+                        </form>
+                        <% } %>
+                </div>
+                
+            </div>
+
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>SI No</th>
+                        <th>Customer Name</th>
+                        <th>Email</th>
+                        <th>Orders</th>
+                        <th>Wallet Balance</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(function(users, index) { %>
+                        <tr>
+                            <td><%= (currentPage - 1) * 10 + index + 1 %></td>
+                            <td><%= users.username %></td>
+                            <td><%= users.email %></td>
+                            <td><%= users.orders %></td>
+                            <td>$<%= users.walletBalance.toFixed(2) %></td>
+                            <td>
+                                <form id="status-form-<%= users._id %>">
+                                    <button type="button"
+                                        class="status-btn <%= users.status === 'active' ? 'unblock-btn' : 'block-btn' %>"
+                                        onclick="toggleUserStatus('<%= users._id %>', '<%= users.status %>')">
+                                        <%= users.status === 'active' ? 'Unblock' : 'Block' %>
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <%= users.joinedDate ? new Date(users.joinedDate).toLocaleDateString() : 'N/A' %>
+                            </td>
+                            <td style="display: flex">
+
+                                <form action="/admin/user-management/user-details" method="GET">
+                                    <button class="action-btn view-btn" type="submit">View</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <% if (currentPage > 1) { %>
+                    <a href="/admin/user-management?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
+                <% } %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a href="/admin/user-management?page=<%= i %>&search=<%= search %>"
+                    class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+                <% } %>
+                <% if (currentPage < totalPages) { %>
+                    <a href="/admin/user-management?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
+                <% } %>
+            </div>
+        </div>
+
+
+        
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+        <script>
+            function changeUserStatus(userId, status) {
+                fetch(`/admin/user-management/${userId}`, {
+                    method: "POST", // Use POST since we are using a form-like structure
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ status: status }), // Send the new status
+                })
+                    .then((response) => {
+                        if (response.ok) {
+                            location.reload(); // Reload the page to see the changes
+                        } else {
+                            alert("Error updating status");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
+            }
+
+            // Function to toggle user status
+            function toggleUserStatus(userId, currentStatus) {
+    // Determine the new status
+    const newStatus = currentStatus === "Unblocked" ? "Blocked" : "Unblocked";
+
+    // Make an Axios PATCH request to update the status in the backend
+    axios
+        .patch(`/admin/user-management/update-status/${userId}`, { status: newStatus })
+        .then((response) => {
+            if (response.data.success) {
+                // Update the button's appearance and text based on the new status
+                const button = document.querySelector(`#status-form-${userId} button`);
+                button.textContent = newStatus === "Unblocked" ? "Unblock" : "Block";
+                button.className = newStatus === "Unblocked" ? "status-btn unblock-btn" : "status-btn block-btn";
+
+                button.setAttribute("onclick", `toggleUserStatus('${userId}', '${newStatus}')`);
+            } else {
+                console.error("Failed to update status.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error updating user status:", error);
+        });
+}
+
+        </script>
+</body>
+
+</html>
