@@ -368,20 +368,22 @@
         .pagination a {
             margin: 0 5px;
             padding: 8px 12px;
-            background-color: #5c59e8; /* Primary color */
+            background-color: #5c59e8;
+            /* Primary color */
             color: white;
             border-radius: 5px;
             text-decoration: none;
         }
 
         .pagination a.active {
-            background-color: #c21000; /* Secondary color */
+            background-color: #c21000;
+            /* Secondary color */
         }
 
         .pagination a:hover {
-            background-color: #333; /* Darken on hover */
+            background-color: #333;
+            /* Darken on hover */
         }
-
     </style>
 </head>
 
@@ -429,7 +431,7 @@
                         </form>
                         <% } %>
                 </div>
-                
+
             </div>
 
             <table class="product-table">
@@ -448,17 +450,26 @@
                 <tbody>
                     <% users.forEach(function(users, index) { %>
                         <tr>
-                            <td><%= (currentPage - 1) * 10 + index + 1 %></td>
-                            <td><%= users.username %></td>
-                            <td><%= users.email %></td>
-                            <td><%= users.orders %></td>
-                            <td>$<%= users.walletBalance.toFixed(2) %></td>
+                            <td>
+                                <%= (currentPage - 1) * 10 + index + 1 %>
+                            </td>
+                            <td>
+                                <%= users.username %>
+                            </td>
+                            <td>
+                                <%= users.email %>
+                            </td>
+                            <td>
+                                <%= users.orders %>
+                            </td>
+                            <td>$<%= users.walletBalance.toFixed(2) %>
+                            </td>
                             <td>
                                 <form id="status-form-<%= users._id %>">
                                     <button type="button"
                                         class="status-btn <%= users.status === 'active' ? 'unblock-btn' : 'block-btn' %>"
                                         onclick="toggleUserStatus('<%= users._id %>', '<%= users.status %>')">
-                                        <%= users.status === 'active' ? 'Unblock' : 'Block' %>
+                                        <%= users.status==='active' ? 'Unblock' : 'Block' %>
                                     </button>
                                 </form>
                             </td>
@@ -472,27 +483,30 @@
                                 </form>
                             </td>
                         </tr>
-                    <% }); %>
+                        <% }); %>
                 </tbody>
             </table>
 
             <!-- Pagination -->
             <div class="pagination">
-                <% if (currentPage > 1) { %>
+                <% if (currentPage> 1) { %>
                     <a href="/admin/user-management?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
-                <% } %>
-                <% for (let i = 1; i <= totalPages; i++) { %>
-                    <a href="/admin/user-management?page=<%= i %>&search=<%= search %>"
-                    class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-                <% } %>
-                <% if (currentPage < totalPages) { %>
-                    <a href="/admin/user-management?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
-                <% } %>
+                    <% } %>
+                        <% for (let i=1; i <=totalPages; i++) { %>
+                            <a href="/admin/user-management?page=<%= i %>&search=<%= search %>"
+                                class="<%= currentPage === i ? 'active' : '' %>">
+                                <%= i %>
+                            </a>
+                            <% } %>
+                                <% if (currentPage < totalPages) { %>
+                                    <a
+                                        href="/admin/user-management?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
+                                    <% } %>
             </div>
         </div>
 
 
-        
+
 
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
@@ -519,28 +533,28 @@
 
             // Function to toggle user status
             function toggleUserStatus(userId, currentStatus) {
-    // Determine the new status
-    const newStatus = currentStatus === "Unblocked" ? "Blocked" : "Unblocked";
+                // Determine the new status
+                const newStatus = currentStatus === "Unblocked" ? "Blocked" : "Unblocked";
 
-    // Make an Axios PATCH request to update the status in the backend
-    axios
-        .patch(`/admin/user-management/update-status/${userId}`, { status: newStatus })
-        .then((response) => {
-            if (response.data.success) {
-                // Update the button's appearance and text based on the new status
-                const button = document.querySelector(`#status-form-${userId} button`);
-                button.textContent = newStatus === "Unblocked" ? "Unblock" : "Block";
-                button.className = newStatus === "Unblocked" ? "status-btn unblock-btn" : "status-btn block-btn";
+                // Make an Axios PATCH request to update the status in the backend
+                axios
+                    .patch(`/admin/user-management/update-status/${userId}`, { status: newStatus })
+                    .then((response) => {
+                        if (response.data.success) {
+                            // Update the button's appearance and text based on the new status
+                            const button = document.querySelector(`#status-form-${userId} button`);
+                            button.textContent = newStatus === "Unblocked" ? "Unblock" : "Block";
+                            button.className = newStatus === "Unblocked" ? "status-btn unblock-btn" : "status-btn block-btn";
 
-                button.setAttribute("onclick", `toggleUserStatus('${userId}', '${newStatus}')`);
-            } else {
-                console.error("Failed to update status.");
+                            button.setAttribute("onclick", `toggleUserStatus('${userId}', '${newStatus}')`);
+                        } else {
+                            console.error("Failed to update status.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error updating user status:", error);
+                    });
             }
-        })
-        .catch((error) => {
-            console.error("Error updating user status:", error);
-        });
-}
 
         </script>
 </body>
