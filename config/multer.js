@@ -5,7 +5,7 @@ const fs = require("fs");
 
 const uploadDir = "./uploads/";
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true }); // Create directory if it doesn't exist
+    fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
         cb(null, "./uploads/");
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // Append the timestamp to the file name
+        cb(null, Date.now() + path.extname(file.originalname));
     },
 });
 

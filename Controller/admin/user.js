@@ -28,8 +28,6 @@ const updateUserStatus = async (req, res) => {
 
         await User.findByIdAndUpdate(userId, { status: newStatus });
 
-        //reload the page again after updating
-        // location.reload();
         res.json({ success: true });
     } catch (error) {
         console.error("Error updating user status : \n", error);

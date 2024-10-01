@@ -1,31 +1,34 @@
-function toggleCategoryStatus(categoryId, currentStatus) {
-    console.log("Function invoked");
-    console.log("Category ID:", categoryId);
-    console.log("Current Status:", currentStatus);
+function toggleProductStatus(productId, currentStatus) {
+    // console.log("Function invoked");
+    // console.log("Category ID:", productId);
+    // console.log("Current Status:", currentStatus);
 
-    // Determine the new status
     const newStatus = currentStatus === "listed" ? "unlisted" : "listed";
-    console.log("New Status:", newStatus);
+    // console.log("New Status:", newStatus);
 
-    // Make an Axios PATCH request to update the status in the backend
     axios
-        .patch(`/admin/product-management/update-status/${categoryId}`, { status: newStatus })
+        .patch(`/admin/product-management/update-status/${productId}`, { status: newStatus })
         .then((response) => {
-            console.log("Response from server:", response.data);
+            console.log("Response from server:", response);
             if (response.data.success) {
-                // Update the button's appearance and text based on the new status
-                const button = document.querySelector(`#status-form-${categoryId} button`);
+                const button = document.querySelector(`#status-form-${productId} button`);
                 button.textContent = newStatus === "listed" ? "Unlist" : "List";
                 button.className = newStatus === "listed" ? "status-btn unlist-btn" : "status-btn list-btn";
 
-                // Update the onclick event for the button
-                button.setAttribute("onclick", `toggleCategoryStatus('${categoryId}', '${newStatus}')`);
+                button.setAttribute("onclick", `toggleProductStatus('${productId}', '${newStatus}')`);
                 location.reload();
             } else {
                 console.error("Failed to update status.");
             }
         })
         .catch((error) => {
-            console.error("Error updating category status:", error);
+            console.error("Error updating product status:", error);
         });
+}
+
+const error = document.getElementById("error");
+if (error) {
+    setTimeout(() => {
+        error.style.display = "none";
+    }, 3000);
 }

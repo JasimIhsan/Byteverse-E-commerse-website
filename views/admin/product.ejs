@@ -40,13 +40,13 @@
 
             <div class="product-search-filter">
                 <div style="display: flex">
-                    <form action="/admin/user-management" method="get">
+                    <form action="/admin/product-management" method="get">
                         <input type="text" name="search" placeholder="Search products..." class="search-input"
                             value="<%= search %>" />
                         <button class="add-product-btn" type="submit">Search</button>
                     </form>
                     <% if (search) { %>
-                        <form action="/admin/user-management" method="GET" style="margin-left: 10px">
+                        <form action="/admin/product-management" method="GET" style="margin-left: 10px">
                             <input type="hidden" name="search" value="" />
                             <button type="submit" class="add-product-btn">Show All</button>
                         </form>
@@ -57,6 +57,12 @@
                     <button class="add-product-btn">+ Add product</button>
                 </form>
             </div>
+
+            <% if (error_msg) { %>
+                <div class="error-message" id="error"><%= error_msg %></div>
+                <% } %> <% if (success_msg) { %>
+                <div class="success-message" id="error"><%= success_msg %></div>
+            <% } %>
 
             <table class="product-table">
                 <thead>
@@ -84,8 +90,8 @@
                                 <%= products.name %>
                             </td>
                             <td>
-                                <%= products.category %>
-                            </td>
+                                <%= products.category ? products.category.name : 'No Category' %>
+                            </td>   
                             <td>
                                 <%= products.price %>
                             </td>
@@ -95,19 +101,17 @@
                             <td>
                                 <%= products.colors %>
                             </td>
-
-
                             <td style="display: flex">
                                 <form action="/admin/user-management/user-details" method="GET">
                                     <button class="action-btn view-btn" type="submit">View</button>
                                 </form>
                                 <form id="status-form-<%= products._id %>">
                                     <button type="button" class="status-btn <%= products.status === 'listed' ? 'unlist-btn' : 'list-btn' %>" 
-                                        onclick="toggleCategoryStatus('<%= products._id %>', '<%= products.status %>')">
+                                        onclick="toggleProductStatus('<%= products._id %>', '<%= products.status %>')">
                                         <%= products.status === 'listed' ? 'Unlist' : 'List' %>
                                     </button>
                                 </form>                                
-                                <form action="/admin/product-management/edit/<%= products._id %>" method="GET">
+                                <form action="/admin/product-management/edit-product/<%= products._id %>" method="GET">
                                     <button class="action-btn edit-btn" type="submit">Edit</button>
                                 </form>
                             </td>
@@ -120,25 +124,24 @@
             <!-- Pagination -->
             <div class="pagination">
                 <% if (currentPage> 1) { %>
-                    <a href="/admin/user-management?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
-                    <% } %>
-                        <% for (let i=1; i <=totalPages; i++) { %>
-                            <a href="/admin/user-management?page=<%= i %>&search=<%= search %>"
-                                class="<%= currentPage === i ? 'active' : '' %>">
-                                <%= i %>
-                            </a>
-                            <% } %>
-                                <% if (currentPage < totalPages) { %>
-                                    <a
-                                        href="/admin/user-management?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
-                                    <% } %>
+                    <a href="/admin/product-management?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
+                <% } %>
+                <% for (let i=1; i <=totalPages; i++) { %>
+                    <a href="/admin/product-management?page=<%= i %>&search=<%= search %>"
+                        class="<%= currentPage === i ? 'active' : '' %>">
+                        <%= i %>
+                    </a>
+                <% } %>
+                <% if (currentPage < totalPages) { %>
+                    <a href="/admin/product-management?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
+                <% } %>
             </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 
-        <script src="/javascripts/admin/product"></script>
+        <script src="/javascripts/admin/product.js"></script>
 </body>
 
 </html>

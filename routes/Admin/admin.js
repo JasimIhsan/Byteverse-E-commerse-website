@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const dash = require("../../Controller/admin/dashboard");
-const user_man = require("../../Controller/admin/userManagment");
+const user_man = require("../../Controller/admin/user");
 const cat_man = require("../../Controller/admin/catogory");
 const prd_man = require("../../Controller/admin/products");
 const upload = require("../../config/multer");
@@ -41,5 +41,9 @@ router.patch("/product-management/update-status/:id", prd_man.updateProductStatu
 router.get("/product-management/add-product", prd_man.getAddProduct);
 
 router.post("/product-management/add-product", upload.array("images", 10), prd_man.postAddProduct);
+
+router.get('/product-management/edit-product/:id', prd_man.getEditProduct);
+
+router.post('/product-management/edit-product/:id', prd_man.postEditProduct)
 
 module.exports = router;
