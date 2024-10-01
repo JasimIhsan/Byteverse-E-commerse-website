@@ -4,249 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Byteverse | User-management</title>
-        <style>
-            /* CSS styles remain unchanged */
-            :root {
-                --primary-color: #5c59e8;
-                --secondary-color: #c21000;
-                --bg-color: #f8f9fa;
-                --sidebar-bg: #f0f1f7;
-                --table-bg: #ffffff;
-                --text-color: #333;
-                --header-bg: #ffffff;
-                --low-stock-color: #f39c12;
-                --active-status: #148800;
-                --blocked-status: #a40e00;
-            }
-
-            body {
-                margin: 0;
-                font-family: Arial, sans-serif;
-                background-color: var(--bg-color);
-            }
-
-            .dashboard-container {
-                display: flex;
-                min-height: 100vh;
-            }
-
-            /* Sidebar */
-            .unique-sidebar {
-                width: 250px;
-                background-color: var(--sidebar-bg);
-                padding: 20px;
-            }
-
-            .unique-sidebar-header h2 {
-                font-size: 1.5rem;
-                color: var(--primary-color);
-                text-align: center;
-            }
-
-            .unique-sidebar-menu {
-                list-style: none;
-                padding: 0;
-            }
-
-            .unique-sidebar-menu li {
-                margin: 10px 0;
-            }
-
-            .unique-sidebar-menu li a {
-                text-decoration: none;
-                color: var(--text-color);
-                font-weight: bold;
-                padding: 10px;
-                display: block;
-                border-radius: 5px;
-                transition: background-color 0.3s;
-            }
-
-            .unique-sidebar-menu li a:hover {
-                background-color: rgba(0, 0, 0, 0.1);
-            }
-
-            .unique-sidebar-menu li.active a {
-                background-color: var(--primary-color);
-                color: white;
-            }
-
-            /* Main Content */
-            .product-list-container {
-                flex-grow: 1;
-                padding: 20px;
-            }
-
-            .product-list-container h1 {
-                font-size: 1.8rem;
-                color: var(--text-color);
-            }
-
-            /* Breadcrumbs */
-            .breadcrumbs {
-                font-size: 0.9rem;
-                color: var(--text-color);
-                margin-bottom: 15px;
-            }
-
-            .breadcrumbs a {
-                color: var(--primary-color);
-                text-decoration: none;
-                margin-right: 5px;
-            }
-
-            .breadcrumbs a:hover {
-                text-decoration: underline;
-            }
-
-            .breadcrumbs span {
-                margin-right: 5px;
-            }
-
-            .product-search-filter {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 20px;
-            }
-
-            .product-search-filter div {
-                display: flex;
-                width: 60%;
-            }
-
-            .search-input {
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                width: 60%;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }
-
-            .add-product-btn {
-                padding: 10px 20px;
-                background-color: var(--primary-color);
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                transition: background-color 0.3s;
-            }
-
-            .add-product-btn:hover {
-                background-color: #4e54d4;
-            }
-
-            .category-table {
-                width: 100%;
-                border-collapse: collapse;
-                background-color: var(--table-bg);
-            }
-
-            .category-table th,
-            .category-table td {
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }
-
-            .category-table th {
-                background-color: var(--header-bg);
-                color: var(--text-color);
-            }
-
-            .category-image {
-                width: 50px; /* Adjust as needed */
-                height: auto;
-            }
-
-            .status-dropdown {
-                padding: 5px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-            }
-
-            .status-dropdown.listed {
-                background-color: #d4edda; /* Light green */
-            }
-
-            .status-dropdown.unlisted {
-                background-color: #f8d7da; /* Light red */
-            }
-
-            .status-dropdown.draft {
-                background-color: #e2e3e5; /* Light gray */
-            }
-
-            .action-btn {
-                padding: 8px 12px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            }
-
-            .action-btn.view {
-                background-color: var(--primary-color);
-                color: white;
-            }
-
-            .action-btn.edit {
-                background-color: var(--low-stock-color);
-                color: white;
-            }
-
-            .action-btn.delete {
-                background-color: var(--blocked-status);
-                color: white;
-            }
-
-            .action-btn:hover {
-                opacity: 0.8; /* Optional hover effect */
-            }
-
-            /* Pagination */
-            .pagination {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .pagination span {
-                color: var(--text-color);
-            }
-
-            .pagination-buttons {
-                display: flex;
-            }
-
-            .page-btn {
-                padding: 10px 15px;
-                margin: 0 5px;
-                border: 1px solid #ddd;
-                text-decoration: none;
-                color: var(--text-color);
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-            }
-
-            .page-btn:hover {
-                background-color: var(--primary-color);
-                color: white;
-            }
-
-            .page-btn.active {
-                background-color: var(--primary-color);
-                color: white;
-            }
-
-            .status-dropdown {
-                padding: 5px;
-                border-radius: 5px;
-                border: 1px solid #ddd;
-                width: 100%;
-            }
-        </style>
+        <link rel="stylesheet" href="/css/admin/user-management.css" />
     </head>
 
     <body>
@@ -259,7 +17,7 @@
                 <ul class="unique-sidebar-menu">
                     <li><a href="/admin/dashboard">Dashboard</a></li>
                     <li><a href="/admin/user-management">Users</a></li>
-                    <li><a href="#">Products</a></li>
+                    <li><a href="/admin/product-management">Products</a></li>
                     <li><a href="#">Orders</a></li>
                     <li class="active"><a href="#">Categories</a></li>
                     <li><a href="#">Coupon</a></li>
@@ -270,75 +28,130 @@
             </aside>
             <!-- Main Content -->
             <div class="product-list-container">
-                <h1>Category Management</h1>
+                <h1>Category-Management</h1>
 
                 <!-- Breadcrumbs -->
                 <nav class="breadcrumbs">
                     <a href="/admin/dashboard">Dashboard</a>
                     <span>&gt;</span>
-                    <a href="#">category-Management</a>
+                    <a href="#">Category-Management</a>
                 </nav>
 
                 <div class="product-search-filter">
-                    <div>
-                        <input type="text" placeholder="Search customer..." class="search-input" />
-                        <button class="add-product-btn" style="margin-left: 15px">Search</button>
+                    <div class="search-div">
+                        <form action="/admin/category-management" method="get">
+                            <input type="text" name="search" placeholder="Search Category..." class="search-input" value="<%= search %>" />
+                            <button class="add-product-btn" type="submit">Search</button>
+                        </form>
+                        <% if (search) { %>
+                        <form action="/admin/category-management" method="GET" style="margin-left: 10px">
+                            <input type="hidden" name="search" value="" />
+                            <button type="submit" class="add-product-btn">Show All</button>
+                        </form>
+                        <% } %>
                     </div>
-                    <button class="add-product-btn">+ Add Catogery</button>
+                    <button class="add-product-btn" id="addCategoryBtn">+Add Category</button>
                 </div>
 
-                <table class="category-table">
+                <% if (error_msg) { %>
+                <div class="error-message" id="error"><%= error_msg %></div>
+                <% } %> <% if (success_msg) { %>
+                <div class="success-message" id="error"><%= success_msg %></div>
+                <% } %>
+
+                <table class="product-table">
                     <thead>
                         <tr>
                             <th>SI No</th>
-                            <th>Image</th>
-                            <th>Category</th>
-                            <th>Stock</th>
+                            <!-- <th>Image</th> -->
+                            <th>Category Name</th>
+
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <% category.forEach(function(category, index) { %>
                         <tr>
-                            <td>1</td>
-                            <td><img src="image1.png" alt="Category 1" class="category-image" /></td>
-                            <td>Professional Laptops</td>
-                            <td>50</td>
+                            <td><%= (currentPage - 1) * 10 + index + 1 %></td>
+                            <!-- <td>
+                                <%= category.image %>
+                            </td> -->
+                            <td><%= category.name %></td>
                             <td>
-                                <select class="status-dropdown listed">
-                                    <option value="listed">Listed</option>
-                                    <option value="unlisted">Unlisted</option>
-                                    <option value="draft">Draft</option>
-                                </select>
+                                <form id="status-form-<%= category._id %>">
+                                    <button type="button" class="status-btn <%= category.status === 'listed' ? 'unlist-btn' : 'list-btn' %>" onclick="toggleCategoryStatus('<%= category._id %>', '<%= category.status %>')"><%= category.status==='listed' ? 'Unlist' : 'List' %></button>
+                                </form>
                             </td>
-                            <td>
-                                <button class="action-btn view">View</button>
-                                <button class="action-btn edit">Edit</button>
-                                <button class="action-btn delete">Delete</button>
+                            <td style="display: flex">
+                                <form action="/admin/user-management/user-details" method="GET">
+                                    <button class="action-btn view-btn" type="submit">View</button>
+                                </form>
+
+                                <button class="action-btn edit-btn" data-id="<%= category._id %>" data-name="<%= category.name %>" data-description="<%= category.description %>">Edit</button>
                             </td>
                         </tr>
-                        <tr>
-                            <td>2</td>
-                            <td><img src="image2.png" alt="Category 2" class="category-image" /></td>
-                            <td>Gaming Laptops</td>
-                            <td>30</td>
-                            <td>
-                                <select class="status-dropdown unlisted">
-                                    <option value="listed">Listed</option>
-                                    <option value="unlisted">Unlisted</option>
-                                    <option value="draft">Draft</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button class="action-btn view">View</button>
-                                <button class="action-btn edit">Edit</button>
-                                <button class="action-btn delete">Delete</button>
-                            </td>
-                        </tr>
-                        <!-- Add more rows as needed -->
+                        <% }); %>
                     </tbody>
                 </table>
+
+                <!-- Pagination -->
+
+                <div class="pagination">
+                    <% if (currentPage> 1) { %>
+                    <a href="/admin/category-management?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
+                    <% } %> <% for (let i=1; i <=totalPages; i++) { %>
+                    <a href="/admin/category-management?page=<%= i %>&search=<%= search %>" class="<%= currentPage === i ? 'active' : '' %>"> <%= i %> </a>
+                    <% } %> <% if (currentPage < totalPages) { %>
+                    <a href="/admin/category-management?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
+                    <% } %>
+                </div>
             </div>
         </div>
+
+        <!-- add category -->
+        <div id="addCategoryModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeAddModal">&times;</span>
+                <h2>Add Category</h2>
+
+                <form id="addCategoryForm" action="/admin/category-management/add-category" method="post">
+                    <div class="form-group">
+                        <label for="add-cat-name">Category Name:</label>
+                        <input type="text" id="add-cat-name" name="name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="add-cat-description">Description:</label>
+                        <input type="text" id="add-cat-description" name="description" />
+                    </div>
+                    <button type="submit" class="updateCategory-btn">Add Category</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Category Modal -->
+        <div id="editCategoryModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeEditModal">&times;</span>
+                <h2>Edit Category</h2>
+
+                <form id="editCategoryForm" action="/admin/category-management/edit-category" method="post">
+                    <input type="hidden" id="edit-cat-id" name="id" />
+                    <div class="form-group">
+                        <label for="add-cat-name">Category Name:</label>
+                        <input type="text" id="edit-cat-name" name="name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="add-cat-description">Description:</label>
+                        <input type="text" id="edit-cat-description" name="description" />
+                    </div>
+                    <button type="submit" class="updateCategory-btn">Update Category</button>
+                </form>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+        <script src="/javascripts/admin/category-management.js"></script>
     </body>
 </html>

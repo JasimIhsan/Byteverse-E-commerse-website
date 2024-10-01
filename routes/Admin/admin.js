@@ -3,6 +3,8 @@ const router = express.Router();
 const dash = require("../../Controller/admin/dashboard");
 const user_man = require("../../Controller/admin/userManagment");
 const cat_man = require("../../Controller/admin/catogory");
+const prd_man = require("../../Controller/admin/products");
+const upload = require("../../config/multer");
 
 //----------- dashboard -----------------//
 
@@ -22,6 +24,22 @@ router.get("/user-management/user-details", user_man.getUserDetails);
 
 //----------- Catogery management -----------------//
 
-router.get("/category", cat_man.getCategory);
+router.get("/category-management", cat_man.getCategory);
+
+router.post("/category-management/edit-category", cat_man.editCategory);
+
+router.post("/category-management/add-category", cat_man.addCategory);
+
+router.patch("/category-management/update-status/:id", cat_man.editCategoryStatus);
+
+//----------- Product management -----------------//
+
+router.get("/product-management", prd_man.getProduts);
+
+router.patch("/product-management/update-status/:id", prd_man.updateProductStatus);
+
+router.get("/product-management/add-product", prd_man.getAddProduct);
+
+router.post("/product-management/add-product", upload.array("images", 10), prd_man.postAddProduct);
 
 module.exports = router;

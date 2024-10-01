@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Byteverse | User-management</title>
-    <link rel="stylesheet" href="/css/admin/user-management.css">
+    <link rel="stylesheet" href="/css/admin/product.css">
 </head>
 
 <body>
@@ -17,8 +17,8 @@
             </div>
             <ul class="unique-sidebar-menu">
                 <li><a href="/admin/dashboard">Dashboard</a></li>
-                <li class="active"><a href="#">Users</a></li>
-                <li><a href="/admin/product-management">Products</a></li>
+                <li><a href="/admin/user-management">Users</a></li>
+                <li class="active"><a href="#">Products</a></li>
                 <li><a href="#">Orders</a></li>
                 <li><a href="/admin/category-management">Categories</a></li>
                 <li><a href="#">Coupon</a></li>
@@ -29,19 +29,19 @@
         </aside>
         <!-- Main Content -->
         <div class="product-list-container">
-            <h1>User-Management</h1>
+            <h1>Product-Management</h1>
 
             <!-- Breadcrumbs -->
             <nav class="breadcrumbs">
                 <a href="/admin/dashboard">Dashboard</a>
                 <span>&gt;</span>
-                <a href="#">User-Management</a>
+                <a href="#">Product-Management</a>
             </nav>
 
             <div class="product-search-filter">
                 <div style="display: flex">
                     <form action="/admin/user-management" method="get">
-                        <input type="text" name="search" placeholder="Search customer..." class="search-input"
+                        <input type="text" name="search" placeholder="Search products..." class="search-input"
                             value="<%= search %>" />
                         <button class="add-product-btn" type="submit">Search</button>
                     </form>
@@ -52,57 +52,66 @@
                         </form>
                         <% } %>
                 </div>
+                <form action="/admin/product-management/add-product" method="get">
 
+                    <button class="add-product-btn">+ Add product</button>
+                </form>
             </div>
 
             <table class="product-table">
                 <thead>
                     <tr>
                         <th>SI No</th>
-                        <th>Customer Name</th>
-                        <th>Email</th>
-                        <th>Orders</th>
-                        <th>Wallet Balance</th>
-                        <th>Status</th>
-                        <th>Created</th>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Color</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% users.forEach(function(users, index) { %>
+                    <% products.forEach(function(products, index) { %>
                         <tr>
                             <td>
                                 <%= (currentPage - 1) * 10 + index + 1 %>
                             </td>
                             <td>
-                                <%= users.username %>
+                                <%= products.image %>
                             </td>
                             <td>
-                                <%= users.email %>
+                                <%= products.name %>
                             </td>
                             <td>
-                                <%= users.orders %>
-                            </td>
-                            <td>$<%= users.walletBalance.toFixed(2) %>
+                                <%= products.category %>
                             </td>
                             <td>
-                                <form id="status-form-<%= users._id %>">
-                                    <button type="button"
-                                        class="status-btn <%= users.status === 'active' ? 'unblock-btn' : 'block-btn' %>"
-                                        onclick="toggleUserStatus('<%= users._id %>', '<%= users.status %>')">
-                                        <%= users.status==='active' ? 'Unblock' : 'Block' %>
-                                    </button>
-                                </form>
+                                <%= products.price %>
                             </td>
                             <td>
-                                <%= users.joinedDate ? new Date(users.joinedDate).toLocaleDateString() : 'N/A' %>
+                                <%= products.stock %>
                             </td>
-                            <td style="display: flex">
+                            <td>
+                                <%= products.colors %>
+                            </td>
 
+
+                            <td style="display: flex">
                                 <form action="/admin/user-management/user-details" method="GET">
                                     <button class="action-btn view-btn" type="submit">View</button>
                                 </form>
+                                <form id="status-form-<%= products._id %>">
+                                    <button type="button" class="status-btn <%= products.status === 'listed' ? 'unlist-btn' : 'list-btn' %>" 
+                                        onclick="toggleCategoryStatus('<%= products._id %>', '<%= products.status %>')">
+                                        <%= products.status === 'listed' ? 'Unlist' : 'List' %>
+                                    </button>
+                                </form>                                
+                                <form action="/admin/product-management/edit/<%= products._id %>" method="GET">
+                                    <button class="action-btn edit-btn" type="submit">Edit</button>
+                                </form>
                             </td>
+
                         </tr>
                         <% }); %>
                 </tbody>
@@ -128,7 +137,8 @@
 
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-        <script src="/javascripts/admin/user-management.js"></script>
+
+        <script src="/javascripts/admin/product"></script>
 </body>
 
 </html>

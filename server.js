@@ -7,6 +7,7 @@ const adminRoutes = require("./routes/Admin/admin");
 const morgan = require("morgan");
 const passport = require("passport");
 const methodOverride = require("method-override");
+const multer = require("multer");
 require("dotenv").config();
 
 const app = express();
@@ -17,6 +18,8 @@ app.set("view engine", "ejs");
 // app.use(morgan("common"));
 
 app.use(express.static("public"));
+
+console.log(multer);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
