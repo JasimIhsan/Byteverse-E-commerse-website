@@ -1,228 +1,453 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Byteverse | User-management</title>
+        <link rel="stylesheet" href="/css/admin/addproduct.css" />
+        <!-- Cropper.js CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css" />
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Byteverse | User-management</title>
-    <link rel="stylesheet" href="/css/admin/addproduct.css">
-</head>
+    <body>
+        <style>
+            /* Preview Images Styles */
+            #preview-container {
+                display: flex;
+                flex-wrap: wrap;
+                margin-top: 10px;
+            }
 
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="unique-sidebar">
-            <div class="unique-sidebar-header">
-                <h2>Byteverse</h2>
-            </div>
-            <ul class="unique-sidebar-menu">
-                <li><a href="/admin/dashboard">Dashboard</a></li>
-                <li><a href="#">Users</a></li>
-                <li class="active"><a href="#">Products</a></li>
-                <li><a href="#">Orders</a></li>
-                <li><a href="/admin/category-management">Categories</a></li>
-                <li><a href="#">Coupon</a></li>
-                <li><a href="#">Offers</a></li>
-                <li><a href="#">Support</a></li>
-                <li><a href="#">Settings</a></li>
-            </ul>
-        </aside>
-        <!-- Main Content -->
-        <div class="product-list-container">
-            <h1>Add Product</h1>
+            #preview-container img {
+                max-width: 100px;
+                margin: 5px 10px 10px 0;
+                border-radius: 8px; /* Rounded corners */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Soft shadow */
+                transition: transform 0.3s; /* Animation on hover */
+            }
 
-            <!-- Breadcrumbs -->
-            <nav class="breadcrumbs">
-                <a href="/admin/dashboard">Dashboard</a>
-                <span>&gt;</span>
-                <a href="/admin/product-management">Product-Management</a>
-                <span>&gt;</span>
-                <a href="#">Add-product</a>
-            </nav>
+            #preview-container img:hover {
+                transform: scale(1.05); /* Slight zoom effect on hover */
+            }
 
-            <form id="product-form" enctype="multipart/form-data" method="POST"
-                action="/admin/product-management/add-product">
-                <div class="form-group">
-                    <label for="name">Product Name:</label>
-                    <input type="text" id="name" name="name" required>
+            /* Modal Styles */
+            .cropper-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000; /* Bring modal to the front */
+                opacity: 0;
+                transition: opacity 0.3s ease; /* Smooth fade in */
+                display: none; /* Initially hidden */
+            }
+
+            .cropper-modal.active {
+                display: flex; /* Show when active */
+                align-items: center;
+                justify-content: center;
+                opacity: 1; /* Visible when active */
+            }
+
+            .cropper-modal-content {
+                position: relative; /* Create a positioning context */
+                background: white;
+                padding: 0; /* Remove padding for better alignment */
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+            }
+
+            .cropper-close {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                font-size: 24px;
+                color: #333; /* Darker color for visibility */
+                cursor: pointer;
+                transition: color 0.2s; /* Change color on hover */
+            }
+
+            .cropper-close:hover {
+                color: red; /* Change color on hover */
+            }
+
+            #cropper-image {
+                position: absolute; /* Position absolutely within the modal */
+                top: 0; /* Align to the top */
+                left: 0; /* Align to the left */
+                width: 100%; /* Full width */
+                height: auto; /* Maintain aspect ratio */
+                border-radius: 8px; /* Rounded corners */
+            }
+
+            /* Hide crop button initially */
+            #crop-button {
+                display: none;
+                margin-top: 10px; /* Add spacing above the button */
+                padding: 10px 15px; /* Button padding */
+                background-color: #28a745; /* Green background */
+                color: white; /* White text */
+                border: none; /* No border */
+                border-radius: 5px; /* Rounded corners */
+                cursor: pointer; /* Pointer cursor */
+                transition: background-color 0.3s; /* Smooth background change */
+            }
+
+            #crop-button:hover {
+                background-color: #218838; /* Darker green on hover */
+            }
+
+            /* Error Message */
+            .error-message {
+                color: red;
+                margin-top: 10px;
+            }
+
+            .dashboard-container {
+                display: flex;
+            }
+
+            .unique-sidebar {
+                width: 200px;
+                background-color: #f4f4f4;
+                padding: 15px;
+            }
+
+            .unique-sidebar-header h2 {
+                margin: 0;
+            }
+
+            .unique-sidebar-menu {
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .unique-sidebar-menu li {
+                margin: 10px 0;
+            }
+
+            .unique-sidebar-menu li a {
+                text-decoration: none;
+                color: #333;
+            }
+
+            .unique-sidebar-menu li.active a {
+                font-weight: bold;
+                color: #007bff;
+            }
+
+            .product-list-container {
+                flex-grow: 1;
+                padding: 20px;
+            }
+        </style>
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="unique-sidebar">
+                <div class="unique-sidebar-header">
+                    <h2>Byteverse</h2>
                 </div>
-                <div class="form-group">
-                    <label for="brand">Brand:</label>
-                    <select id="brand" name="brand" required>
-                        <option value="" disabled selected>Select a brand</option>
-                        <option value="Apple">Apple</option>
-                        <option value="Dell">Dell</option>
-                        <option value="HP">HP</option>
-                        <option value="Lenovo">Lenovo</option>
-                        <option value="Asus">Asus</option>
-                        <option value="Acer">Acer</option>
-                        <option value="Microsoft">Microsoft</option>
-                        <option value="MSI">MSI</option>
-                        <option value="Razer">Razer</option>
-                        <option value="Samsung">Samsung</option>
-                        <option value="Toshiba">Toshiba</option>
-                        <option value="Sony">Sony</option>
-                        <option value="Huawei">Huawei</option>
-                        <option value="Xiaomi">Xiaomi</option>
-                        <option value="Alienware">Alienware</option>
-                        <option value="Gigabyte">Gigabyte</option>
-                        <option value="LG">LG</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="category">Category:</label>
-                    <select id="category" name="category" required>
-                        <option value="" disabled selected>Select a category</option>
-                        <% categories.forEach(function(category) { %>
-                            <option value="<%= category._id %>">
-                                <%= category.name %>
-                            </option>
+                <ul class="unique-sidebar-menu">
+                    <li><a href="/admin/dashboard">Dashboard</a></li>
+                    <li><a href="#">Users</a></li>
+                    <li class="active"><a href="#">Products</a></li>
+                    <li><a href="#">Orders</a></li>
+                    <li><a href="/admin/category-management">Categories</a></li>
+                    <li><a href="#">Coupon</a></li>
+                    <li><a href="#">Offers</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Settings</a></li>
+                </ul>
+            </aside>
+            <!-- Main Content -->
+            <div class="product-list-container">
+                <h1>Add Product</h1>
+
+                <!-- Breadcrumbs -->
+                <nav class="breadcrumbs">
+                    <a href="/admin/dashboard">Dashboard</a>
+                    <span>&gt;</span>
+                    <a href="/admin/product-management">Product-Management</a>
+                    <span>&gt;</span>
+                    <a href="#">Add-product</a>
+                </nav>
+
+                <form id="product-form" enctype="multipart/form-data" method="POST" action="/admin/product-management/add-product">
+                    <div class="form-group">
+                        <label for="name">Product Name:</label>
+                        <input type="text" id="name" name="name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="brand">Brand:</label>
+                        <select id="brand" name="brand">
+                            <option value="" disabled selected>Select a brand</option>
+                            <option value="Apple">Apple</option>
+                            <option value="Dell">Dell</option>
+                            <option value="HP">HP</option>
+                            <option value="Lenovo">Lenovo</option>
+                            <option value="Asus">Asus</option>
+                            <option value="Acer">Acer</option>
+                            <option value="Microsoft">Microsoft</option>
+                            <option value="MSI">MSI</option>
+                            <option value="Razer">Razer</option>
+                            <option value="Samsung">Samsung</option>
+                            <option value="Toshiba">Toshiba</option>
+                            <option value="Sony">Sony</option>
+                            <option value="Huawei">Huawei</option>
+                            <option value="Xiaomi">Xiaomi</option>
+                            <option value="Alienware">Alienware</option>
+                            <option value="Gigabyte">Gigabyte</option>
+                            <option value="LG">LG</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <select id="category" name="category">
+                            <option value="" disabled selected>Select a category</option>
+                            <% categories.forEach(function(category) { %>
+                            <option value="<%= category._id %>"><%= category.name %></option>
                             <% }); %>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="price">Price:</label>
-                    <input type="number" id="price" name="price" required>
-                </div>
-                <div class="form-group">
-                    <label for="stock">Stock:</label>
-                    <input type="number" id="stock" name="stock" required>
-                </div>
-                <div class="form-group">
-                    <label for="processor-brand">Processor Brand:</label>
-                    <select id="processor-brand" name="specifications[processor][brand]" required>
-                        <option value="" disabled selected>Select a processor brand</option>
-                        <option value="Intel">Intel</option>
-                        <option value="AMD">AMD</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="processor-model">Processor Model:</label>
-                    <input type="text" id="processor-model" name="specifications[processor][model]" required>
-                </div>
-                <div class="form-group">
-                    <label for="processor-cores">Processor Cores:</label>
-                    <input type="number" id="processor-cores" name="specifications[processor][cores]" required>
-                </div>
-                <div class="form-group">
-                    <label for="processor-speed">Processor Speed:</label>
-                    <input type="text" id="processor-speed" name="specifications[processor][speed]" required>
-                </div>
-                <div class="form-group">
-                    <label for="ram-size">RAM Size (GB):</label>
-                    <select id="ram-size" name="specifications[ram][size]" required>
-                        <option value="" disabled selected>Select RAM size</option>
-                        <option value="4">4 GB</option>
-                        <option value="8">8 GB</option>
-                        <option value="16">16 GB</option>
-                        <option value="32">32 GB</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="ram-type">RAM Type:</label>
-                    <select id="ram-type" name="specifications[ram][type]" required>
-                        <option value="" disabled selected>Select RAM type</option>
-                        <option value="DDR4">DDR4</option>
-                        <option value="DDR5">DDR5</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="storage-type">Storage Type:</label>
-                    <select id="storage-type" name="specifications[storage][type]" required>
-                        <option value="" disabled selected>Select storage type</option>
-                        <option value="SSD">SSD</option>
-                        <option value="HDD">HDD</option>
-                        <option value="Hybrid">Hybrid</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="storage-capacity">Storage Capacity:</label>
-                    <select id="storage-capacity" name="specifications[storage][capacity]" required>
-                        <option value="" disabled selected>Select storage capacity</option>
-                        <option value="256GB">256 GB</option>
-                        <option value="512GB">512 GB</option>
-                        <option value="1TB">1 TB</option>
-                        <option value="2TB">2 TB</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="display-size">Display Size:</label>
-                    <input type="text" id="display-size" name="specifications[display][size]" required>
-                </div>
-                <div class="form-group">
-                    <label for="display-resolution">Display Resolution:</label>
-                    <input type="text" id="display-resolution" name="specifications[display][resolution]" required>
-                </div>
-                <div class="form-group">
-                    <label for="graphics-brand">Graphics Brand:</label>
-                    <select id="graphics-brand" name="specifications[graphics][brand]" required>
-                        <option value="" disabled selected>Select a graphics brand</option>
-                        <option value="NVIDIA">NVIDIA</option>
-                        <option value="AMD">AMD</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="graphics-model">Graphics Model:</label>
-                    <input type="text" id="graphics-model" name="specifications[graphics][model]" required>
-                </div>
-                <div class="form-group">
-                    <label for="graphics-memory">Graphics Memory:</label>
-                    <input type="text" id="graphics-memory" name="specifications[graphics][memory]" required>
-                </div>
-                <div class="form-group">
-                    <label for="battery-type">Battery Type:</label>
-                    <select id="battery-type" name="specifications[battery][type]" required>
-                        <option value="" disabled selected>Select battery type</option>
-                        <option value="Lithium-ion">Lithium-ion</option>
-                        <option value="Lithium-polymer">Lithium-polymer</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="battery-capacity">Battery Capacity:</label>
-                    <input type="text" id="battery-capacity" name="specifications[battery][capacity]" required>
-                </div>
-                <div class="form-group">
-                    <label for="os">Operating System:</label>
-                    <select id="os" name="specifications[os]" required>
-                        <option value="" disabled selected>Select an operating system</option>
-                        <option value="Windows">Windows</option>
-                        <option value="Linux">Linux</option>
-                        <option value="macOS">macOS</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="weight">Weight:</label>
-                    <input type="text" id="weight" name="specifications[weight]" required>
-                </div>
-                <div class="form-group">
-                    <label for="width">Width:</label>
-                    <input type="number" id="width" name="specifications[dimensions][width]" required>
-                </div>
-                <div class="form-group">
-                    <label for="height">Height:</label>
-                    <input type="number" id="height" name="specifications[dimensions][height]" required>
-                </div>
-                <div class="form-group">
-                    <label for="depth">Depth:</label>
-                    <input type="number" id="depth" name="specifications[dimensions][depth]" required>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price:</label>
+                        <input type="number" id="price" name="price" />
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock:</label>
+                        <input type="number" name="stock" id="stock" />
+                    </div>
+                    <div class="form-group">
+                        <label for="processor-brand">Processor Brand:</label>
+                        <select id="processor-brand" name="specifications[processor][brand]">
+                            <option value="" disabled selected>Select a processor brand</option>
+                            <option value="Intel">Intel</option>
+                            <option value="AMD">AMD</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="processor-model">Processor Model:</label>
+                        <input type="text" id="processor-model" name="specifications[processor][model]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="processor-cores">Processor Cores:</label>
+                        <input type="number" id="processor-cores" name="specifications[processor][cores]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="processor-speed">Processor Speed:</label>
+                        <input type="text" id="processor-speed" name="specifications[processor][speed]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="ram-size">RAM Size (GB):</label>
+                        <select id="ram-size" name="specifications[ram][size]">
+                            <option value="" disabled selected>Select RAM size</option>
+                            <option value="4">4 GB</option>
+                            <option value="8">8 GB</option>
+                            <option value="16">16 GB</option>
+                            <option value="32">32 GB</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ram-type">RAM Type:</label>
+                        <select id="ram-type" name="specifications[ram][type]">
+                            <option value="" disabled selected>Select RAM type</option>
+                            <option value="DDR4">DDR4</option>
+                            <option value="DDR5">DDR5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="storage-type">Storage Type:</label>
+                        <select id="storage-type" name="specifications[storage][type]">
+                            <option value="" disabled selected>Select storage type</option>
+                            <option value="SSD">SSD</option>
+                            <option value="HDD">HDD</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="storage-capacity">Storage Capacity:</label>
+                        <select id="storage-capacity" name="specifications[storage][capacity]">
+                            <option value="" disabled selected>Select storage capacity</option>
+                            <option value="256GB">256 GB</option>
+                            <option value="512GB">512 GB</option>
+                            <option value="1TB">1 TB</option>
+                            <option value="2TB">2 TB</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="display-size">Display Size:</label>
+                        <input type="text" id="display-size" name="specifications[display][size]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="display-resolution">Display Resolution:</label>
+                        <input type="text" id="display-resolution" name="specifications[display][resolution]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="graphics-brand">Graphics Brand:</label>
+                        <select id="graphics-brand" name="specifications[graphics][brand]">
+                            <option value="" disabled selected>Select a graphics brand</option>
+                            <option value="NVIDIA">NVIDIA</option>
+                            <option value="AMD">AMD</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="graphics-model">Graphics Model:</label>
+                        <input type="text" id="graphics-model" name="specifications[graphics][model]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="graphics-memory">Graphics Memory:</label>
+                        <input type="text" id="graphics-memory" name="specifications[graphics][memory]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="battery-type">Battery Type:</label>
+                        <select id="battery-type" name="specifications[battery][type]">
+                            <option value="" disabled selected>Select battery type</option>
+                            <option value="Lithium-ion">Lithium-ion</option>
+                            <option value="Lithium-polymer">Lithium-polymer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="battery-capacity">Battery Capacity:</label>
+                        <input type="text" id="battery-capacity" name="specifications[battery][capacity]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="os">Operating System:</label>
+                        <select id="os" name="specifications[os]">
+                            <option value="" disabled selected>Select an operating system</option>
+                            <option value="Windows">Windows</option>
+                            <option value="Linux">Linux</option>
+                            <option value="macOS">macOS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Weight:</label>
+                        <input type="text" id="weight" name="specifications[weight]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="width">Width:</label>
+                        <input type="number" id="width" name="specifications[dimensions][width]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="height">Height:</label>
+                        <input type="number" id="height" name="specifications[dimensions][height]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="depth">Depth:</label>
+                        <input type="number" id="depth" name="specifications[dimensions][depth]" />
+                    </div>
+                    <div class="form-group">
+                        <label for="warranty">Warranty:</label>
+                        <input type="text" id="warranty" name="warranty" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="primaryImageIndex">Primary Image (index):</label>
+                        <input type="number" name="primaryImageIndex" min="0" placeholder="0 (first image)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="images">Upload Images (Max 5):</label>
+                        <input type="file" id="images" name="images" accept="image/*" multiple />
+                        <div class="error-message" id="image-error"></div>
+                    </div>
+                    <div id="preview-container"></div>
+                    <div>
+                        <button type="submit">Add Product</button>
+                    </div>
+                </form>
 
-                <div class="form-group">
-                    <label for="images">Upload Images: (require 3 images)</label>
-                    <input type="file" id="images" name="images" accept="image/*" multiple required>
+                <!-- Cropper Modal -->
+                <div class="cropper-modal" id="cropper-modal">
+                    <div class="cropper-modal-content">
+                        <span class="cropper-close" id="cropper-close">&times;</span>
+                        <img id="cropper-image" />
+                        <button id="crop-button">Crop Image</button>
+                    </div>
                 </div>
-
-
-                <button type="submit">Add Product</button>
-            </form>
-
-
+            </div>
         </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.9.2/cropper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <!-- Cropper.js Script -->
+        <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+        <script>
+            const imageInput = document.getElementById("images");
+            const previewContainer = document.getElementById("preview-container");
+            const cropperModal = document.getElementById("cropper-modal");
+            const cropperImage = document.getElementById("cropper-image");
+            const cropButton = document.getElementById("crop-button");
+            const cropperClose = document.getElementById("cropper-close");
+            const imageError = document.getElementById("image-error");
+            let cropper;
+            let currentImage; // Store reference to the currently clicked image
+            const maxImages = 5;
 
+            imageInput.addEventListener("change", (event) => {
+                const files = event.target.files;
+                console.log(`Selected files: ${files.length}`); // Debugging log
+                if (files.length > maxImages) {
+                    imageError.textContent = `You can only upload a maximum of ${maxImages} images.`;
+                    return;
+                } else {
+                    imageError.textContent = ""; // Clear error message
+                }
 
-        <script src="/javascripts/admin/product"></script>
-</body>
+                [...files].forEach((file) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.style.maxWidth = "100px"; // Set max width for preview
+                        img.style.cursor = "pointer"; // Change cursor to pointer
+                        img.addEventListener("click", () => {
+                            console.log("Image clicked for cropping"); // Debugging log
+                            currentImage = img; // Store the currently clicked image
+                            openCropper(img.src);
+                        });
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
 
+            function openCropper(src) {
+                cropperModal.classList.add("active");
+                cropperImage.src = src;
+
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(cropperImage, {
+                    aspectRatio: 4 / 4,
+                    viewMode: 1,
+                });
+
+                cropButton.style.display = "block"; // Show crop button
+            }
+
+            cropButton.addEventListener("click", () => {
+                if (currentImage && cropper) {
+                    // Ensure currentImage is set
+                    const croppedCanvas = cropper.getCroppedCanvas();
+                    const croppedImage = croppedCanvas.toDataURL();
+                    currentImage.src = croppedImage; // Update the existing image's src
+                    cropperModal.classList.remove("active");
+                    cropButton.style.display = "none"; // Hide crop button
+                    imageInput.value = ""; // Clear the input
+                    currentImage = null; // Clear the reference
+                }
+            });
+
+            cropperClose.addEventListener("click", () => {
+                cropperModal.classList.remove("active");
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropButton.style.display = "none"; // Hide crop button
+                currentImage = null; // Clear the reference if modal is closed
+            });
+        </script>
+    </body>
 </html>

@@ -53,8 +53,22 @@ const getAddProduct = async (req, res) => {
 
 const postAddProduct = async (req, res) => {
     try {
-        // Create an array of file paths for the uploaded images
-        const imagePaths = req.files.map((file) => file.path);
+        const { primaryImageIndex } = req.body;
+
+        const images = [];
+
+        if (req.files["images"]) {
+            req.files["images"].forEach((file, index) => {
+                images.push({
+                    imagePath: `/uploads/${file.filename}`,
+                    isPrimary: index == primaryImageIndex,
+                });
+            });
+        }
+
+        if (images.length < 3) {
+            return res.redirect("/admin/product-management/add-product?error=You must upload at least 3 images.");
+        }
 
         // console.log(req.body);
 
@@ -63,6 +77,7 @@ const postAddProduct = async (req, res) => {
             brand: req.body.brand,
             category: req.body.category,
             price: req.body.price,
+            stock: req.body.stock,
             specifications: {
                 processor: {
                     brand: req.body.specifications.processor.brand,
@@ -99,7 +114,8 @@ const postAddProduct = async (req, res) => {
                     depth: req.body.specifications.dimensions.depth,
                 },
             },
-            images: imagePaths,
+            warranty: req.body.warranty,
+            images,
         });
 
         await newProduct.save();

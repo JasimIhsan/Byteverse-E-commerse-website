@@ -4,7 +4,7 @@ const dash = require("../../Controller/admin/dashboard");
 const user_man = require("../../Controller/admin/user");
 const cat_man = require("../../Controller/admin/catogory");
 const prd_man = require("../../Controller/admin/products");
-const upload = require("../../config/multer");
+const productImageUpload = require("../../config/multer");
 
 //----------- dashboard -----------------//
 
@@ -40,7 +40,7 @@ router.patch("/product-management/update-status/:id", prd_man.updateProductStatu
 
 router.get("/product-management/add-product", prd_man.getAddProduct);
 
-router.post("/product-management/add-product", upload.array("images", 10), prd_man.postAddProduct);
+router.post("/product-management/add-product", productImageUpload, prd_man.postAddProduct);
 
 router.get('/product-management/edit-product/:id', prd_man.getEditProduct);
 

@@ -44,7 +44,12 @@ const productSchema = new mongoose.Schema(
             },
         },
         warranty: { type: String, required: true },
-        images: [String],
+        images: [
+            {
+                imagePath: String,
+                isPrimary: Boolean, // To flag the primary image
+            },
+        ],
         status: {
             type: String,
             enum: ["listed", "unlisted"],
