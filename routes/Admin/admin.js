@@ -5,6 +5,7 @@ const user_man = require("../../Controller/admin/user");
 const cat_man = require("../../Controller/admin/catogory");
 const prd_man = require("../../Controller/admin/products");
 const productImageUpload = require("../../config/multer");
+const { log } = require("debug/src/browser");
 
 //----------- dashboard -----------------//
 
@@ -40,10 +41,19 @@ router.patch("/product-management/update-status/:id", prd_man.updateProductStatu
 
 router.get("/product-management/add-product", prd_man.getAddProduct);
 
-router.post("/product-management/add-product", productImageUpload, prd_man.postAddProduct);
+// router.post("/product-management/add-product", productImageUpload.array("images[]", 10), prd_man.postAddProduct);
+// router.post("/product-management/add-product", productImageUpload.array("images[]", 10), (req,res)=>{
+//     console.log('dstfghs');
+//     res.status(201)
+// });
 
-router.get('/product-management/edit-product/:id', prd_man.getEditProduct);
+router.post("/product-management/add-product", productImageUpload.any(), (req,res)=>{
+    console.log(req.files);
+    res.status(201)
+});
 
-router.post('/product-management/edit-product/:id', prd_man.postEditProduct)
+router.get("/product-management/edit-product/:id", prd_man.getEditProduct);
+
+router.post("/product-management/edit-product/:id", prd_man.postEditProduct);
 
 module.exports = router;

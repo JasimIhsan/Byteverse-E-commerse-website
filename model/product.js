@@ -1,3 +1,4 @@
+// models/Product.js
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
@@ -47,7 +48,7 @@ const productSchema = new mongoose.Schema(
         images: [
             {
                 imagePath: String,
-                isPrimary: Boolean, // To flag the primary image
+                isPrimary: Boolean, 
             },
         ],
         status: {
@@ -59,6 +60,6 @@ const productSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const Product = mongoose.model("Products", productSchema);
+const Product = mongoose.model("Product", productSchema);
 
 module.exports = Product;

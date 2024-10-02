@@ -53,26 +53,22 @@ const getAddProduct = async (req, res) => {
 
 const postAddProduct = async (req, res) => {
     try {
-        const { primaryImageIndex } = req.body;
+        // Extracting images from the request
+        const images = req.files.map((file, index) => {
+            return {
+                imagePath: file.path, // Assuming you want to store the file path
+                isPrimary: req.body.primary_image == index, // Set primary based on radio button selection
+            };
+        });
 
-        const images = [];
-
-        if (req.files["images"]) {
-            req.files["images"].forEach((file, index) => {
-                images.push({
-                    imagePath: `/uploads/${file.filename}`,
-                    isPrimary: index == primaryImageIndex,
-                });
-            });
+        // Determine which image is the primary
+        const primaryImageIndex = req.body.primary_image; // Index of the primary image
+        if (primaryImageIndex !== undefined) {
+            images[primaryImageIndex].isPrimary = true; // Set the selected primary image
         }
 
-        if (images.length < 3) {
-            return res.redirect("/admin/product-management/add-product?error=You must upload at least 3 images.");
-        }
-
-        // console.log(req.body);
-
-        const newProduct = new Products({
+        // Create a new product document
+        const newProduct = new Product({
             name: req.body.name,
             brand: req.body.brand,
             category: req.body.category,
@@ -80,49 +76,53 @@ const postAddProduct = async (req, res) => {
             stock: req.body.stock,
             specifications: {
                 processor: {
-                    brand: req.body.specifications.processor.brand,
-                    model: req.body.specifications.processor.model,
-                    cores: req.body.specifications.processor.cores,
-                    speed: req.body.specifications.processor.speed,
+                    brand: req.body["specifications[processor][brand]"],
+                    model: req.body["specifications[processor][model]"],
+                    cores: req.body["specifications[processor][cores]"],
+                    speed: req.body["specifications[processor][speed]"],
                 },
                 ram: {
-                    size: req.body.specifications.ram.size,
-                    type: req.body.specifications.ram.type,
+                    size: req.body["specifications[ram][size]"],
+                    type: req.body["specifications[ram][type]"],
                 },
                 storage: {
-                    type: req.body.specifications.storage.type,
-                    capacity: req.body.specifications.storage.capacity,
+                    type: req.body["specifications[storage][type]"],
+                    capacity: req.body["specifications[storage][capacity]"],
                 },
                 display: {
-                    size: req.body.specifications.display.size,
-                    resolution: req.body.specifications.display.resolution,
+                    size: req.body["specifications[display][size]"],
+                    resolution: req.body["specifications[display][resolution]"],
                 },
                 graphics: {
-                    brand: req.body.specifications.graphics.brand,
-                    model: req.body.specifications.graphics.model,
-                    memory: req.body.specifications.graphics.memory,
+                    brand: req.body["specifications[graphics][brand]"],
+                    model: req.body["specifications[graphics][model]"],
+                    memory: req.body["specifications[graphics][memory]"],
                 },
                 battery: {
-                    type: req.body.specifications.battery.type,
-                    capacity: req.body.specifications.battery.capacity,
+                    type: req.body["specifications[battery][type]"],
+                    capacity: req.body["specifications[battery][capacity]"],
                 },
-                os: req.body.specifications.os,
-                weight: req.body.specifications.weight,
+                os: req.body["specifications[os]"],
+                weight: req.body["specifications[weight]"],
                 dimensions: {
-                    width: req.body.specifications.dimensions.width,
-                    height: req.body.specifications.dimensions.height,
-                    depth: req.body.specifications.dimensions.depth,
+                    width: req.body["specifications[dimensions][width]"],
+                    height: req.body["specifications[dimensions][height]"],
+                    depth: req.body["specifications[dimensions][depth]"],
                 },
             },
             warranty: req.body.warranty,
-            images,
+            images: images,
+            status: req.body.status || "listed", // Default to "listed" if not specified
         });
 
+        // Save the product to the database
         await newProduct.save();
 
-        res.redirect("/admin/product-management?success=Product added successfully");
+        // Redirect or respond to the client
+        res.redirect("/admin/product-management");
     } catch (error) {
-        console.error("Error from post add product : \n", error);
+        console.error(error);
+        res.status(500).send("An error occurred while adding the product.");
     }
 };
 

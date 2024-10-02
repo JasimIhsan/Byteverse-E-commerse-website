@@ -7,145 +7,14 @@
         <link rel="stylesheet" href="/css/admin/addproduct.css" />
         <!-- Cropper.js CSS -->
         <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js" async></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
     </head>
 
     <body>
-        <style>
-            /* Preview Images Styles */
-            #preview-container {
-                display: flex;
-                flex-wrap: wrap;
-                margin-top: 10px;
-            }
-
-            #preview-container img {
-                max-width: 100px;
-                margin: 5px 10px 10px 0;
-                border-radius: 8px; /* Rounded corners */
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Soft shadow */
-                transition: transform 0.3s; /* Animation on hover */
-            }
-
-            #preview-container img:hover {
-                transform: scale(1.05); /* Slight zoom effect on hover */
-            }
-
-            /* Modal Styles */
-            .cropper-modal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 1000; /* Bring modal to the front */
-                opacity: 0;
-                transition: opacity 0.3s ease; /* Smooth fade in */
-                display: none; /* Initially hidden */
-            }
-
-            .cropper-modal.active {
-                display: flex; /* Show when active */
-                align-items: center;
-                justify-content: center;
-                opacity: 1; /* Visible when active */
-            }
-
-            .cropper-modal-content {
-                position: relative; /* Create a positioning context */
-                background: white;
-                padding: 0; /* Remove padding for better alignment */
-                border-radius: 8px;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
-            }
-
-            .cropper-close {
-                position: absolute;
-                top: 10px;
-                right: 15px;
-                font-size: 24px;
-                color: #333; /* Darker color for visibility */
-                cursor: pointer;
-                transition: color 0.2s; /* Change color on hover */
-            }
-
-            .cropper-close:hover {
-                color: red; /* Change color on hover */
-            }
-
-            #cropper-image {
-                position: absolute; /* Position absolutely within the modal */
-                top: 0; /* Align to the top */
-                left: 0; /* Align to the left */
-                width: 100%; /* Full width */
-                height: auto; /* Maintain aspect ratio */
-                border-radius: 8px; /* Rounded corners */
-            }
-
-            /* Hide crop button initially */
-            #crop-button {
-                display: none;
-                margin-top: 10px; /* Add spacing above the button */
-                padding: 10px 15px; /* Button padding */
-                background-color: #28a745; /* Green background */
-                color: white; /* White text */
-                border: none; /* No border */
-                border-radius: 5px; /* Rounded corners */
-                cursor: pointer; /* Pointer cursor */
-                transition: background-color 0.3s; /* Smooth background change */
-            }
-
-            #crop-button:hover {
-                background-color: #218838; /* Darker green on hover */
-            }
-
-            /* Error Message */
-            .error-message {
-                color: red;
-                margin-top: 10px;
-            }
-
-            .dashboard-container {
-                display: flex;
-            }
-
-            .unique-sidebar {
-                width: 200px;
-                background-color: #f4f4f4;
-                padding: 15px;
-            }
-
-            .unique-sidebar-header h2 {
-                margin: 0;
-            }
-
-            .unique-sidebar-menu {
-                list-style-type: none;
-                padding: 0;
-            }
-
-            .unique-sidebar-menu li {
-                margin: 10px 0;
-            }
-
-            .unique-sidebar-menu li a {
-                text-decoration: none;
-                color: #333;
-            }
-
-            .unique-sidebar-menu li.active a {
-                font-weight: bold;
-                color: #007bff;
-            }
-
-            .product-list-container {
-                flex-grow: 1;
-                padding: 20px;
-            }
-        </style>
         <div class="dashboard-container">
             <!-- Sidebar -->
             <aside class="unique-sidebar">
@@ -177,7 +46,7 @@
                     <a href="#">Add-product</a>
                 </nav>
 
-                <form id="product-form" enctype="multipart/form-data" method="POST" action="/admin/product-management/add-product">
+                <form id="product-form"  method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="name">Product Name:</label>
                         <input type="text" id="name" name="name" />
@@ -344,110 +213,108 @@
                         <label for="warranty">Warranty:</label>
                         <input type="text" id="warranty" name="warranty" value="" />
                     </div>
+                    
                     <div class="form-group">
-                        <label for="primaryImageIndex">Primary Image (index):</label>
-                        <input type="number" name="primaryImageIndex" min="0" placeholder="0 (first image)" />
+                        <label for="images">Upload Product Images (Minimum 4):</label>
+                        <div id="image-upload-container">
+                            <div class="image-upload">
+                                <input type="file" accept="image/*" class="image-input" onchange="initializeCropper(this, 0)">
+                                <input type="file" id="croppedImage-0" accept="image/*">
+                                <img id="image-preview-0" class="image-preview" style="display:none; max-width: 200px;" />
+                                <button type="button" class="crop-btn" onclick="cropImage(0)">Crop</button>
+                                <input type="radio" name="primary_image" value="0"> Set as Primary
+                            </div>
+                        </div>
+                        <button type="button" id="add-image-btn">Add More Images</button>
                     </div>
-                    <div class="form-group">
-                        <label for="images">Upload Images (Max 5):</label>
-                        <input type="file" id="images" name="images" accept="image/*" multiple />
-                        <div class="error-message" id="image-error"></div>
-                    </div>
-                    <div id="preview-container"></div>
-                    <div>
                         <button type="submit">Add Product</button>
                     </div>
                 </form>
-
-                <!-- Cropper Modal -->
-                <div class="cropper-modal" id="cropper-modal">
-                    <div class="cropper-modal-content">
-                        <span class="cropper-close" id="cropper-close">&times;</span>
-                        <img id="cropper-image" />
-                        <button id="crop-button">Crop Image</button>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <!-- Cropper.js Script -->
-        <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+
         <script>
-            const imageInput = document.getElementById("images");
-            const previewContainer = document.getElementById("preview-container");
-            const cropperModal = document.getElementById("cropper-modal");
-            const cropperImage = document.getElementById("cropper-image");
-            const cropButton = document.getElementById("crop-button");
-            const cropperClose = document.getElementById("cropper-close");
-            const imageError = document.getElementById("image-error");
-            let cropper;
-            let currentImage; // Store reference to the currently clicked image
-            const maxImages = 5;
 
-            imageInput.addEventListener("change", (event) => {
-                const files = event.target.files;
-                console.log(`Selected files: ${files.length}`); // Debugging log
-                if (files.length > maxImages) {
-                    imageError.textContent = `You can only upload a maximum of ${maxImages} images.`;
-                    return;
-                } else {
-                    imageError.textContent = ""; // Clear error message
-                }
 
-                [...files].forEach((file) => {
+            
+
+
+
+            let croppers = []; // Store cropper instances
+            let croppedImages = []; // Store cropped images for form submission
+        
+            // Initialize Cropper.js when an image is selected
+            function initializeCropper(input, index) {
+                if (input.files && input.files[0]) {
                     const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const img = document.createElement("img");
-                        img.src = e.target.result;
-                        img.style.maxWidth = "100px"; // Set max width for preview
-                        img.style.cursor = "pointer"; // Change cursor to pointer
-                        img.addEventListener("click", () => {
-                            console.log("Image clicked for cropping"); // Debugging log
-                            currentImage = img; // Store the currently clicked image
-                            openCropper(img.src);
+                    reader.onload = function(e) {
+                        const imgElement = document.getElementById(`image-preview-${index}`);
+                        const croppedImage = document.getElementById(`croppedImage-${index}`);
+                        imgElement.src = e.target.result;
+                        croppedImage.src = e.target.result;
+                        imgElement.style.display = 'block';
+        
+
+                        
+
+                        // Initialize cropper after image is loaded
+                        if (croppers[index]) {
+                            croppers[index].destroy(); // Destroy any existing cropper before initializing a new one
+                        }
+        
+                        croppers[index] = new Cropper(imgElement, {
+                            aspectRatio: 1, // Adjust aspect ratio as needed
+                            viewMode: 1,
+                            background: false,
                         });
-                        previewContainer.appendChild(img);
                     };
-                    reader.readAsDataURL(file);
-                });
-            });
-
-            function openCropper(src) {
-                cropperModal.classList.add("active");
-                cropperImage.src = src;
-
-                if (cropper) {
-                    cropper.destroy();
+                    reader.readAsDataURL(input.files[0]);
                 }
-                cropper = new Cropper(cropperImage, {
-                    aspectRatio: 4 / 4,
-                    viewMode: 1,
-                });
-
-                cropButton.style.display = "block"; // Show crop button
             }
-
-            cropButton.addEventListener("click", () => {
-                if (currentImage && cropper) {
-                    // Ensure currentImage is set
-                    const croppedCanvas = cropper.getCroppedCanvas();
-                    const croppedImage = croppedCanvas.toDataURL();
-                    currentImage.src = croppedImage; // Update the existing image's src
-                    cropperModal.classList.remove("active");
-                    cropButton.style.display = "none"; // Hide crop button
-                    imageInput.value = ""; // Clear the input
-                    currentImage = null; // Clear the reference
-                }
-            });
-
-            cropperClose.addEventListener("click", () => {
-                cropperModal.classList.remove("active");
+        
+            // Crop the image and replace the preview with the cropped version
+            function cropImage(index) {
+                const cropper = croppers[index];
                 if (cropper) {
+                    const croppedCanvas = cropper.getCroppedCanvas();
+                    // Convert the cropped image to a base64 string for JSON submission
+                    const base64Image = croppedCanvas.toDataURL('image/jpeg');
+        
+                    croppedImages[index] = base64Image; // Store base64 image in the array
+        
+                    // Replace the canvas with the actual cropped image preview
+                    const imgElement = document.getElementById(`image-preview-${index}`);
+                    imgElement.src = base64Image; // Set the cropped image as the new source
+                    imgElement.style.display = 'block'; // Ensure it's visible
+        
+                    // Destroy the cropper instance
                     cropper.destroy();
+                    croppers[index] = null; // Clear the cropper instance
                 }
-                cropButton.style.display = "none"; // Hide crop button
-                currentImage = null; // Clear the reference if modal is closed
+            }
+        
+            // Add more image upload inputs dynamically
+            document.getElementById('add-image-btn').addEventListener('click', function() {
+                const container = document.getElementById('image-upload-container');
+                const newIndex = container.getElementsByClassName('image-upload').length;
+        
+                const newImageUpload = `
+                    <div class="image-upload">
+                        <input type="file" name="images" accept="image/*" class="image-input" onchange="initializeCropper(this, ${newIndex})">
+                        <img id="image-preview-${newIndex}" class="image-preview" style="display:none; max-width: 200px;"/>
+                        <button type="button" class="crop-btn" onclick="cropImage(${newIndex})">Crop</button>
+                        <input type="radio" name="primaryImageIndex" value="${newIndex}"> Set as Primary
+                    </div>
+                `;
+        
+                container.insertAdjacentHTML('beforeend', newImageUpload);
             });
         </script>
+        
+        
+        
+      
     </body>
 </html>
+

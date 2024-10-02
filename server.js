@@ -5,6 +5,8 @@ const connectDB = require("./db/connectDB");
 const userRoutes = require("./routes/User/login");
 const adminRoutes = require("./routes/Admin/admin");
 const morgan = require("morgan");
+const bodyParser = require("body-parser");
+
 const passport = require("passport");
 const methodOverride = require("method-override");
 const multer = require("multer");
@@ -37,6 +39,8 @@ app.use(
         saveUninitialized: true,
     })
 );
+
+app.use(bodyParser.json());
 
 // Initialize Passport after session
 app.use(passport.initialize());

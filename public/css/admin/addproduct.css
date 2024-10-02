@@ -153,10 +153,11 @@ button {
     font-size: 16px;
     width: 100%;
     transition: background-color 0.3s;
+    margin-top: 10px;
 }
 
 button:hover {
-    background-color: var(--secondary-color);
+    background-color: #3a38b6;
 }
 
 input[type="file"] {
