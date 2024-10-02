@@ -53,6 +53,8 @@ const getAddProduct = async (req, res) => {
 
 const postAddProduct = async (req, res) => {
     try {
+        console.log("Entered ");
+
         // Extracting images from the request
         const images = req.files.map((file, index) => {
             return {
