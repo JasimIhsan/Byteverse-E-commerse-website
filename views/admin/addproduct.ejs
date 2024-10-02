@@ -43,7 +43,11 @@
                     <span>&gt;</span>
                     <a href="#">Add-product</a>
                 </nav>
-
+                <% if (error_msg) { %>
+                <div class="error-message" id="error"><%= error_msg %></div>
+                <% } %> <% if (success_msg) { %>
+                <div class="success-message" id="error"><%= success_msg %></div>
+                <% } %>
                 <form id="product-form" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="name">Product Name:</label>
@@ -213,14 +217,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="images">Upload Product Images (Minimum 4):</label>
+                        <label for="images">Upload Product Images (Minimum 3):</label>
                         <div id="image-upload-container">
                             <div class="image-upload">
                                 <input type="file" accept="image/*" class="image-input" onchange="initializeCropper(this, 0)" />
-                                <input type="file" name="croppedImage[]" id="croppedImage-0" accept="image/*" hidden/>
+                                <input type="file" name="croppedImage[]" id="croppedImage-0" accept="image/*" hidden />
                                 <img id="image-preview-0" class="image-preview" style="display: none; max-width: 200px" />
                                 <button type="button" class="crop-btn" onclick="cropImage(0)">Crop</button>
-                                <input type="radio" name="primary_image" value="0" /> Set as Primary
+                                <input type="radio" name="primaryImageIndex" value="0" /> Set as Primary
                             </div>
                         </div>
                         <button type="button" id="add-image-btn">Add More Images</button>
@@ -277,7 +281,7 @@
 
             // Crop the image and replace the preview with the cropped version
             function cropImage(index) {
-                console.log(index)
+                console.log(index);
                 const cropper = croppers[index];
                 if (cropper) {
                     const croppedCanvas = cropper.getCroppedCanvas();
@@ -324,6 +328,13 @@
                 `;
                 container.insertAdjacentHTML("beforeend", newImageUpload);
             });
+
+            const error = document.getElementById("error");
+            if (error) {
+                setTimeout(() => {
+                    error.style.display = "none";
+                }, 3000);
+            }
         </script>
     </body>
 </html>

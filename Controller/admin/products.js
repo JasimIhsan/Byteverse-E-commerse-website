@@ -14,7 +14,7 @@ const getProduts = async (req, res) => {
             .skip(skip)
             .limit(limit);
 
-        console.log(prds.category);
+        // console.log(prds.category);
 
         const totalProducts = await Products.countDocuments({ name: { $regex: search, $options: "i" } });
         const totalPages = Math.ceil(totalProducts / limit);
@@ -45,7 +45,9 @@ const getAddProduct = async (req, res) => {
     try {
         const categories = await Category.find();
 
-        res.render("admin/addproduct", { categories });
+        const error_msg = req.query.error;
+        const success_msg = req.query.success;
+        res.render("admin/addproduct", { categories, error_msg, success_msg });
     } catch (error) {
         console.error("Error from get add Product : \n", error);
     }
@@ -53,24 +55,24 @@ const getAddProduct = async (req, res) => {
 
 const postAddProduct = async (req, res) => {
     try {
-        console.log("Entered ");
+        const isExist = await Products.findOne({ name: req.body.name });
 
-        // Extracting images from the request
-        const images = req.files.map((file, index) => {
-            return {
-                imagePath: file.path, // Assuming you want to store the file path
-                isPrimary: req.body.primary_image == index, // Set primary based on radio button selection
-            };
+        if (isExist) {
+            return res.redirect("/admin/product-management/add-product?error=Product already exists");
+        }
+
+        const imageName = req.files.map((file) => {
+            // console.log(file.filename);
+
+            return file.filename;
         });
 
-        // Determine which image is the primary
-        const primaryImageIndex = req.body.primary_image; // Index of the primary image
-        if (primaryImageIndex !== undefined) {
-            images[primaryImageIndex].isPrimary = true; // Set the selected primary image
+        if (imageName.length < 3) {
+            return res.redirect("/admin/product-management/add-product?error=Atleast 3 images needed");
         }
 
         // Create a new product document
-        const newProduct = new Product({
+        const newProduct = new Products({
             name: req.body.name,
             brand: req.body.brand,
             category: req.body.category,
@@ -78,53 +80,55 @@ const postAddProduct = async (req, res) => {
             stock: req.body.stock,
             specifications: {
                 processor: {
-                    brand: req.body["specifications[processor][brand]"],
-                    model: req.body["specifications[processor][model]"],
-                    cores: req.body["specifications[processor][cores]"],
-                    speed: req.body["specifications[processor][speed]"],
+                    brand: req.body.specifications.processor.brand,
+                    model: req.body.specifications.processor.model,
+                    cores: req.body.specifications.processor.cores,
+                    speed: req.body.specifications.processor.speed,
                 },
                 ram: {
-                    size: req.body["specifications[ram][size]"],
-                    type: req.body["specifications[ram][type]"],
+                    size: req.body.specifications.ram.size,
+                    type: req.body.specifications.ram.type,
                 },
                 storage: {
-                    type: req.body["specifications[storage][type]"],
-                    capacity: req.body["specifications[storage][capacity]"],
+                    type: req.body.specifications.storage.type,
+                    capacity: req.body.specifications.storage.capacity,
                 },
                 display: {
-                    size: req.body["specifications[display][size]"],
-                    resolution: req.body["specifications[display][resolution]"],
+                    size: req.body.specifications.display.size,
+                    resolution: req.body.specifications.display.resolution,
                 },
                 graphics: {
-                    brand: req.body["specifications[graphics][brand]"],
-                    model: req.body["specifications[graphics][model]"],
-                    memory: req.body["specifications[graphics][memory]"],
+                    brand: req.body.specifications.graphics.brand,
+                    model: req.body.specifications.graphics.model,
+                    memory: req.body.specifications.graphics.memory,
                 },
                 battery: {
-                    type: req.body["specifications[battery][type]"],
-                    capacity: req.body["specifications[battery][capacity]"],
+                    type: req.body.specifications.battery.type,
+                    capacity: req.body.specifications.battery.capacity,
                 },
-                os: req.body["specifications[os]"],
-                weight: req.body["specifications[weight]"],
+                os: req.body.specifications.os,
+                weight: req.body.specifications.weight,
                 dimensions: {
-                    width: req.body["specifications[dimensions][width]"],
-                    height: req.body["specifications[dimensions][height]"],
-                    depth: req.body["specifications[dimensions][depth]"],
+                    width: req.body.specifications.dimensions.width,
+                    height: req.body.specifications.dimensions.height,
+                    depth: req.body.specifications.dimensions.depth,
                 },
             },
             warranty: req.body.warranty,
-            images: images,
-            status: req.body.status || "listed", // Default to "listed" if not specified
+            images: imageName,
+            status: req.body.status || "listed",
         });
 
         // Save the product to the database
         await newProduct.save();
 
+        // console.log("Document stored successfully");
+
         // Redirect or respond to the client
-        res.redirect("/admin/product-management");
+        res.redirect("/admin/product-management/add-product?success=Product added successfully");
     } catch (error) {
         console.error(error);
-        res.status(500).send("An error occurred while adding the product.");
+        res.redirect("/admin/product-management/add-product?error=An error occurred while adding the product.");
     }
 };
 
@@ -140,6 +144,8 @@ const getEditProduct = async (req, res) => {
 
         const categories = await Category.find();
 
+        // console.log(product);
+
         res.render("admin/editproduct", { categories, product });
     } catch (error) {
         console.error("Error from Get edit product page : \n", error);
@@ -148,18 +154,91 @@ const getEditProduct = async (req, res) => {
 
 const postEditProduct = async (req, res) => {
     try {
-        const { name, brand, category, price, stock, specifications, warranty } = req.body;
         const productId = req.params.id;
 
-        const updatedProduct = await Products.findByIdAndUpdate(productId, { name, brand, category, price, stock, specifications, warranty }, { new: true, runValidators: true });
+        const isExist = await Products.findOne({ name: req.body.name });
+
+        if (isExist) {
+            return res.redirect("/admin/product-management?error=Product already exists");
+        }
+
+        const imageName = req.files.map((file) => {
+            // console.log(file.filename);
+
+            return file.filename;
+        });
+
+        if (imageName.length < 3) {
+            return res.redirect("/admin/product-management?error=Atleast 3 images needed");
+        }
+
+        // console.log("req.body of edit page : \n", req.body);
+        // console.log("req.files of edit page : \n", req.files);
+        // console.log("req.name : \n", req.body.name);
+
+        const updatedProductData = {
+            name: req.body.name,
+            brand: req.body.brand,
+            category: req.body.category,
+            price: req.body.price,
+            stock: req.body.stock,
+            specifications: {
+                processor: {
+                    brand: req.body.specifications?.processor?.brand || "",
+                    model: req.body.specifications?.processor?.model || "",
+                    cores: req.body.specifications?.processor?.cores || "",
+                    speed: req.body.specifications?.processor?.speed || "",
+                },
+                ram: {
+                    size: req.body.specifications?.ram?.size || "",
+                    type: req.body.specifications?.ram?.type || "",
+                },
+                storage: {
+                    type: req.body.specifications?.storage?.type || "",
+                    capacity: req.body.specifications?.storage?.capacity || "",
+                },
+                display: {
+                    size: req.body.specifications?.display?.size || "",
+                    resolution: req.body.specifications?.display?.resolution || "",
+                },
+                graphics: {
+                    brand: req.body.specifications?.graphics?.brand || "",
+                    model: req.body.specifications?.graphics?.model || "",
+                    memory: req.body.specifications?.graphics?.memory || "",
+                },
+                battery: {
+                    type: req.body.specifications?.battery?.type || "",
+                    capacity: req.body.specifications?.battery?.capacity || "",
+                },
+                os: req.body.specifications?.os || "",
+                weight: req.body.specifications?.weight || "",
+                dimensions: {
+                    width: req.body.specifications?.dimensions?.width || "",
+                    height: req.body.specifications?.dimensions?.height || "",
+                    depth: req.body.specifications?.dimensions?.depth || "",
+                },
+            },
+            warranty: req.body.warranty || "",
+            images: imageName.length > 0 ? imageName : req.body.images || [],
+            status: req.body.status || "listed",
+        };
+
+        console.log(updatedProductData);
+
+        const updatedProduct = await Products.findByIdAndUpdate(productId, updatedProductData, { new: true });
 
         if (!updatedProduct) {
             return res.redirect("/admin/product-management?error=Product not found");
         }
 
-        res.redirect("/admin/product-management?success=Product edited successfully");
+        console.log("Product ID: ", productId);
+        console.log("Updated Data: ", updatedProductData);
+        console.log("Files: ", req.files);
+
+        res.redirect(`/admin/product-management?success=Product updated successfully`);
     } catch (error) {
-        console.error("Error from post edit product : \n", error);
+        console.error("Error updating product: \n", error);
+        res.redirect(`/admin/product-management?error=Error updating product`);
     }
 };
 

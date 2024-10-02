@@ -45,12 +45,10 @@ const productSchema = new mongoose.Schema(
             },
         },
         warranty: { type: String, required: true },
-        images: [
-            {
-                imagePath: String,
-                isPrimary: Boolean, 
-            },
-        ],
+        images: {
+            type: [String],
+            require: true,
+        },
         status: {
             type: String,
             enum: ["listed", "unlisted"],
