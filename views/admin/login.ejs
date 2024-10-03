@@ -11,6 +11,10 @@
         <div class="login-container">
             <h1>Admin Login</h1>
 
+            <% if (error_msg) { %>
+            <div class="error-message" id="error"><%= error_msg %></div>
+            <% } %>
+
             <form action="/admin/dashboard" method="POST" id="loginForm">
                 <div class="input-group">
                     <label for="username">Admin name</label>

@@ -80,27 +80,15 @@ input:focus {
 
 .error-message {
     background-color: #f8d7da;
-    /* Light red background */
     color: #721c24;
-    /* Dark red text color */
     border: 1px solid #f5c6cb;
-    /* Border matching the background color */
     padding: 10px 15px;
-    /* Padding for spacing inside the box */
     border-radius: 5px;
-    /* Rounded corners */
     font-size: 14px;
-    /* Font size */
     font-weight: bold;
-    /* Bold text */
     margin: 10px 0;
-    /* Margin to separate from other elements */
     text-align: center;
-    /* Center the text */
     max-width: 400px;
-    /* Optional: to control the width */
     margin-left: auto;
-    /* Optional: center the box horizontally */
     margin-right: auto;
-    /* Optional: center the box horizontally */
 }

@@ -156,11 +156,11 @@ const postEditProduct = async (req, res) => {
     try {
         const productId = req.params.id;
 
-        const isExist = await Products.findOne({ name: req.body.name });
+        // const isExist = await Products.findOne({ name: req.body.name });
 
-        if (isExist) {
-            return res.redirect("/admin/product-management?error=Product already exists");
-        }
+        // if (isExist) {
+        //     return res.redirect("/admin/product-management?error=Product already exists");
+        // }
 
         const imageName = req.files.map((file) => {
             // console.log(file.filename);
@@ -168,9 +168,9 @@ const postEditProduct = async (req, res) => {
             return file.filename;
         });
 
-        if (imageName.length < 3) {
-            return res.redirect("/admin/product-management?error=Atleast 3 images needed");
-        }
+        // if (imageName.length < 3) {
+        //     return res.redirect("/admin/product-management?error=Atleast 3 images needed");
+        // }
 
         // console.log("req.body of edit page : \n", req.body);
         // console.log("req.files of edit page : \n", req.files);

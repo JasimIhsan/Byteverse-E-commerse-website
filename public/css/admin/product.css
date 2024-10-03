@@ -157,6 +157,12 @@ body {
     color: var(--text-color);
 }
 
+.product-table tr {
+    /* display: flex;
+    align-items: center; */
+    height: 55px;
+}
+
 .action-btn {
     padding: 8px 12px;
     border: none;

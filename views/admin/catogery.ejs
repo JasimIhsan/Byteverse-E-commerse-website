@@ -74,9 +74,6 @@
                         <% category.forEach(function(category, index) { %>
                         <tr>
                             <td><%= (currentPage - 1) * 10 + index + 1 %></td>
-                            <!-- <td>
-                                <%= category.image %>
-                            </td> -->
                             <td><%= category.name %></td>
                             <td>
                                 <form id="status-form-<%= category._id %>">

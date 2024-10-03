@@ -83,8 +83,8 @@
                             <td>
                                 <%= (currentPage - 1) * 10 + index + 1 %>
                             </td>
-                            <td>
-                                <%= products.image %>
+                            <td style="width: 100px;">
+                                <img src="/<%= products.images[0] %>" alt="img" style="max-width: 50px; max-height: 50px;" />
                             </td>
                             <td>
                                 <%= products.name %>
@@ -93,6 +93,7 @@
                                 <%= products.category ? products.category.name : 'No Category' %>
                             </td>   
                             <td>
+                                1727894943881_9630.png
                                 <%= products.price %>
                             </td>
                             <td>
