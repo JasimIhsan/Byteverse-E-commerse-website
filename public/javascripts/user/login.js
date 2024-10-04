@@ -92,3 +92,10 @@ function validateSignInForm(event) {
 
 // Attach the validate function to the sign-in form submit event
 document.getElementById("signinForm").addEventListener("submit", validateSignInForm);
+
+const error = document.getElementById("error");
+if (error) {
+    setTimeout(() => {
+        error.style.display = "none";
+    }, 3000);
+}

@@ -26,7 +26,7 @@
                     <span>or use your email for registration</span>
 
                     <% if (message) { %>
-                    <p class="error-message"><%= message %></p>
+                    <p class="error-message" id="error"><%= message %></p>
                     <% } %>
 
                     <input type="text" placeholder="Name" name="username" id="username" onkeyup="validateUsername()" />
@@ -62,7 +62,7 @@
                     <span>or use your account</span>
 
                     <% if (message) { %>
-                    <p class="error-message"><%= message %></p>
+                    <p class="error-message" id="error"><%= message %></p>
                     <% } %>
 
                     <input type="email" placeholder="Email" name="email" id="signinEmail" onkeyup="validateEmail()" />

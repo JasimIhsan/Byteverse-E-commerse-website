@@ -3,545 +3,267 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Byteverse | User-management</title>
+        <title>Product Card</title>
         <style>
-            /* CSS styles remain unchanged */
-            :root {
-                --primary-color: #5c59e8;
-                --secondary-color: #c21000;
-                --bg-color: #f8f9fa;
-                --sidebar-bg: #f0f1f7;
-                --table-bg: #ffffff;
-                --text-color: #333;
-                --header-bg: #ffffff;
-                --low-stock-color: #f39c12;
-                --active-status: #148800;
-                --blocked-status: #a40e00;
+            /* Reset and base styles */
+            * {
+                box-sizing: border-box;
             }
-
             body {
-                margin: 0;
                 font-family: Arial, sans-serif;
-                background-color: var(--bg-color);
-            }
-
-            .dashboard-container {
-                display: flex;
-                min-height: 100vh;
-            }
-
-            /* Sidebar */
-            .unique-sidebar {
-                width: 250px;
-                background-color: var(--sidebar-bg);
-                padding: 20px;
-            }
-
-            .unique-sidebar-header h2 {
-                font-size: 1.5rem;
-                color: var(--primary-color);
-                text-align: center;
-            }
-
-            .unique-sidebar-menu {
-                list-style: none;
+                margin: 0;
                 padding: 0;
+                background-color: #f4f4f4;
             }
-
-            .unique-sidebar-menu li {
-                margin: 10px 0;
-            }
-
-            .unique-sidebar-menu li a {
-                text-decoration: none;
-                color: var(--text-color);
-                font-weight: bold;
-                padding: 10px;
-                display: block;
-                border-radius: 5px;
-                transition: background-color 0.3s;
-            }
-
-            .unique-sidebar-menu li a:hover {
-                background-color: rgba(0, 0, 0, 0.1);
-            }
-
-            .unique-sidebar-menu li.active a {
-                background-color: var(--primary-color);
-                color: white;
-            }
-
-            /* Main Content */
-            .product-list-container {
-                flex-grow: 1;
+            .unique-container {
+                max-width: 1200px;
+                margin: 0 auto;
                 padding: 20px;
             }
-
-            .product-list-container h1 {
-                font-size: 1.8rem;
-                color: var(--text-color);
+            /* Product card styles */
+            .unique-product-card {
+                background-color: #ffffff;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                overflow: hidden;
+                transition: box-shadow 0.3s ease;
+                max-width: 300px;
+                margin: 0 auto;
             }
-
-            /* Breadcrumbs */
-            .breadcrumbs {
-                font-size: 0.9rem;
-                color: var(--text-color);
-                margin-bottom: 15px;
+            .unique-product-card:hover {
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             }
-
-            .breadcrumbs a {
-                color: var(--primary-color);
-                text-decoration: none;
-                margin-right: 5px;
+            .unique-product-image {
+                position: relative;
+                aspect-ratio: 1 / 1;
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
-
-            .breadcrumbs a:hover {
-                text-decoration: underline;
+            .unique-product-image img {
+                width: 80%;
+                height: 80%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
             }
-
-            .breadcrumbs span {
-                margin-right: 5px;
+            .unique-product-card:hover .unique-product-image img {
+                transform: scale(1.05);
             }
-
-            .product-search-filter {
+            .unique-wishlist-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: rgba(212, 212, 212, 0.8);
+                border: none;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            .unique-product-card:hover .unique-wishlist-btn {
+                opacity: 1;
+            }
+            .unique-wishlist-btn.filled svg {
+                fill: red;
+                stroke: red;
+            }
+            .unique-product-info {
+                padding: 16px;
+            }
+            .unique-product-title {
+                font-size: 16px;
+                font-weight: 600;
+                margin: 0 0 8px;
+            }
+            .unique-product-price-rating {
                 display: flex;
                 justify-content: space-between;
-                margin-bottom: 20px;
+                align-items: center;
+                margin-bottom: 12px;
             }
-
-            .search-input {
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                width: 60%;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }
-
-            .add-product-btn {
-                padding: 10px 20px;
-                background-color: var(--primary-color);
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                transition: background-color 0.3s;
-            }
-
-            .add-product-btn:hover {
-                background-color: #4e54d4;
-            }
-
-            .product-table {
-                width: 100%;
-                background-color: var(--table-bg);
-                border-collapse: collapse;
-                margin-bottom: 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                overflow: hidden;
-            }
-
-            .product-table th,
-            .product-table td {
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }
-
-            .product-table th {
-                background-color: #f0f4ff;
+            .unique-product-price {
+                font-size: 18px;
                 font-weight: bold;
-                color: var(--text-color);
             }
-
-            .product-table td {
-                color: var(--text-color);
+            .unique-product-rating {
+                display: flex;
+                align-items: center;
             }
-
-            .action-btn {
-                padding: 8px 12px;
+            .unique-rating-star {
+                color: #ffc107;
+                margin-right: 4px;
+            }
+            .unique-rating-value {
+                font-size: 14px;
+                color: #757575;
+            }
+            .unique-add-to-cart-btn {
+                width: 100%;
+                padding: 8px 16px;
+                background-color: #007bff;
+                color: #ffffff;
                 border: none;
-                border-radius: 5px;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 600;
                 cursor: pointer;
-                margin-right: 5px;
-                transition: background-color 0.3s;
+                transition: background-color 0.3s ease;
+            }
+            .unique-add-to-cart-btn:hover {
+                background-color: #0056b3;
+            }
+            .unique-add-to-cart-btn.added {
+                background-color: green;
             }
 
-            .edit-btn {
-                background-color: var(--primary-color);
-                color: white;
+            /* Modal Styles */
+            .unique-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
             }
-
-            .edit-btn:hover {
-                background-color: #4e54d4;
+            .unique-modal-content {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                text-align: center;
+                width: 90%;
+                height: 230px;
+                max-width: 400px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                animation: fadeIn 0.3s ease-in-out;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
             }
-
-            .delete-btn {
-                background-color: #ff6154;
-                color: white;
+            .unique-modal-content h4 {
+                font-size: 25px;
+                margin-bottom: 45px;
             }
-
-            .delete-btn:hover {
-                background-color: #d9534f;
-            }
-
-            .view-btn {
+            .unique-modal-content button {
+                padding: 14px 25px;
                 background-color: #007bff;
                 color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 20px;
             }
-
-            .view-btn:hover {
+            .unique-modal-content button:hover {
                 background-color: #0056b3;
             }
 
-            /* Pagination */
-            .pagination {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+            /* Fade-in animation for modal */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
 
-            .pagination span {
-                color: var(--text-color);
-            }
-
-            .pagination-buttons {
-                display: flex;
-            }
-
-            .page-btn {
-                padding: 10px 15px;
-                margin: 0 5px;
-                border: 1px solid #ddd;
-                text-decoration: none;
-                color: var(--text-color);
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-            }
-
-            .page-btn:hover {
-                background-color: var(--primary-color);
-                color: white;
-            }
-
-            .page-btn.active {
-                background-color: var(--primary-color);
-                color: white;
-            }
-
-            .status-dropdown {
-                padding: 5px;
-                border-radius: 5px;
-                border: 1px solid #ddd;
-                width: 100%;
-            }
-
-            .user-profile {
-                background-color: white;
-                border-radius: 10px;
-                padding: 20px;
-                margin-bottom: 20px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }
-
-            .profile-header {
-                display: flex;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-
-            .profile-image {
-                width: 100px;
-                height: 100px;
-                border-radius: 50%;
-                margin-right: 20px;
-            }
-
-            .profile-info h2 {
-                margin: 0;
-                font-size: 1.5rem;
-            }
-
-            .premium-badge {
-                background-color: #e0e7ff;
-                color: #3949ab;
-                padding: 2px 8px;
-                border-radius: 10px;
-                font-size: 0.8em;
-                margin-left: 10px;
-            }
-
-            .user-details div {
-                margin-bottom: 10px;
-            }
-
-            .user-stats {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 20px;
-            }
-
-            .stat-card {
-                background-color: white;
-                border-radius: 10px;
-                padding: 20px;
-                flex: 1;
-                margin-right: 20px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-                text-align: center;
-            }
-
-            .stat-card:last-child {
-                margin-right: 0;
-            }
-
-            .stat-card h3 {
-                margin: 0;
-                font-size: 0.9em;
-                color: #888;
-            }
-
-            .stat-card .value {
-                font-size: 1.5em;
-                font-weight: bold;
-                margin: 10px 0;
-            }
-
-            .stat-card .change {
-                font-size: 0.8em;
-            }
-
-            .change.positive {
-                color: #4caf50;
-            }
-
-            .change.negative {
-                color: #f44336;
-            }
-
-            .order-history {
-                background-color: white;
-                border-radius: 10px;
-                padding: 20px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            }
-
-            .order-history-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-
-            .order-filters {
-                display: flex;
-            }
-
-            .filter-btn {
-                background-color: #f0f2f5;
-                border: none;
-                padding: 8px 12px;
-                margin-left: 10px;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-
-            .order-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            .order-table th,
-            .order-table td {
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #eee;
-            }
-
-            .order-id {
-                color: #3949ab;
-            }
-
-            .product-info {
-                display: flex;
-                align-items: center;
-            }
-
-            .product-image {
-                width: 40px;
-                height: 40px;
-                margin-right: 10px;
-                border-radius: 5px;
-            }
-
-            .product-sub {
-                font-size: 0.8em;
-                color: #888;
-            }
-
-            .status {
-                padding: 5px 10px;
-                border-radius: 20px;
-                font-size: 0.8em;
-            }
-
-            .status.processing {
-                background-color: #fff3e0;
-                color: #e65100;
-            }
-
-            .status.shipped {
-                background-color: #e3f2fd;
-                color: #1565c0;
-            }
-
-            .status.delivered {
-                background-color: #e8f5e9;
-                color: #2e7d32;
-            }
-
-            .pagination {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-top: 20px;
-            }
-
-            .pagination-buttons {
-                display: flex;
-            }
-
-            .page-btn {
-                background-color: #f0f2f5;
-                border: none;
-                padding: 5px 10px;
-                margin: 0 5px;
-                border-radius: 5px;
-                cursor: pointer;
-            }
-
-            .page-btn.active {
-                background-color: #3949ab;
-                color: white;
+            /* Responsive styles */
+            @media (max-width: 768px) {
+                .unique-product-card {
+                    max-width: 100%;
+                }
             }
         </style>
     </head>
-
     <body>
-        <div class="dashboard-container">
-            <!-- Sidebar -->
-            <aside class="unique-sidebar">
-                <div class="unique-sidebar-header">
-                    <h2>Byteverse</h2>
+        <div class="unique-container">
+            <div class="unique-product-card">
+                <div class="unique-product-image">
+                    <img src="/public/images/Laptops/Prof-1.png" alt="Product Image" />
+                    <button class="unique-wishlist-btn" aria-label="Add to wishlist">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </button>
                 </div>
-                <ul class="unique-sidebar-menu">
-                    <li><a href="/admin/dashboard">Dashboard</a></li>
-                    <li class="active"><a href="#">Users</a></li>
-                    <li><a href="#">Products</a></li>
-                    <li><a href="#">Orders</a></li>
-                    <li><a href="#">Categories</a></li>
-                    <li><a href="#">Coupon</a></li>
-                    <li><a href="#">Offers</a></li>
-                    <li><a href="#">Support</a></li>
-                    <li><a href="#">Settings</a></li>
-                </ul>
-            </aside>
-            <!-- Main Content -->
-            <div class="product-list-container">
-                <h1>User details</h1>
-
-                <!-- Breadcrumbs -->
-                <nav class="breadcrumbs">
-                    <a href="/admin/dashboard">Dashboard</a>
-                    <span>&gt;</span>
-                    <a href="#">User-Management</a>
-                    <span>&gt;</span>
-                    <a href="#">User-details</a>
-                </nav>
-
-                <div class="user-profile">
-                    <div class="profile-header">
-                        <img src="/public/images/potfolio.jpg" alt="User profile" class="profile-image" />
-                        <div class="profile-info">
-                            <h2>Linda Blair <span class="premium-badge">Premium</span></h2>
-                            <p>@linda_blair321</p>
+                <div class="unique-product-info">
+                    <h3 class="unique-product-title">Product Title</h3>
+                    <div class="unique-product-price-rating">
+                        <p class="unique-product-price">$99.99</p>
+                        <div class="unique-product-rating">
+                            <span class="unique-rating-star">★</span>
+                            <span class="unique-rating-star">★</span>
+                            <span class="unique-rating-star">★</span>
+                            <span class="unique-rating-star">★</span>
+                            <span class="unique-rating-value">(4.5)</span>
                         </div>
                     </div>
-                    <div class="user-details">
-                        <div><strong>User ID :</strong> ID-011221</div>
-                        <div><strong>Billing Email :</strong> lindablair@email.com</div>
-                        <div><strong>Phone Number :</strong> 050 414 8778</div>
-                        <div><strong>Delivery Address :</strong> 1833 Bel Meadow Drive, Fontana, California 92335, USA</div>
-                        <div><strong>Latest Transaction:</strong> 12 December 2022</div>
-                    </div>
-                </div>
-
-                <div class="user-stats">
-                    <div class="stat-card">
-                        <h3>Total Balance</h3>
-                        <div class="value">$723.00</div>
-                        <div class="change negative">-25%</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Total Orders</h3>
-                        <div class="value">1,296</div>
-                        <div class="change positive">+10%</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Rewards Point</h3>
-                        <div class="value">1400</div>
-                        <div class="change positive">+10%</div>
-                    </div>
-                </div>
-
-                <div class="order-history">
-                    <div class="order-history-header">
-                        <h2>Order History</h2>
-                        <div class="order-filters">
-                            <button class="filter-btn">Select Date</button>
-                            <button class="filter-btn">Filters</button>
-                        </div>
-                    </div>
-                    <table class="order-table">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Product</th>
-                                <th>Total</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="order-id">#302012</td>
-                                <td class="product-info">
-                                    <div>
-                                        <div>Handmade Pouch</div>
-                                        <div class="product-sub">+3 other products</div>
-                                    </div>
-                                </td>
-                                <td>$121.00</td>
-                                <td><span class="status processing">Processing</span></td>
-                                <td>12 Dec 2023</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="pagination">
-                        <span>Showing 1-5 from 1,296</span>
-                        <div class="pagination-buttons">
-                            <button class="page-btn">&lt;</button>
-                            <button class="page-btn active">1</button>
-                            <button class="page-btn">2</button>
-                            <button class="page-btn">3</button>
-                            <button class="page-btn">...</button>
-                            <button class="page-btn">&gt;</button>
-                        </div>
-                    </div>
+                    <button class="unique-add-to-cart-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        Add to Cart
+                    </button>
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="unique-modal" id="unique-modal">
+            <div class="unique-modal-content" id="unique-modal-content">
+                <h4 id="unique-modal-message"></h4>
+                <button id="modal-button" onclick="closeUniqueModal()">Ok</button>
+            </div>
+        </div>
+
+        <script>
+            const uniqueModal = document.getElementById("unique-modal");
+            const uniqueModalMessage = document.getElementById("unique-modal-message");
+            const addToCartButton = document.querySelector(".unique-add-to-cart-btn");
+
+            document.querySelector(".unique-wishlist-btn").addEventListener("click", function () {
+                this.classList.toggle("filled");
+                uniqueModalMessage.textContent = this.classList.contains("filled") ? "Product added to wishlist!" : "Product removed from wishlist!";
+                showUniqueModal();
+            });
+
+            addToCartButton.addEventListener("click", function () {
+                if (this.textContent === "Add to Cart") {
+                    // Logic to add the product to the cart
+                    // Here you can implement your cart logic, e.g., update cart in localStorage or send an API request
+
+                    this.textContent = "Go to Cart"; // Change button text
+                    this.classList.add("added"); // Optional: add a class for styling
+                    uniqueModalMessage.textContent = "Product added to cart!";
+                    showUniqueModal();
+                } else {
+                    // Redirect to the cart when "Go to Cart" is clicked
+                    window.location.href = "/cart"; // Change this to your cart URL
+                }
+            });
+
+            function showUniqueModal() {
+                uniqueModal.style.display = "flex";
+            }
+
+            function closeUniqueModal() {
+                uniqueModal.style.display = "none";
+                addToCartButton.textContent = "Add to Cart"; // Reset button text
+            }
+        </script>
     </body>
 </html>

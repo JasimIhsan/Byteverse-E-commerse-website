@@ -55,11 +55,11 @@ const getAddProduct = async (req, res) => {
 
 const postAddProduct = async (req, res) => {
     try {
-        const isExist = await Products.findOne({ name: req.body.name });
+        // const isExist = await Products.findOne({ name: req.body.name });
 
-        if (isExist) {
-            return res.redirect("/admin/product-management/add-product?error=Product already exists");
-        }
+        // if (isExist) {
+        //     return res.redirect("/admin/product-management/add-product?error=Product already exists");
+        // }
 
         const imageName = req.files.map((file) => {
             // console.log(file.filename);

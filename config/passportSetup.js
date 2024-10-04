@@ -15,6 +15,7 @@ passport.use(
         async (accessToken, refreshToken, profile, done) => {
             try {
                 const existUser = await User.findOne({ googleId: profile.id });
+                console.log(existUser);
                 if (existUser) {
                     return done(new Error("user exists"));
                 }
