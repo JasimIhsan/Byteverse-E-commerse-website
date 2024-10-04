@@ -8,35 +8,44 @@ const passport = require("../../config/passportSetup");
 
 router.get("/", user.getHome);
 
-router.post("/login", user.postHome);
+router.post("/login", auth.isLogged, user.postHome);
 
-router.get("/login", user.getLogin);
+router.get("/login", auth.isLogged, user.getLogin);
 
-router.post("/", user.postLogin);
+router.post("/", auth.isLogged, user.postLogin);
 
-router.get("/login/enter-otp", user.getEnterOTP);
+router.get("/login/enter-otp", auth.isLogged, user.getEnterOTP);
 
-router.post("/login/enter-otp", user.postSignup);
+router.post("/login/enter-otp", auth.isLogged, user.postSignup);
 
-router.post("/login/enter-otp/verify-otp", user.varifyOTP);
+router.post("/login/enter-otp/verify-otp", auth.isLogged, user.varifyOTP);
 
-router.post("/signup/resend-otp", user.resendOTP);
+router.post("/signup/resend-otp", auth.isLogged, user.resendOTP);
 
 router.get(
     "/auth/google",
+    auth.isLogged,
     passport.authenticate("google", {
         scope: ["profile", "email"],
-        failureRedirect: "/login",
     })
 );
 
-router.get(
-    "/auth/google/callback",
-    passport.authenticate("google", {
-        failureRedirect: "/login",
-    }),
-    user.handleGoogleAuth
-);
+router.get("/auth/google/callback", auth.isLogged, (req, res, next) => {
+    passport.authenticate("google", (err, user, info) => {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            return res.redirect(`/login?error=${encodeURIComponent(info.message)}`);
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                return next(err);
+            }
+            return res.redirect("/");
+        });
+    })(req, res, next);
+});
 
 //------------------------------ Product detail page -----------------------------------//
 

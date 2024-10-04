@@ -80,9 +80,9 @@
                         <label for="category">Category:</label>
                         <select id="category" name="category">
                             <option value="" disabled selected>Select a category</option>
-                            <% categories.forEach(function(category) { %>
+                            <% categories.forEach(function(category) { %> <% if (category.status === "listed") { %>
                             <option value="<%= category._id %>"><%= category.name %></option>
-                            <% }); %>
+                            <% } %> <% }); %>
                         </select>
                     </div>
                     <div class="form-group">

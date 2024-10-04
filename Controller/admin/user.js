@@ -9,7 +9,6 @@ const getUserManagement = async (req, res) => {
         const regex = new RegExp("^" + search, "i");
 
         const users = await User.find({ username: { $regex: regex } })
-            .sort({ joinedAt: -1 })
             .skip(skip)
             .limit(limit);
 

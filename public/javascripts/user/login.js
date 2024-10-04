@@ -15,7 +15,13 @@ function validateUsername() {
     const username = document.getElementById("username").value;
     const usernameError = document.getElementById("usernameError");
 
-    if (username.length < 3) {
+    if (username.trim().length === 0) {
+        usernameError.textContent = "Username cannot be empty or contain only spaces";
+        return false;
+    } else if (username.includes(" ")) {
+        usernameError.textContent = "Username cannot contain spaces";
+        return false;
+    } else if (username.length < 3) {
         usernameError.textContent = "Username must be at least 3 characters long";
         return false;
     } else {
@@ -30,7 +36,13 @@ function validateEmail() {
     const emailError = document.getElementById("emailError") || document.getElementById("signinEmailError");
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!emailRegex.test(email)) {
+    if (email.trim().length === 0) {
+        emailError.textContent = "Email cannot be empty or contain only spaces";
+        return false;
+    } else if (email.includes(" ")) {
+        emailError.textContent = "Email cannot contain spaces";
+        return false;
+    } else if (!emailRegex.test(email)) {
         emailError.textContent = "Please enter a valid email address";
         return false;
     } else {
@@ -98,4 +110,57 @@ if (error) {
     setTimeout(() => {
         error.style.display = "none";
     }, 3000);
+}
+
+//----------------------------------------------------- sign in validation -----------------------------------------//
+
+function checkEmailInput() {
+    const emailInput = document.getElementById("signinEmail");
+    const emailError = document.getElementById("signinEmailError");
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailInput.value.trim() === "") {
+        emailError.textContent = "Email cannot be empty.";
+        emailError.style.color = "red";
+    } else if (emailInput.value.includes(" ")) {
+        emailError.textContent = "Email cannot contain spaces.";
+        emailError.style.color = "red";
+    } else if (!emailPattern.test(emailInput.value.trim())) {
+        emailError.textContent = "Please enter a valid email address.";
+        emailError.style.color = "red";
+    } else {
+        emailError.textContent = "";
+    }
+}
+
+function checkPasswordInput() {
+    const passwordInput = document.getElementById("signinPassword");
+    const passwordError = document.getElementById("signinPasswordError");
+
+    if (passwordInput.value.trim() === "") {
+        passwordError.textContent = "Password cannot be empty.";
+        passwordError.style.color = "red";
+    } else if (passwordInput.value.includes(" ")) {
+        passwordError.textContent = "Password cannot contain spaces.";
+        passwordError.style.color = "red";
+    } else if (passwordInput.value.length < 6) {
+        passwordError.textContent = "Password must be at least 6 characters long.";
+        passwordError.style.color = "red";
+    } else {
+        passwordError.textContent = "";
+    }
+}
+
+function validateSignInForm() {
+    checkEmailInput(); // Validate email before submission
+    checkPasswordInput(); // Validate password before submission
+
+    // Check if there are any error messages
+    const emailError = document.getElementById("signinEmailError").textContent;
+    const passwordError = document.getElementById("signinPasswordError").textContent;
+
+    if (emailError || passwordError) {
+        return false; // Prevent form submission
+    }
+    return true; // Allow form submission
 }

@@ -8,9 +8,10 @@ const getCategory = async (req, res) => {
         const regex = new RegExp("^" + search, "i");
 
         const catg = await Category.find({ name: { $regex: regex } })
-            .sort({ joinedAt: -1 })
             .skip(skip)
             .limit(limit);
+
+        console.log(catg);
 
         const totalCategory = await Category.countDocuments({ name: { $regex: search, $options: "i" } });
         const totalPages = Math.ceil(totalCategory / limit);

@@ -17,13 +17,15 @@ passport.use(
                 const existUser = await User.findOne({ googleId: profile.id });
                 console.log(existUser);
                 if (existUser) {
-                    return done(new Error("user exists"));
+                    return done(null, false, { message: "User already exists. " });
                 }
 
                 const existingEmailUser = await User.findOne({ email: profile.emails[0].value });
                 if (existingEmailUser) {
-                    return done(new Error("user exists"));
+                    return done(null, false, { message: "Email is already in use. " });
                 }
+
+                if (existUser.status == "Blocked") return done(null, false, { message: "User is blocked" });
 
                 const password = crypto.randomInt(10000000, 99999999).toString();
                 const hashedPassword = await bcrypt.hash(password, 10);

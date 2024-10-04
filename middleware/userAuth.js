@@ -1,11 +1,20 @@
-const checkAuth = (req, res, next) => {
+const checkSession = (req, res, next) => {
     if (req.session.user) {
         next();
     } else {
-        res.redirect("/");
+        res.redirect("/login");
     }
 };
 
-// module.exports = {
-//     checkAuth,
-// };
+const isLogged = (req, res, next) => {
+    if (req.session.user) {
+        res.redirect("/");
+    } else {
+        next();
+    }
+};
+
+module.exports = {
+    checkSession,
+    isLogged,
+};

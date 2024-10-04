@@ -102,7 +102,7 @@ const postLogin = async (req, res) => {
             const isMatched = await bcrypt.compare(password, user.password);
 
             if (isMatched) {
-                req.session.user = user;
+                req.session.user = true;
                 res.redirect("/");
             } else {
                 res.redirect("/login?error=Incorrect email or password"); // error : incorect password or email
@@ -184,7 +184,7 @@ const varifyOTP = async (req, res) => {
 
         if (isMatched) {
             //mark as varified to not to use again
-            req.session.user = user;
+            req.session.user = true;
             await otpRecord.save();
 
             const hashedPassword = await securePassword(password);

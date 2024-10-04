@@ -10,7 +10,6 @@ const getProduts = async (req, res) => {
 
         const prds = await Products.find({ name: { $regex: regex } })
             .populate("category")
-            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
@@ -44,6 +43,7 @@ const updateProductStatus = async (req, res) => {
 const getAddProduct = async (req, res) => {
     try {
         const categories = await Category.find();
+
 
         const error_msg = req.query.error;
         const success_msg = req.query.success;

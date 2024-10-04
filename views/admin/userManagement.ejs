@@ -1,134 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Byteverse | User-management</title>
+        <link rel="stylesheet" href="/css/admin/user-management.css" />
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Byteverse | User-management</title>
-    <link rel="stylesheet" href="/css/admin/user-management.css">
-</head>
+    <body>
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="unique-sidebar">
+                <div class="unique-sidebar-header">
+                    <h2>Byteverse</h2>
+                </div>
+                <ul class="unique-sidebar-menu">
+                    <li><a href="/admin/dashboard">Dashboard</a></li>
+                    <li class="active"><a href="#">Users</a></li>
+                    <li><a href="/admin/product-management">Products</a></li>
+                    <li><a href="#">Orders</a></li>
+                    <li><a href="/admin/category-management">Categories</a></li>
+                    <li><a href="#">Coupon</a></li>
+                    <li><a href="#">Offers</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Settings</a></li>
+                </ul>
+            </aside>
+            <!-- Main Content -->
+            <div class="product-list-container">
+                <h1>User-Management</h1>
 
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="unique-sidebar">
-            <div class="unique-sidebar-header">
-                <h2>Byteverse</h2>
-            </div>
-            <ul class="unique-sidebar-menu">
-                <li><a href="/admin/dashboard">Dashboard</a></li>
-                <li class="active"><a href="#">Users</a></li>
-                <li><a href="/admin/product-management">Products</a></li>
-                <li><a href="#">Orders</a></li>
-                <li><a href="/admin/category-management">Categories</a></li>
-                <li><a href="#">Coupon</a></li>
-                <li><a href="#">Offers</a></li>
-                <li><a href="#">Support</a></li>
-                <li><a href="#">Settings</a></li>
-            </ul>
-        </aside>
-        <!-- Main Content -->
-        <div class="product-list-container">
-            <h1>User-Management</h1>
+                <!-- Breadcrumbs -->
+                <nav class="breadcrumbs">
+                    <a href="/admin/dashboard">Dashboard</a>
+                    <span>&gt;</span>
+                    <a href="#">User-Management</a>
+                </nav>
 
-            <!-- Breadcrumbs -->
-            <nav class="breadcrumbs">
-                <a href="/admin/dashboard">Dashboard</a>
-                <span>&gt;</span>
-                <a href="#">User-Management</a>
-            </nav>
-
-            <div class="product-search-filter">
-                <div style="display: flex">
-                    <form action="/admin/user-management" method="get">
-                        <input type="text" name="search" placeholder="Search customer..." class="search-input"
-                            value="<%= search %>" />
-                        <button class="add-product-btn" type="submit">Search</button>
-                    </form>
-                    <% if (search) { %>
+                <div class="product-search-filter">
+                    <div style="display: flex">
+                        <form action="/admin/user-management" method="get">
+                            <input type="text" name="search" placeholder="Search customer..." class="search-input" value="<%= search %>" />
+                            <button class="add-product-btn" type="submit">Search</button>
+                        </form>
+                        <% if (search) { %>
                         <form action="/admin/user-management" method="GET" style="margin-left: 10px">
                             <input type="hidden" name="search" value="" />
                             <button type="submit" class="add-product-btn">Show All</button>
                         </form>
                         <% } %>
+                    </div>
                 </div>
 
-            </div>
-
-            <table class="product-table">
-                <thead>
-                    <tr>
-                        <th>SI No</th>
-                        <th>Customer Name</th>
-                        <th>Email</th>
-                        <th>Orders</th>
-                        <th>Wallet Balance</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% users.forEach(function(users, index) { %>
+                <table class="product-table">
+                    <thead>
                         <tr>
-                            <td>
-                                <%= (currentPage - 1) * 10 + index + 1 %>
-                            </td>
-                            <td>
-                                <%= users.username %>
-                            </td>
-                            <td>
-                                <%= users.email %>
-                            </td>
-                            <td>
-                                <%= users.orders %>
-                            </td>
-                            <td>$<%= users.walletBalance.toFixed(2) %>
-                            </td>
+                            <th>SI No</th>
+                            <th>Customer Name</th>
+                            <th>Email</th>
+                            <th>Orders</th>
+                            <th>Wallet Balance</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(function(users, index) { %>
+                        <tr>
+                            <td><%= (currentPage - 1) * 10 + index + 1 %></td>
+                            <td><%= users.username %></td>
+                            <td><%= users.email %></td>
+                            <td><%= users.orders %></td>
+                            <td>$<%= users.walletBalance.toFixed(2) %></td>
                             <td>
                                 <form id="status-form-<%= users._id %>">
-                                    <button type="button"
-                                        class="status-btn <%= users.status === 'active' ? 'unblock-btn' : 'block-btn' %>"
-                                        onclick="toggleUserStatus('<%= users._id %>', '<%= users.status %>')">
-                                        <%= users.status==='active' ? 'Unblock' : 'Block' %>
-                                    </button>
+                                    <button type="button" class="status-btn <%= users.status == 'Blocked' ? 'unblock-btn' : 'block-btn' %>" onclick="toggleUserStatus('<%= users._id %>', '<%= users.status %>')"><%= users.status==='Blocked' ? 'Unblock' : 'Block' %></button>
                                 </form>
                             </td>
-                            <td>
-                                <%= users.joinedDate ? new Date(users.joinedDate).toLocaleDateString() : 'N/A' %>
-                            </td>
+                            <td><%= users.joinedDate ? new Date(users.joinedDate).toLocaleDateString() : 'N/A' %></td>
                             <td style="display: flex">
-
                                 <form action="/admin/user-management/user-details" method="GET">
                                     <button class="action-btn view-btn" type="submit">View</button>
                                 </form>
                             </td>
                         </tr>
                         <% }); %>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
 
-            <!-- Pagination -->
-            <div class="pagination">
-                <% if (currentPage> 1) { %>
+                <!-- Pagination -->
+                <div class="pagination">
+                    <% if (currentPage> 1) { %>
                     <a href="/admin/user-management?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
+                    <% } %> <% for (let i=1; i <=totalPages; i++) { %>
+                    <a href="/admin/user-management?page=<%= i %>&search=<%= search %>" class="<%= currentPage === i ? 'active' : '' %>"> <%= i %> </a>
+                    <% } %> <% if (currentPage < totalPages) { %>
+                    <a href="/admin/user-management?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
                     <% } %>
-                        <% for (let i=1; i <=totalPages; i++) { %>
-                            <a href="/admin/user-management?page=<%= i %>&search=<%= search %>"
-                                class="<%= currentPage === i ? 'active' : '' %>">
-                                <%= i %>
-                            </a>
-                            <% } %>
-                                <% if (currentPage < totalPages) { %>
-                                    <a
-                                        href="/admin/user-management?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
-                                    <% } %>
+                </div>
             </div>
         </div>
-
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
         <script src="/javascripts/admin/user-management.js"></script>
-</body>
-
+    </body>
 </html>

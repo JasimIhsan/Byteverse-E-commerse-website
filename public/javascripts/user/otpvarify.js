@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const enableResendLink = () => {
         resendLink.classList.remove("disabled");
         resendLink.style.pointerEvents = "auto";
-        resendLink.style.color = "#5C59E8"; // Change the color to indicate it's active
+        resendLink.style.color = "#5C59E8";
         timerElement.textContent = "";
     };
 

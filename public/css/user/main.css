@@ -4048,3 +4048,13 @@ input.num-product::-webkit-inner-spin-button {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   /* Optional: shadow effect for better visibility */
 }
+
+.logo-text {
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.logo {
+  text-decoration: none;
+  color: black;
+}

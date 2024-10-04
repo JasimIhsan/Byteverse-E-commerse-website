@@ -193,7 +193,7 @@
                         <% product.images.forEach((image, index) => { %>
                             <div class="image-upload">
                                 <img id="image-preview-<%= index %>" class="image-preview" src="/<%= image %>" style="display: block; max-width: 200px;" />
-                                <input type="file" accept="image/*" class="image-input" onchange=`initializeCropper(this, <%= index %>)` />
+                                <input type="file" accept="image/*" class="image-input" onchange=`initializeCropper(this, '/<%= index %>')` />
                                 <input type="file" name="croppedImage[]" id="croppedImage-<%= index %>" accept="image/*" hidden />
                                 <button type="button" class="crop-btn" onclick=`cropImage(<%= index %>)`>Crop</button>
                                 <input type="radio" name="primaryImageIndex" value="<%= index %>"> Set as Primary
