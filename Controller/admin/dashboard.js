@@ -20,8 +20,8 @@ const getAdminDashboard = async (req, res) => {
 
 const postAdminLogin = async (req, res) => {
     try {
-        const username = "admin";
-        const password = 123456;
+        const username = "";
+        const password = "";
 
         const { adminUsername, adminPassword } = req.body;
         // console.log(adminUsername);

@@ -1,26 +1,30 @@
 const express = require("express");
 const router = express.Router();
-const user = require("../../Controller/user/userController");
+const home = require("../../Controller/user/user");
 const auth = require("../../middleware/userAuth");
 const passport = require("../../config/passportSetup");
+const shop = require("../../Controller/user/shop");
+const profile = require("../../Controller/user/profile");
 
 //------------------- login and sign up -----------------------//
 
-router.get("/", user.getHome);
+router.get("/", home.getHome);
 
-router.post("/login", auth.isLogged, user.postHome);
+router.post("/login", auth.isLogged, home.postHome);
 
-router.get("/login", auth.isLogged, user.getLogin);
+router.get("/login", auth.isLogged, home.getLogin);
 
-router.post("/", auth.isLogged, user.postLogin);
+router.post("/", auth.isLogged, home.postLogin);
 
-router.get("/login/enter-otp", auth.isLogged, user.getEnterOTP);
+router.get("/login/enter-otp", auth.isLogged, home.getEnterOTP);
 
-router.post("/login/enter-otp", auth.isLogged, user.postSignup);
+router.post("/login/enter-otp", auth.isLogged, home.postSignup);
 
-router.post("/login/enter-otp/verify-otp", auth.isLogged, user.varifyOTP);
+router.post("/login/enter-otp/verify-otp", auth.isLogged, home.varifyOTP);
 
-router.post("/signup/resend-otp", auth.isLogged, user.resendOTP);
+router.post("/signup/resend-otp", auth.isLogged, home.resendOTP);
+
+router.post("/logout", home.Logout);
 
 router.get(
     "/auth/google",
@@ -46,11 +50,20 @@ router.get("/auth/google/callback", auth.isLogged, (req, res, next) => {
         });
     })(req, res, next);
 });
+// ----------------------------- shope ----------------------------------------------//
 
-//------------------------------ Product detail page -----------------------------------//
+router.get("/shop", shop.getShop);
 
-router.get("/product-detail/:productId", user.getProductDetail);
+router.get("/shop/product-detail/:productId", shop.getProductDetail);
 
-router.post("/logout", user.Logout);
+//------------------------------ User profile page -----------------------------------//
+
+router.get("/:userId/profile", profile.getProfile);
+
+router.get("/:userId/profile/address", profile.getAddress);
+
+router.get("/:userId/profile/address/add-address", profile.getAddAddress);
+
+router.post("/:userId/profile/address/add-address", profile.postAddAddress);
 
 module.exports = router;

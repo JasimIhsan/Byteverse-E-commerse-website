@@ -1,0 +1,272 @@
+<%- include('partials/head.ejs') %>
+<body class="animsition">
+    <!-- Header -->
+    <%- include('partials/header.ejs') %>
+
+    <!-- Cart -->
+    <%- include('partials/cart.ejs') %>
+
+    <!-- Product -->
+    <div class="bg0 m-t-23 p-b-140 d-flex">
+        <div class="filter-container">
+            <h2><strong>Categories</strong></h2>
+            <div class="categories">
+                <% categories.forEach(category => { %>
+                <div class="category">
+                    <span><%= category.name %></span>
+                    <span class="count"><%= category.productCount %></span>
+                    <!-- Display the count of products -->
+                </div>
+                <% }) %>
+            </div>
+
+            <h2><strong>Price</strong></h2>
+            <div class="price-range">
+                <input type="range" min="340" max="1350" value="340" />
+                <div class="price-inputs">
+                    <div class="price-input">
+                        <input type="number" value="340" min="340" max="1350" />
+                    </div>
+                    <div class="price-input">
+                        <input type="number" value="1350" min="340" max="1350" />
+                    </div>
+                </div>
+            </div>
+
+            <h2><strong>Brand</strong></h2>
+            <div class="brand">
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" checked /> Apple </label>
+                    <span class="count">13</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" checked /> Asus </label>
+                    <span class="count">47</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> Cobra </label>
+                    <span class="count">53</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> Dell </label>
+                    <span class="count">98</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> Lenovo </label>
+                    <span class="count">153</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> XE Gaming </label>
+                    <span class="count">13</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> Asbeck </label>
+                    <span class="count">35</span>
+                </div>
+                <div class="show-all">Show all</div>
+            </div>
+
+            <h2><strong>SSD Size</strong></h2>
+            <div class="ssd-size">
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> 2 TB </label>
+                    <span class="count">13</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> 1 TB </label>
+                    <span class="count">25</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> 512 GB </label>
+                    <span class="count">47</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> 256 GB </label>
+                    <span class="count">98</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> 128 GB </label>
+                    <span class="count">98</span>
+                </div>
+                <div class="checkbox-item">
+                    <label> <input type="checkbox" /> 64 GB or less </label>
+                    <span class="count">151</span>
+                </div>
+            </div>
+
+            <h2>Color</h2>
+            <div class="colors">
+                <div class="color-option color-green"></div>
+                <div class="color-option color-coral"></div>
+                <div class="color-option color-pink"></div>
+                <div class="color-option color-blue"></div>
+                <div class="color-option color-black"></div>
+                <div class="color-option color-white"></div>
+            </div>
+        </div>
+        <div class="container">
+            <div style="height: 70px"></div>
+
+            <div class="row isotope-grid" style="margin-right: 4px">
+                <% products.forEach(product => { %>
+                <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item <%= product.category %>">
+                    <div class="unique-container">
+                        <a href="/shop/product-detail/<%= product._id %>" class="unique-product-card">
+                            <!-- Link to product detail page -->
+                            <div class="unique-product-image">
+                                <img src="<%= product.images[0] %>" alt="Product Image" />
+                                <button class="unique-wishlist-btn" aria-label="Add to wishlist">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </a>
+                        <div class="unique-product-info">
+                            <h3 class="unique-product-title"><%= product.name %></h3>
+                            <div class="unique-product-price-rating">
+                                <p class="unique-product-price">$<%= product.price.toFixed(2) %></p>
+                                <div class="unique-product-rating">
+                                    <span class="unique-rating-star">★</span>
+                                    <span class="unique-rating-star">★</span>
+                                    <span class="unique-rating-star">★</span>
+                                    <span class="unique-rating-star">★</span>
+                                    <span class="unique-rating-value">(4.5)</span>
+                                </div>
+                            </div>
+                            <button class="unique-add-to-cart-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px">
+                                    <circle cx="9" cy="21" r="1"></circle>
+                                    <circle cx="20" cy="21" r="1"></circle>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                </svg>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex-c-m flex-w w-full p-t-38" id="pagination-container">
+                <!-- Previous Button -->
+                <% if (currentPage > 1) { %>
+                <a href="/shop?page=<%= currentPage - 1 %>" class="flex-c-m trans-04 m-all-7 pagination-previous"> Previous </a>
+                <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="/shop?page=<%= i %>" class="flex-c-m how-pagination1 trans-04 m-all-7 <%= i === currentPage ? 'active-pagination1' : '' %>"> <%= i %> </a>
+                <% } %>
+
+                <!-- Next Button -->
+                <% if (currentPage < totalPages) { %>
+                <a href="/shop?page=<%= currentPage + 1 %>" class="flex-c-m how-pagination1 trans-04 m-all-7 pagination-next"> Next </a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('partials/footer.ejs') %>
+
+    <!--===============================================================================================-->
+    <script src="/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/bootstrap/js/popper.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/select2/select2.min.js"></script>
+    <script>
+        $(".js-select2").each(function () {
+            $(this).select2({
+                minimumResultsForSearch: 20,
+                dropdownParent: $(this).next(".dropDownSelect2"),
+            });
+        });
+    </script>
+    <!--===============================================================================================-->
+    <script src="/vendor/daterangepicker/moment.min.js"></script>
+    <script src="/vendor/daterangepicker/daterangepicker.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/slick/slick.min.js"></script>
+    <script src="/js/slick-custom.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/parallax100/parallax100.js"></script>
+    <script>
+        $(".parallax100").parallax100();
+    </script>
+    <!--===============================================================================================-->
+    <script src="/vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+    <script>
+        $(".gallery-lb").each(function () {
+            // the containers for all your galleries
+            $(this).magnificPopup({
+                delegate: "a", // the selector for gallery item
+                type: "image",
+                gallery: {
+                    enabled: true,
+                },
+                mainClass: "mfp-fade",
+            });
+        });
+    </script>
+    <!--===============================================================================================-->
+    <script src="/vendor/isotope/isotope.pkgd.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/sweetalert/sweetalert.min.js"></script>
+    <script>
+        $(".js-addwish-b2, .js-addwish-detail").on("click", function (e) {
+            e.preventDefault();
+        });
+
+        $(".js-addwish-b2").each(function () {
+            var nameProduct = $(this).parent().parent().find(".js-name-b2").html();
+            $(this).on("click", function () {
+                swal(nameProduct, "is added to wishlist !", "success");
+
+                $(this).addClass("js-addedwish-b2");
+                $(this).off("click");
+            });
+        });
+
+        $(".js-addwish-detail").each(function () {
+            var nameProduct = $(this).parent().parent().parent().find(".js-name-detail").html();
+
+            $(this).on("click", function () {
+                swal(nameProduct, "is added to wishlist !", "success");
+
+                $(this).addClass("js-addedwish-detail");
+                $(this).off("click");
+            });
+        });
+
+        /*---------------------------------------------*/
+
+        $(".js-addcart-detail").each(function () {
+            var nameProduct = $(this).parent().parent().parent().parent().find(".js-name-detail").html();
+            $(this).on("click", function () {
+                swal(nameProduct, "is added to cart !", "success");
+            });
+        });
+    </script>
+    <!--===============================================================================================-->
+    <script src="/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script>
+        $(".js-pscroll").each(function () {
+            $(this).css("position", "relative");
+            $(this).css("overflow", "hidden");
+            var ps = new PerfectScrollbar(this, {
+                wheelSpeed: 1,
+                scrollingThreshold: 1000,
+                wheelPropagation: false,
+            });
+
+            $(window).on("resize", function () {
+                ps.update();
+            });
+        });
+    </script>
+    <!--===============================================================================================-->
+    <script src="/js/main.js"></script>
+</body>

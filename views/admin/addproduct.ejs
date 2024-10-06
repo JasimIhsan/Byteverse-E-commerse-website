@@ -51,11 +51,12 @@
                 <form id="product-form" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="name">Product Name:</label>
-                        <input type="text" id="name" name="name" />
+                        <input type="text" id="name" name="name" onkeyup="validateName()" />
+                        <span class="error" id="name-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="brand">Brand:</label>
-                        <select id="brand" name="brand">
+                        <select id="brand" name="brand" onchange="validateBrand()">
                             <option value="" disabled selected>Select a brand</option>
                             <option value="Apple">Apple</option>
                             <option value="Dell">Dell</option>
@@ -75,145 +76,191 @@
                             <option value="Gigabyte">Gigabyte</option>
                             <option value="LG">LG</option>
                         </select>
+                        <span class="error" id="brand-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="category">Category:</label>
-                        <select id="category" name="category">
+                        <select id="category" name="category" onchange="validateCategory()">
                             <option value="" disabled selected>Select a category</option>
                             <% categories.forEach(function(category) { %> <% if (category.status === "listed") { %>
                             <option value="<%= category._id %>"><%= category.name %></option>
                             <% } %> <% }); %>
                         </select>
+                        <span class="error" id="category-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="price">Price:</label>
-                        <input type="number" id="price" name="price" />
+                        <input type="number" id="price" name="price" oninput="validatePrice()" />
+                        <span class="error" id="price-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="stock">Stock:</label>
-                        <input type="number" name="stock" id="stock" />
+                        <input type="number" name="stock" id="stock" oninput="validateStock()" />
+                        <span class="error" id="stock-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="processor-brand">Processor Brand:</label>
-                        <select id="processor-brand" name="specifications[processor][brand]">
+                        <select id="processor-brand" name="specifications[processor][brand]" onchange="validateProcessorBrand()">
                             <option value="" disabled selected>Select a processor brand</option>
                             <option value="Intel">Intel</option>
                             <option value="AMD">AMD</option>
                         </select>
+                        <span class="error" id="processor-brand-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="processor-model">Processor Model:</label>
-                        <input type="text" id="processor-model" name="specifications[processor][model]" />
+                        <input type="text" id="processor-model" name="specifications[processor][model]" oninput="validateProcessorModel()" />
+                        <span class="error" id="processor-model-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="processor-cores">Processor Cores:</label>
-                        <input type="number" id="processor-cores" name="specifications[processor][cores]" />
+                        <input type="number" id="processor-cores" name="specifications[processor][cores]" oninput="validateProcessorCores()" />
+                        <span class="error" id="processor-cores-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="processor-speed">Processor Speed:</label>
-                        <input type="text" id="processor-speed" name="specifications[processor][speed]" />
+                        <input type="text" id="processor-speed" name="specifications[processor][speed]" oninput="validateProcessorSpeed()" />
+                        <span class="error" id="processor-speed-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="ram-size">RAM Size (GB):</label>
-                        <select id="ram-size" name="specifications[ram][size]">
+                        <select id="ram-size" name="specifications[ram][size]" onchange="validateRamSize()">
                             <option value="" disabled selected>Select RAM size</option>
                             <option value="4">4 GB</option>
                             <option value="8">8 GB</option>
                             <option value="16">16 GB</option>
                             <option value="32">32 GB</option>
                         </select>
+                        <span class="error" id="ram-size-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="ram-type">RAM Type:</label>
-                        <select id="ram-type" name="specifications[ram][type]">
+                        <select id="ram-type" name="specifications[ram][type]" onchange="validateRamType()">
                             <option value="" disabled selected>Select RAM type</option>
                             <option value="DDR4">DDR4</option>
                             <option value="DDR5">DDR5</option>
                         </select>
+                        <span class="error" id="ram-type-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="storage-type">Storage Type:</label>
-                        <select id="storage-type" name="specifications[storage][type]">
+                        <select id="storage-type" name="specifications[storage][type]" onchange="validateStorageType()">
                             <option value="" disabled selected>Select storage type</option>
                             <option value="SSD">SSD</option>
                             <option value="HDD">HDD</option>
                             <option value="Hybrid">Hybrid</option>
                         </select>
+                        <span class="error" id="storage-type-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="storage-capacity">Storage Capacity:</label>
-                        <select id="storage-capacity" name="specifications[storage][capacity]">
+                        <select id="storage-capacity" name="specifications[storage][capacity]" onchange="validateStorageCapacity()">
                             <option value="" disabled selected>Select storage capacity</option>
                             <option value="256GB">256 GB</option>
                             <option value="512GB">512 GB</option>
                             <option value="1TB">1 TB</option>
                             <option value="2TB">2 TB</option>
                         </select>
+                        <span class="error" id="storage-capacity-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="display-size">Display Size:</label>
-                        <input type="text" id="display-size" name="specifications[display][size]" />
+                        <input type="text" id="display-size" name="specifications[display][size]" oninput="validateDisplaySize()" />
+                        <span class="error" id="display-size-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="display-resolution">Display Resolution:</label>
-                        <input type="text" id="display-resolution" name="specifications[display][resolution]" />
+                        <input type="text" id="display-resolution" name="specifications[display][resolution]" oninput="validateDisplayResolution()" />
+                        <span class="error" id="display-resolution-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="graphics-brand">Graphics Brand:</label>
-                        <select id="graphics-brand" name="specifications[graphics][brand]">
+                        <select id="graphics-brand" name="specifications[graphics][brand]" onchange="validateGraphicsBrand()">
                             <option value="" disabled selected>Select a graphics brand</option>
                             <option value="NVIDIA">NVIDIA</option>
                             <option value="AMD">AMD</option>
                         </select>
+                        <span class="error" id="graphics-brand-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="graphics-model">Graphics Model:</label>
-                        <input type="text" id="graphics-model" name="specifications[graphics][model]" />
+                        <input type="text" id="graphics-model" name="specifications[graphics][model]" oninput="validateGraphicsModel()" />
+                        <span class="error" id="graphics-model-error"></span>
                     </div>
+
                     <div class="form-group">
-                        <label for="graphics-memory">Graphics Memory:</label>
-                        <input type="text" id="graphics-memory" name="specifications[graphics][memory]" />
+                        <label for="graphics-memory">Graphics Memory (in GB):</label>
+                        <input type="text" id="graphics-memory" name="specifications[graphics][memory]" oninput="validateGraphicsMemory()" />
+                        <span class="error" id="graphics-memory-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="battery-type">Battery Type:</label>
-                        <select id="battery-type" name="specifications[battery][type]">
+                        <select id="battery-type" name="specifications[battery][type]" onchange="validateBatteryType()">
                             <option value="" disabled selected>Select battery type</option>
                             <option value="Lithium-ion">Lithium-ion</option>
                             <option value="Lithium-polymer">Lithium-polymer</option>
                         </select>
+                        <span class="error" id="battery-type-error"></span>
                     </div>
+
                     <div class="form-group">
-                        <label for="battery-capacity">Battery Capacity:</label>
-                        <input type="text" id="battery-capacity" name="specifications[battery][capacity]" />
+                        <label for="battery-capacity">Battery Capacity (in mAh):</label>
+                        <input type="text" id="battery-capacity" name="specifications[battery][capacity]" oninput="validateBatteryCapacity()" />
+                        <span class="error" id="battery-capacity-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="os">Operating System:</label>
-                        <select id="os" name="specifications[os]">
+                        <select id="os" name="specifications[os]" onchange="validateOperatingSystem()">
                             <option value="" disabled selected>Select an operating system</option>
                             <option value="Windows">Windows</option>
                             <option value="Linux">Linux</option>
                             <option value="macOS">macOS</option>
                         </select>
+                        <span class="error" id="os-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="weight">Weight:</label>
-                        <input type="text" id="weight" name="specifications[weight]" />
+                        <input type="text" id="weight" name="specifications[weight]" oninput="validateWeight()" />
+                        <span class="error" id="weight-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="width">Width:</label>
-                        <input type="number" id="width" name="specifications[dimensions][width]" />
+                        <input type="number" id="width" name="specifications[dimensions][width]" oninput="validateWidth()" />
+                        <span class="error" id="width-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="height">Height:</label>
-                        <input type="number" id="height" name="specifications[dimensions][height]" />
+                        <input type="number" id="height" name="specifications[dimensions][height]" oninput="validateHeight()" />
+                        <span class="error" id="height-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="depth">Depth:</label>
-                        <input type="number" id="depth" name="specifications[dimensions][depth]" />
+                        <input type="number" id="depth" name="specifications[dimensions][depth]" oninput="validateDepth()" />
+                        <span class="error" id="depth-error"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="warranty">Warranty:</label>
-                        <input type="text" id="warranty" name="warranty" value="" />
+                        <input type="text" id="warranty" name="warranty" value="" oninput="validateWarranty()" />
+                        <span class="error" id="warranty-error"></span>
                     </div>
 
                     <div class="form-group">
@@ -236,6 +283,7 @@
             </div>
         </div>
 
+        <script src="/javascripts/admin/formvalidation.js"></script>
         <script>
             function base64ToFile(base64, filename) {
                 const arr = base64.split(",");

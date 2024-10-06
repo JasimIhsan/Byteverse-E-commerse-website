@@ -11,7 +11,7 @@ const getCategory = async (req, res) => {
             .skip(skip)
             .limit(limit);
 
-        console.log(catg);
+        // console.log(catg);
 
         const totalCategory = await Category.countDocuments({ name: { $regex: search, $options: "i" } });
         const totalPages = Math.ceil(totalCategory / limit);

@@ -223,7 +223,7 @@ const postEditProduct = async (req, res) => {
             status: req.body.status || "listed",
         };
 
-        console.log(updatedProductData);
+        // console.log(updatedProductData);
 
         const updatedProduct = await Products.findByIdAndUpdate(productId, updatedProductData, { new: true });
 
@@ -231,9 +231,9 @@ const postEditProduct = async (req, res) => {
             return res.redirect("/admin/product-management?error=Product not found");
         }
 
-        console.log("Product ID: ", productId);
-        console.log("Updated Data: ", updatedProductData);
-        console.log("Files: ", req.files);
+        // console.log("Product ID: ", productId);
+        // console.log("Updated Data: ", updatedProductData);
+        // console.log("Files: ", req.files);
 
         res.redirect(`/admin/product-management?success=Product updated successfully`);
     } catch (error) {
