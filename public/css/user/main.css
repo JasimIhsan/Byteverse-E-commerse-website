@@ -3802,6 +3802,7 @@ input.num-product::-webkit-inner-spin-button {
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
+  position: relative;
   /* Add a tiny border */
   border-radius: 8px;
   /* Optional: round corners for a softer look */
@@ -3817,9 +3818,9 @@ input.num-product::-webkit-inner-spin-button {
   margin: 0 auto;
 }
 
-.unique-product-card:hover {
+/* .unique-product-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .unique-product-image {
   position: relative;
@@ -3852,6 +3853,7 @@ input.num-product::-webkit-inner-spin-button {
   height: 40px;
   display: flex;
   align-items: center;
+  z-index: 10;
   justify-content: center;
   cursor: pointer;
   opacity: 0;
@@ -4219,3 +4221,14 @@ input[type="number"] {
   display: flex;
   gap: 5px;
 }
+
+.btn-quantity {
+  width: 32px;
+  height: 40px;
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+}
+

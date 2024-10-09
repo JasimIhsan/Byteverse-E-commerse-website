@@ -84,11 +84,16 @@
                                             <h2>Your Addresses</h2>
                                             <p>The following addresses will be used on the checkout page.</p>
 
-                                            <div class="row">
+                                            <% if (error_msg) { %>
+                                            <div class="error-message" id="error"><%= error_msg %></div>
+                                            <% } %> <% if (success_msg) { %>
+                                            <div class="success-message" id="error"><%= success_msg %></div>
+                                            <% } %>
+                                            <div class="row mt-2">
                                                 <div class="col-lg-12">
                                                     <% if (addresses.length > 0) { %> <% addresses.forEach(address => { %>
                                                     <div class="card card-dashboard mb-3">
-                                                        <div class="card-body">
+                                                        <div class="card-body ">
                                                             <div class="card-title d-flex justify-content-end">
                                                                 <% if (address.isDefault) { %>
                                                                 <p class="d-flex justify-content-end">Default Address</p>
@@ -101,8 +106,12 @@
                                                                 <%= address.country %><br />
                                                                 <%= address.phoneNumber %><br />
                                                             </p>
-                                                            <button class="btn btn-primary">Edit</button>
-                                                            <button class="btn btn-danger">Delete</button>
+                                                            <div class="d-flex gap-3 w-100 mt-2">
+                                                                <form action="/<%= user._id %>/profile/address/<%= address._id %>/edit-address" method="get">
+                                                                    <button class="btn btn-primary rounded">Edit</button>
+                                                                </form>
+                                                                <button class="btn btn-danger rounded" style="margin-left: 10px;" onclick="deleteAddress('<%= address._id %>')">Delete</button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <% }); %> <% } else { %>
@@ -110,7 +119,7 @@
                                                     <% } %>
 
                                                     <form action="/<%= user._id %>/profile/address/add-address" method="get">
-                                                        <button type="submit" class="btn btn-success">Add Address</button>
+                                                        <button type="submit" class="btn btn-success rounded">Add Address</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -138,27 +147,33 @@
                                                 <button type="submit" class="btn btn-outline-primary-2"><span>Save Changes</span></button>
                                             </form>
                                         </div>
-                                        <!-- .End .tab-pane -->
                                     </div>
-                                    <!-- End .tab-content -->
                                 </div>
-                                <!-- End .col-lg-9 -->
                             </div>
-                            <!-- End .row -->
                         </div>
-                        <!-- End .container -->
                     </div>
-                    <!-- End .dashboard -->
                 </div>
-                <!-- End .page-content -->
             </main>
-            <!-- End .main -->
             <%- include('partials/footer.ejs') %>
         </div>
-        <!-- End .page-wrapper -->
 
         <script src="/assets/js/jquery.min.js"></script>
         <script src="/assets/js/bootstrap.bundle.min.js"></script>
         <script src="/assets/js/main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            function deleteAddress(addressId) {
+                const userId = "<%= user._id %>";
+
+                axios
+                    .delete(`/${userId}/profile/address/${addressId}`)
+                    .then((response) => {
+                        window.location.reload();
+                    })
+                    .catch((error) => {
+                        console.error("Error from deleting address : \n", error);
+                    });
+            }
+        </script>
     </body>
 </html>

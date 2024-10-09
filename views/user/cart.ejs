@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>Molla - Bootstrap eCommerce Template</title>
+        <meta name="keywords" content="HTML5 Template" />
+        <meta name="description" content="Molla - Bootstrap eCommerce Template" />
+        <meta name="author" content="p-themes" />
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/favicon-16x16.png" />
+        <link rel="manifest" href="/assets/images/icons/site.html" />
+        <link rel="mask-icon" href="/assets/images/icons/safari-pinned-tab.svg" color="#666666" />
+        <link rel="shortcut icon" href="/assets/images/icons/favicon.ico" />
+        <meta name="apple-mobile-web-app-title" content="Molla" />
+        <meta name="application-name" content="Molla" />
+        <meta name="msapplication-TileColor" content="#cc9966" />
+        <meta name="msapplication-config" href="/assets/images/icons/browserconfig.xml" />
+        <meta name="theme-color" content="#ffffff" />
+        <!-- Plugins CSS File -->
+        <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+        <!-- Main CSS File -->
+        <link rel="stylesheet" href="/assets/css/style.css" />
+        <link rel="stylesheet" href="/css/user/main.css" />
+        <!-- Include SweetAlert2 CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+
+        <!-- Include SweetAlert2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    </head>
+
+    <body>
+        <div class="page-wrapper">
+            <%- include('partials/header.ejs') %>
+
+            <main class="main">
+                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); margin-top: 65px">
+                    <div class="container">
+                        <h1 class="page-title">Shopping Cart<span>Shop</span></h1>
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .page-header -->
+                <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                    <div class="container">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+                        </ol>
+                    </div>
+                    <!-- End .container -->
+                </nav>
+                <!-- End .breadcrumb-nav -->
+
+                <div class="page-content">
+                    <div class="cart">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-9">
+                                    <form action="/<%= user._id %>/cart/update" method="POST">
+                                        <table class="table table-cart table-mobile">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <% if (cartItems.length > 0) { %> <% cartItems.forEach(item => { %>
+                                                <tr>
+                                                    <td class="product-col">
+                                                        <div class="product">
+                                                            <figure class="product-media">
+                                                                <a href="#">
+                                                                    <img src="/<%= item.image[0] %>" alt="Product image" />
+                                                                </a>
+                                                            </figure>
+                                                            <h3 class="product-title">
+                                                                <a href="#"><%= item.name %></a>
+                                                            </h3>
+                                                        </div>
+                                                    </td>
+                                                    <td class="price-col">$<%= item.price.toFixed(2) %></td>
+                                                    <td class="quantity-col">
+                                                        <div class="cart-product-quantity">
+                                                            <input type="number" name="quantity[<%= item.id %>]" class="form-control" value="<%= item.quantity %>" min="1" max="10" step="1" required />
+                                                        </div>
+                                                    </td>
+                                                    <td class="total-col">$<%= (item.price * item.quantity).toFixed(2) %></td>
+                                                    <td class="remove-col">
+                                                        <button type="button" class="btn-remove" data-product-id="<%= item.id %>">
+                                                            <i class="icon-close"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <% }) %> <% } else { %>
+                                                <tr>
+                                                    <td colspan="5" class="text-center">Your cart is empty.</td>
+                                                </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+
+                                        <div class="cart-bottom">
+                                            <!-- <div class="cart-discount">
+                                                <form action="#">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" required placeholder="coupon code" />
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div> -->
+
+                                            <button type="submit" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <aside class="col-lg-3">
+                                    <div class="summary summary-cart">
+                                        <h3 class="summary-title">Cart Total</h3>
+
+                                        <table class="table table-summary">
+                                            <tbody>
+                                                <tr class="summary-subtotal">
+                                                    <td>Total:</td>
+                                                    <td>$<%= subtotal.toFixed(2) %></td>
+                                                </tr>
+                                                <tr class="summary-shipping">
+                                                    <td>Shipping:</td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                                <!-- <tr class="summary-shipping-row">
+                                                    <td>
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" id="free-shipping" name="shipping" class="custom-control-input" />
+                                                            <label class="custom-control-label" for="free-shipping">Free Shipping</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>$0.00</td>
+                                                </tr> -->
+                                                <tr class="summary-shipping-row">
+                                                    <td>
+                                                        <div class="custom-control custom-radio">
+                                                            <!-- <input type="radio" id="standard-shipping" name="shipping" class="custom-control-input" /> -->
+                                                            <label class="custom-control-label" for="standard-shipping">Standard:</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>$10.00</td>
+                                                </tr>
+                                                <!-- <tr class="summary-shipping-row">
+                                                    <td>
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" id="express-shipping" name="shipping" class="custom-control-input" />
+                                                            <label class="custom-control-label" for="express-shipping">Express:</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>$20.00</td>
+                                                </tr> -->
+                                                <tr class="summary-total">
+                                                    <td>All Total:</td>
+                                                    <td>$<%= total.toFixed(2) %></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                        <a href="/<%= user._id %>/cart/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                                    </div>
+
+                                    <a href="/shop" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="footer">
+                <div class="footer-middle">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget widget-about">
+                                    <img src="/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25" />
+                                    <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.</p>
+
+                                    <div class="social-icons">
+                                        <a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Pinterest"><i class="icon-pinterest"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End .container -->
+                </div>
+            </footer>
+
+            <div class="mobile-menu-overlay"></div>
+            <div class="mobile-menu-container">
+                <div class="mobile-menu-wrapper">
+                    <span class="mobile-menu-close">Close</span>
+                    <nav class="mobile-nav"></nav>
+                </div>
+            </div>
+        </div>
+        <!-- End .page-wrapper -->
+
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+        <script>
+            document.querySelectorAll(".btn-remove").forEach((button) => {
+                button.addEventListener("click", async (event) => {
+                    const productId = event.target.closest("button").getAttribute("data-product-id");
+                    const userId = "<%= user._id %>"; // Ensure this is defined in your template
+
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "Do you really want to remove this item from the cart?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, remove it!",
+                        cancelButtonText: "No, keep it",
+                        customClass: {
+                            confirmButton: "your-custom-confirm-button-class", // Style as needed
+                            cancelButton: "your-custom-cancel-button-class", // Style as needed
+                        },
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const response = await axios.post(`/${userId}/cart/${productId}/delete-item`);
+
+                                // Success SweetAlert2 popup
+                                Swal.fire({
+                                    title: "Item Removed",
+                                    text: response.data.message,
+                                    icon: "success",
+                                    confirmButtonText: "OK",
+                                    customClass: {
+                                        confirmButton: "your-custom-success-button-class",
+                                    },
+                                });
+
+                                // Remove the product row from the UI
+                                event.target.closest("tr").remove();
+                            } catch (error) {
+                                // Error SweetAlert2 popup
+                                Swal.fire({
+                                    title: "Error",
+                                    text: error.response ? error.response.data.message : "An error occurred while removing the item.",
+                                    icon: "error",
+                                    confirmButtonText: "Try Again",
+                                    customClass: {
+                                        confirmButton: "your-custom-error-button-class",
+                                    },
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

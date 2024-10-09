@@ -855,3 +855,41 @@ section.banner .btn {
         display: none
     }
 }
+
+/* Style for the SweetAlert2 buttons */
+.swal2-confirm {
+    padding: 10px 20px;
+    /* Increase padding for larger button */
+    font-size: 16px;
+    /* Increase font size */
+    border-radius: 5px;
+    /* Rounded corners */
+}
+
+.swal2-cancel {
+    padding: 10px 20px;
+    /* Increase padding for larger button */
+    font-size: 16px;
+    /* Increase font size */
+    border-radius: 5px;
+    /* Rounded corners */
+}
+
+/* Additional styles for the SweetAlert2 container */
+.swal2-popup {
+    border-radius: 10px;
+    /* Rounded corners for the popup */
+}
+
+/* Optional: Style for the title and text */
+.swal2-title {
+    font-size: 24px;
+    /* Increase title font size */
+    font-weight: bold;
+    /* Make title bold */
+}
+
+.swal2-content {
+    font-size: 18px;
+    /* Increase content font size */
+}

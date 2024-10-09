@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title><%= title %></title>
+        <meta name="keywords" content="HTML5 Template" />
+        <meta name="description" content="Molla - Bootstrap eCommerce Template" />
+        <meta name="author" content="p-themes" />
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/favicon-16x16.png" />
+        <link rel="manifest" href="/assets/images/icons/site.html" />
+        <link rel="mask-icon" href="/assets/images/icons/safari-pinned-tab.svg" color="#666666" />
+        <link rel="shortcut icon" href="/assets/images/icons/favicon.ico" />
+        <meta name="apple-mobile-web-app-title" content="Molla" />
+        <meta name="application-name" content="Molla" />
+        <meta name="msapplication-TileColor" content="#cc9966" />
+        <meta name="msapplication-config" content="/assets/images/icons/browserconfig.xml" />
+        <meta name="theme-color" content="#ffffff" />
+        <!-- Plugins CSS File -->
+        <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+        <!-- Main CSS File -->
+        <link rel="stylesheet" href="/assets/css/style.css" />
+        <link rel="stylesheet" href="/css/user/main.css" />
+    </head>
+
+    <body>
+        <div class="page-wrapper">
+            <%- include('partials/header.ejs') %>
+            <main class="main">
+                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); margin-top: 63px">
+                    <div class="container">
+                        <h1 class="page-title">My Account<span>Shop</span></h1>
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .page-header -->
+                <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+                    <div class="container">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">My Account</li>
+                        </ol>
+                    </div>
+                    <!-- End .container -->
+                </nav>
+                <!-- End .breadcrumb-nav -->
+
+                <div class="page-content">
+                    <div class="dashboard">
+                        <div class="container">
+                            <div class="row">
+                                <aside class="col-md-4 col-lg-3">
+                                    <ul class="nav nav-dashboard flex-column mb-3 mb-md-0">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/account/dashboard">Dashboard</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/account/orders">Orders</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/account/downloads">Downloads</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link active" href="/account/addresses">Addresses</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/account/details">Account Details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/logout">Sign Out</a>
+                                        </li>
+                                    </ul>
+                                </aside>
+
+                                <!-- End .col-lg-3 -->
+
+                                <div class="col-md-8 col-lg-9">
+                                    <div class="tab-content">
+                                        <div>
+                                            <h4 class="card-title mb-2">Addresses</h4>
+
+                                            <!-- Add Address Form should be here -->
+                                            <div class="card card-dashboard mb-3">
+                                                <div class="card-body">
+                                                    <form action="/<%= user._id %>/profile/address/<%= address._id %>/edit-address" method="POST">
+                                                        <div class="form-group">
+                                                            <label for="firstName">First Name</label>
+                                                            <input type="text" class="form-control" id="firstName" name="firstName" value="<%= address.firstName %>" required />
+                                                            <small id="firstNameError" class="text-danger"></small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="lastName">Last Name</label>
+                                                            <input type="text" class="form-control" id="lastName" name="lastName" value="<%= address.lastName %>" required />
+                                                            <small id="lastNameError" class="text-danger"></small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="phoneNumber">Phone Number</label>
+                                                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="<%= address.phoneNumber %>" required />
+                                                            <small id="phoneNumberError" class="text-danger"></small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="street">Street Address</label>
+                                                            <input type="text" class="form-control" id="street" name="street" value="<%= address.street %>" required />
+                                                            <small id="streetError" class="text-danger"></small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="city">City</label>
+                                                            <input type="text" class="form-control" id="city" name="city" value="<%= address.city %>" required />
+                                                            <small id="cityError" class="text-danger"></small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="state">State</label>
+                                                            <input type="text" class="form-control" id="state" name="state" value="<%= address.state %>" required />
+                                                            <small id="stateError" class="text-danger"></small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="postalCode">Postal Code</label>
+                                                            <input type="text" class="form-control" id="postalCode" name="postalCode" value="<%= address.postalCode %>" required />
+                                                            <small id="postalCodeError" class="text-danger"></small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="country">Country</label>
+                                                            <input type="text" class="form-control" id="country" name="country" value="<%= address.country %>" required />
+                                                            <small id="countryError" class="text-danger"></small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="additionalInfo">Additional Info</label>
+                                                            <textarea class="form-control" id="additionalInfo" name="additionalInfo"><%= address.additionalInfo %></textarea>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="isDefault">Set as Default</label>
+                                                            <input type="checkbox" id="isDefault" name="isDefault" <%= address.isDefault ? 'checked' : '' %> />
+                                                        </div>
+                                                        <button type="submit" class="btn btn-success">Update Address</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <%- include('partials/footer.ejs') %>
+        </div>
+        <!-- End .page-wrapper -->
+
+        <script>
+            function validateFirstName() {
+                const firstName = document.getElementById("firstName").value;
+                const firstNameError = document.getElementById("firstNameError");
+
+                if (firstName.trim().length === 0) {
+                    firstNameError.textContent = "First name cannot be empty.";
+                    return false;
+                } else if (firstName.includes("  ")) {
+                    firstNameError.textContent = "First name cannot contain consecutive spaces.";
+                    return false;
+                } else if (firstName.length < 2) {
+                    firstNameError.textContent = "First name must be at least 2 characters long.";
+                    return false;
+                } else {
+                    firstNameError.textContent = ""; // Clear the error message
+                    return true;
+                }
+            }
+
+            function validatePhoneNumber() {
+                const phoneNumber = document.getElementById("phoneNumber").value;
+                const phoneNumberError = document.getElementById("phoneNumberError");
+
+                // Indian phone number regex
+                const phoneRegex = /^(\+91[-\s]?)?[0-9]{10}$/;
+
+                if (phoneNumber.trim().length === 0) {
+                    phoneNumberError.textContent = "Phone number cannot be empty.";
+                    return false;
+                } else if (!phoneRegex.test(phoneNumber)) {
+                    phoneNumberError.textContent = "Phone number must be a valid 10-digit number (e.g., 1234567890 or +91 1234567890).";
+                    return false;
+                } else {
+                    phoneNumberError.textContent = ""; // Clear the error message
+                    return true;
+                }
+            }
+
+            function validateStreet() {
+                const street = document.getElementById("street").value;
+                const streetError = document.getElementById("streetError");
+
+                if (street.trim().length === 0) {
+                    streetError.textContent = "Street address cannot be empty.";
+                    return false;
+                } else {
+                    streetError.textContent = ""; // Clear the error message
+                    return true;
+                }
+            }
+
+            function validateCity() {
+                const city = document.getElementById("city").value;
+                const cityError = document.getElementById("cityError");
+
+                if (city.trim().length === 0) {
+                    cityError.textContent = "City cannot be empty.";
+                    return false;
+                } else {
+                    cityError.textContent = ""; // Clear the error message
+                    return true;
+                }
+            }
+
+            function validateState() {
+                const state = document.getElementById("state").value;
+                const stateError = document.getElementById("stateError");
+
+                if (state.trim().length === 0) {
+                    stateError.textContent = "State cannot be empty.";
+                    return false;
+                } else {
+                    stateError.textContent = ""; // Clear the error message
+                    return true;
+                }
+            }
+
+            function validatePostalCode() {
+                const postalCode = document.getElementById("postalCode").value;
+                const postalCodeError = document.getElementById("postalCodeError");
+
+                // Indian postal code regex
+                const postalCodeRegex = /^[1-9][0-9]{5}$/;
+
+                if (postalCode.trim().length === 0) {
+                    postalCodeError.textContent = "Postal code cannot be empty.";
+                    return false;
+                } else if (!postalCodeRegex.test(postalCode)) {
+                    postalCodeError.textContent = "Postal code must be a 6-digit number (e.g., 110001).";
+                    return false;
+                } else {
+                    postalCodeError.textContent = ""; // Clear the error message
+                    return true;
+                }
+            }
+
+            function validateCountry() {
+                const country = document.getElementById("country").value;
+                const countryError = document.getElementById("countryError");
+
+                if (country.trim().length === 0) {
+                    countryError.textContent = "Country cannot be empty.";
+                    return false;
+                } else {
+                    countryError.textContent = ""; // Clear the error message
+                    return true;
+                }
+            }
+
+            // Call validation functions on keyup events
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("firstName").onkeyup = validateFullName;
+                document.getElementById("phoneNumber").onkeyup = validatePhoneNumber;
+                document.getElementById("street").onkeyup = validateStreet;
+                document.getElementById("city").onkeyup = validateCity;
+                document.getElementById("state").onkeyup = validateState;
+                document.getElementById("postalCode").onkeyup = validatePostalCode;
+                document.getElementById("country").onkeyup = validateCountry;
+            });
+        </script>
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/main.js"></script>
+    </body>
+</html>

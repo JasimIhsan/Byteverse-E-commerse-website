@@ -5,6 +5,7 @@ const auth = require("../../middleware/userAuth");
 const passport = require("../../config/passportSetup");
 const shop = require("../../Controller/user/shop");
 const profile = require("../../Controller/user/profile");
+const checkout = require("../../Controller/user/checkout");
 
 //------------------- login and sign up -----------------------//
 
@@ -65,5 +66,23 @@ router.get("/:userId/profile/address", profile.getAddress);
 router.get("/:userId/profile/address/add-address", profile.getAddAddress);
 
 router.post("/:userId/profile/address/add-address", profile.postAddAddress);
+
+router.delete("/:userId/profile/address/:addressId", profile.deleteAddress);
+
+router.get("/:userId/profile/address/:addressId/edit-address", profile.editAddress);
+
+router.post("/:userId/profile/address/:addressId/edit-address", profile.updateAddress);
+
+//------------------------------ Checkout -----------------------------------//
+
+router.get("/:userId/cart", checkout.getCart);
+
+router.post("/:userId/add-to-cart", checkout.postAddtoCart);
+
+router.post("/:userId/cart/update", checkout.updateCart);
+
+router.post("/:userId/cart/:productId/delete-item", checkout.delete_item);
+
+router.get("/:userId/cart/checkout", checkout.getCheckout);
 
 module.exports = router;

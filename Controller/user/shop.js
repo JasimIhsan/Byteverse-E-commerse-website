@@ -1,5 +1,6 @@
 const Products = require("../../model/product");
 const Category = require("../../model/catogory");
+const User = require("../../model/user");
 
 const getShop = async (req, res) => {
     try {
@@ -7,6 +8,9 @@ const getShop = async (req, res) => {
         const { search = "", page = 1 } = req.query;
         const limit = 12;
         const skip = (page - 1) * limit;
+
+        const userId = req.session.userId;
+        const user = await User.findById(userId);
 
         const products = await Products.find({ status: "listed" })
             .sort({ updatedAt: -1 })
@@ -30,7 +34,7 @@ const getShop = async (req, res) => {
             })
         );
 
-        res.render("user/shop", { user: userLoggedIn, products: filteredProducts, currentPage: Number(page), totalPages, title, categories, categoriesWithCounts });
+        res.render("user/shop", { userLoggedIn, user, products: filteredProducts, currentPage: Number(page), totalPages, title, categories, categoriesWithCounts });
     } catch (error) {
         console.error("Error from get shop  :  \n", error);
     }
@@ -46,14 +50,20 @@ const getProductDetail = async (req, res) => {
             match: { status: "listed" },
         });
 
+        const userId = req.session.userId;
+        const user = await User.findById(userId);
+
+        const userLoggedIn = req.session.user ? true : false;
+
         let errorMessage = null;
         // Check if the product is found
         if (!product) {
             return res.render("user/product-detail", {
-                user: req.session.user ? true : false,
+                userLoggedIn,
                 product: null,
                 relatedProducts: [],
                 title,
+                user,
                 errorMessage: "Product not found.",
             });
         }
@@ -61,10 +71,11 @@ const getProductDetail = async (req, res) => {
         // Check if the category exists and is listed
         if (!product.category) {
             return res.render("user/product-detail", {
-                user: req.session.user ? true : false,
+                userLoggedIn,
                 product,
                 relatedProducts: [],
                 title,
+                user,
                 errorMessage: "Product category is not listed.",
             });
         }
@@ -77,10 +88,11 @@ const getProductDetail = async (req, res) => {
         }).limit(4);
 
         res.render("user/product-detail.ejs", {
-            user: req.session.user ? true : false,
+            userLoggedIn,
             product,
             relatedProducts,
             title,
+            user,
             errorMessage,
         });
     } catch (error) {
