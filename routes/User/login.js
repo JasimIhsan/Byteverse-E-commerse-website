@@ -83,6 +83,10 @@ router.post("/:userId/cart/update", checkout.updateCart);
 
 router.post("/:userId/cart/:productId/delete-item", checkout.delete_item);
 
-router.get("/:userId/cart/checkout", checkout.getCheckout);
+router.get("/:userId/cart/checkout", auth.checkOrderPlaced, checkout.getCheckout);
+
+router.post("/:userId/cart/checkout", auth.checkOrderPlaced, checkout.creatingOrder);
+
+router.get("/:userId/cart/checkout/order-placed/:orderId", checkout.getPlaceOrder);
 
 module.exports = router;

@@ -55,15 +55,17 @@
                 <div class="page-content">
                     <div class="checkout">
                         <div class="container">
-                            <form action="/checkout" method="POST">
+                            <form action="/<%= user %>/cart/checkout" method="POST">
                                 <div class="row">
                                     <div class="col-lg-9">
                                         <h2 class="checkout-title">Billing Details</h2>
                                         <!-- Dropdown to select saved addresses -->
                                         <label for="savedAddress">Saved Addresses</label>
-                                        <select class="form-control" id="savedAddress" name="savedAddress">
+                                        <select class="form-control" id="savedAddress" name="addressId" onchange="populateAddress()">
                                             <% addresses.forEach(function(address) { %>
-                                            <option value="<%= address._id %>" <% if (address.isDefault) { %>selected <% } %>> <%= address.firstName %>, <%= address.street %>, <%= address.city %>, <%= address.postalCode %>, <%= address.country %></option>
+                                            <option value="<%= address._id %>" data-firstname="<%= address.firstName %>" data-lastname="<%= address.lastName %>" data-phonenumber="<%= address.phoneNumber %>" data-street="<%= address.street %>" data-city="<%= address.city %>" data-state="<%= address.state %>" data-postalcode="<%= address.postalCode %>" data-country="<%= address.country %>" data-additionalinfo="<%= address.additionalInfo %>" <% if (address.isDefault) { %>
+                                                selected <% } %>> <%= address.firstName %>, <%= address.street %>, <%= address.city %>, <%= address.postalCode %>, <%= address.country %>
+                                            </option>
                                             <% }); %>
                                         </select>
 
@@ -114,6 +116,7 @@
                                     </div>
                                     <!-- End .col-lg-9 -->
                                     <aside class="col-lg-3">
+                                        <!-- Add your action URL -->
                                         <div class="summary">
                                             <h3 class="summary-title">Your Order</h3>
                                             <table class="table table-summary">
@@ -142,68 +145,44 @@
                                             </table>
 
                                             <h3 class="summary-title">Payment Methods</h3>
-                                            <!-- End .summary-title -->
-                                            <div class="accordion-summary" id="accordion-payment">
-                                                <div class="card">
-                                                    <div class="card-header" id="heading-1">
-                                                        <h2 class="card-title">
-                                                            <a role="button" data-toggle="collapse" href="#collapse-1" aria-expanded="true" aria-controls="collapse-1"> Direct bank transfer </a>
-                                                        </h2>
-                                                    </div>
-                                                    <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-payment">
-                                                        <div class="card-body">Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</div>
-                                                    </div>
+                                            <div class="payment-methods">
+                                                <div class="payment-option" style="margin-bottom: 2rem">
+                                                    <input type="radio" name="paymentMethod" id="payment-bank-transfer" value="Bank Transfer" checked />
+                                                    <label for="payment-bank-transfer">
+                                                        <span class="payment-label">Direct Bank Transfer</span>
+                                                    </label>
                                                 </div>
 
-                                                <div class="card">
-                                                    <div class="card-header" id="heading-2">
-                                                        <h2 class="card-title">
-                                                            <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2"> Wallet payments </a>
-                                                        </h2>
-                                                    </div>
-                                                    <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-payment">
-                                                        <div class="card-body">Ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis.</div>
-                                                    </div>
+                                                <div class="payment-option" style="margin-bottom: 2rem">
+                                                    <input type="radio" name="paymentMethod" id="payment-wallet" value="Wallet Payments" />
+                                                    <label for="payment-wallet">
+                                                        <span class="payment-label">Wallet Payments</span>
+                                                    </label>
                                                 </div>
 
-                                                <div class="card">
-                                                    <div class="card-header" id="heading-3">
-                                                        <h2 class="card-title">
-                                                            <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-3"> Cash on delivery </a>
-                                                        </h2>
-                                                    </div>
-                                                    <div id="collapse-3" class="collapse" aria-labelledby="heading-3" data-parent="#accordion-payment">
-                                                        <div class="card-body">Quisque volutpat mattis eros. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros.</div>
-                                                    </div>
+                                                <div class="payment-option" style="margin-bottom: 2rem">
+                                                    <input type="radio" name="paymentMethod" id="payment-cash-on-delivery" value="Cash on Delivery" />
+                                                    <label for="payment-cash-on-delivery">
+                                                        <span class="payment-label">Cash on Delivery</span>
+                                                    </label>
                                                 </div>
 
-                                                <div class="card">
-                                                    <div class="card-header" id="heading-4">
-                                                        <h2 class="card-title">
-                                                            <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-4" aria-expanded="false" aria-controls="collapse-4"> PayPal <small class="float-right paypal-link">What is PayPal?</small> </a>
-                                                        </h2>
-                                                    </div>
-                                                    <div id="collapse-4" class="collapse" aria-labelledby="heading-4" data-parent="#accordion-payment">
-                                                        <div class="card-body">Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis fermentum.</div>
-                                                    </div>
+                                                <div class="payment-option" style="margin-bottom: 2rem">
+                                                    <input type="radio" name="paymentMethod" id="payment-paypal" value="PayPal" />
+                                                    <label for="payment-paypal">
+                                                        <span class="payment-label">PayPal</span>
+                                                        <small class="paypal-link">What is PayPal?</small>
+                                                    </label>
                                                 </div>
 
-                                                <div class="card">
-                                                    <div class="card-header" id="heading-5">
-                                                        <h2 class="card-title">
-                                                            <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-5" aria-expanded="false" aria-controls="collapse-5">
-                                                                Credit Card (Stripe)
-                                                                <img src="/assets/images/payments-summary.png" alt="payments cards" />
-                                                            </a>
-                                                        </h2>
-                                                    </div>
-                                                    <div id="collapse-5" class="collapse" aria-labelledby="heading-5" data-parent="#accordion-payment">
-                                                        <div class="card-body">Donec nec justo eget felis facilisis fermentum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Lorem ipsum dolor sit amet.</div>
-                                                    </div>
+                                                <div class="payment-option" style="margin-bottom: 2rem">
+                                                    <input type="radio" name="paymentMethod" id="payment-credit-card" value="Credit Card" />
+                                                    <label for="payment-credit-card">
+                                                        <span class="payment-label">Credit Card (Stripe)</span>
+                                                        <img src="/assets/images/payments-summary.png" alt="payments cards" class="payment-icons" />
+                                                    </label>
                                                 </div>
                                             </div>
-
-                                            <!-- End .accordion -->
 
                                             <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
                                                 <span class="btn-text">Place Order</span>
@@ -237,4 +216,29 @@
     <script src="/assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
     <script src="/assets/js/main.js"></script>
+    <script>
+        function populateAddress() {
+            const selectedAddress = document.getElementById("savedAddress").selectedOptions[0]; // Get the selected option
+            const firstName = selectedAddress.getAttribute("data-firstname");
+            const lastName = selectedAddress.getAttribute("data-lastname");
+            const phoneNumber = selectedAddress.getAttribute("data-phonenumber");
+            const street = selectedAddress.getAttribute("data-street");
+            const city = selectedAddress.getAttribute("data-city");
+            const state = selectedAddress.getAttribute("data-state");
+            const postalCode = selectedAddress.getAttribute("data-postalcode");
+            const country = selectedAddress.getAttribute("data-country");
+            const additionalInfo = selectedAddress.getAttribute("data-additionalinfo");
+
+            // Populate the form fields with the selected address data
+            document.querySelector('input[name="firstName"]').value = firstName || "";
+            document.querySelector('input[name="lastName"]').value = lastName || "";
+            document.querySelector('input[name="phoneNumber"]').value = phoneNumber || "";
+            document.querySelector('input[name="street"]').value = street || "";
+            document.querySelector('input[name="city"]').value = city || "";
+            document.querySelector('input[name="state"]').value = state || "";
+            document.querySelector('input[name="postalCode"]').value = postalCode || "";
+            document.querySelector('input[name="country"]').value = country || "";
+            document.querySelector('input[name="additionalInfo"]').value = additionalInfo || "";
+        }
+    </script>
 </html>

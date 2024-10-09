@@ -155,7 +155,7 @@
                                                             <label class="custom-control-label" for="standard-shipping">Standard:</label>
                                                         </div>
                                                     </td>
-                                                    <td>$10.00</td>
+                                                    <td>$20.00</td>
                                                 </tr>
                                                 <!-- <tr class="summary-shipping-row">
                                                     <td>
@@ -172,8 +172,13 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-
-                                        <a href="/<%= user._id %>/cart/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                                        <% if (cartItems.length > 0) { %>
+                                            <!-- If cart has items, show checkout button -->
+                                            <a href="/<%= user._id %>/cart/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                                        <% } else { %>
+                                            <!-- If cart is empty, show message instead of checkout button -->
+                                            <p class="text-center text-muted">Your cart is empty. Please <a href="/shop">choose items</a> from the shop.</p>
+                                        <% } %>
                                     </div>
 
                                     <a href="/shop" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>

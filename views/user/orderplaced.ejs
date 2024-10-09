@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Order Placed Successfully</title>
+        <link rel="stylesheet" href="/assets/css/style.css" />
+        <link rel="stylesheet" href="/css/user/main.css" />
+        <style>
+            body,
+            html {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                height: 100%;
+                background-color: #f3f4f6;
+            }
+            .random-container {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 1rem;
+            }
+            .random-card {
+                background-color: white;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 42rem;
+                padding: 15px 65px;
+            }
+            .random-card-header {
+                text-align: center;
+                padding: 1.5rem;
+            }
+            .random-card-title {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin-top: 1rem;
+            }
+            .random-card-content {
+                padding: 1.5rem;
+            }
+            .text-center {
+                text-align: center;
+            }
+            .text-gray {
+                color: #4b5563;
+            }
+            .font-semibold {
+                font-weight: 600;
+            }
+            .mt-2 {
+                margin-top: 0.5rem;
+            }
+            .text-blue {
+                color: #2563eb;
+            }
+            .border-t,
+            .border-b {
+                border-top: 1px solid #e5e7eb;
+                border-bottom: 1px solid #e5e7eb;
+                padding: 1rem 0;
+                margin: 1rem 0;
+            }
+            .space-y-2 > * + * {
+                margin-top: 0.5rem;
+            }
+            .flex {
+                display: flex;
+            }
+            .justify-between {
+                justify-content: space-between;
+            }
+            .items-center {
+                align-items: center;
+            }
+            .mr-2 {
+                margin-right: 0.5rem;
+            }
+            .ml-7 {
+                margin-left: 1.75rem;
+            }
+            .random-card-footer {
+                padding: 1.5rem;
+                text-align: center;
+            }
+            .random-button {
+                background-color: #2563eb;
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 0.25rem;
+                text-decoration: none;
+                display: inline-block;
+                font-weight: 600;
+            }
+            .random-button:hover {
+                background-color: #1d4ed8;
+            }
+            .random-icon {
+                display: inline-block;
+                width: 2.25rem;
+                height: 2.25rem;
+                vertical-align: middle;
+            }
+            .random-icon-large2 {
+                width: 4rem;
+                height: 4rem;
+            }
+            .text-green {
+                color: #10b981;
+            }
+        </style>
+    </head>
+    <body>
+        <%- include('partials/header.ejs') %>
+        <div class="random-container" style="margin-top: 65px">
+            <div class="random-card">
+                <div class="random-card-header">
+                    <svg class="random-icon random-icon-large text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 100px; height: 100px">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h1 class="random-card-title">Order Placed Successfully!</h1>
+                </div>
+                <div class="random-card-content">
+                    <div class="text-center">
+                        <p class="text-gray">Thank you for your purchase. Your order has been received and is being processed.</p>
+                        <p class="font-semibold mt-2">Order Number: <span class="text-blue"><%= orderNumber %></span></p>
+                    </div>
+                    <div class="border-t border-b">
+                        <h3 class="font-semibold">Order Summary</h3>
+                        <div class="space-y-2">
+                            <% orderItems.forEach(item => { %>
+                            <div class="flex justify-between">
+                                <span><%= item.productName %> (Qty: <%= item.quantity %>)</span>
+                                <span>$<%= item.price.toFixed(2) %></span>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <div class="border-t border-b">
+                        <div class="flex justify-between">
+                            <span class="font-semibold">Subtotal:</span>
+                            <span>$<%= (orderItems.reduce((sum, item) => sum + item.price, 0)).toFixed(2) %></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-semibold">Shipping Charge:</span>
+                            <span>$<%= deliveryCharge.toFixed(2) %></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-semibold">Total:</span>
+                            <span>$<%= totalPrice.toFixed(2) %></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="random-card-footer">
+                    <a href="/shop" class="random-button">Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plugins JS File -->
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/js/main.js"></script>
+    </body>
+</html>

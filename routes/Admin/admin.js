@@ -4,6 +4,7 @@ const dash = require("../../Controller/admin/dashboard");
 const user_man = require("../../Controller/admin/user");
 const cat_man = require("../../Controller/admin/catogory");
 const prd_man = require("../../Controller/admin/products");
+const order = require("../../Controller/admin/orders");
 const productImageUpload = require("../../config/multer");
 const auth = require("../../middleware/adminAuth");
 const { log } = require("debug/src/browser");
@@ -49,5 +50,9 @@ router.post("/product-management/add-product", auth.checkSession, productImageUp
 router.get("/product-management/edit-product/:id", auth.checkSession, prd_man.getEditProduct);
 
 router.post("/product-management/edit-product/:id", auth.checkSession, productImageUpload.array("croppedImage[]", 10), prd_man.postEditProduct);
+
+//----------- Order management -----------------//
+
+router.post("/order-management/update-status/:orderId", order.updateOrderStatus);
 
 module.exports = router;

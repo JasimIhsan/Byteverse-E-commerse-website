@@ -14,7 +14,17 @@ const isLogged = (req, res, next) => {
     }
 };
 
+function checkOrderPlaced(req, res, next) {
+    if (req.session.orderPlaced) {
+        const userId = req.session.userId;
+        return res.redirect(`/${userId}/cart`);
+    } else {
+        next();
+    }
+}
+
 module.exports = {
     checkSession,
     isLogged,
+    checkOrderPlaced,
 };

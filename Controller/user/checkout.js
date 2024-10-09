@@ -2,8 +2,8 @@ const User = require("../../model/user");
 const Product = require("../../model/product");
 const Category = require("../../model/catogory");
 const Cart = require("../../model/cart");
-const user = require("../../model/user");
 const Address = require("../../model/Address");
+const Order = require("../../model/orders");
 
 const getCart = async (req, res) => {
     try {
@@ -11,6 +11,8 @@ const getCart = async (req, res) => {
         const userLoggedIn = req.session.userId ? true : false;
         const cart = await Cart.findOne({ UserId: userId }).populate("Products.ProductId");
         const user = await User.findById(userId);
+
+        req.session.orderPlaced = false;
 
         if (!user) {
             return res.redirect("/login");
@@ -165,14 +167,29 @@ const getCheckout = async (req, res) => {
         const userId = req.session.userId;
         const userLoggedIn = req.session.userLoggedIn ? true : false;
 
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.redirect("/login");
+        }
+
         const addresses = await Address.find({ userId: userId });
         const defaultAddress = addresses.find((address) => address.isDefault);
-
         const cart = await Cart.findOne({ UserId: userId }).populate("Products.ProductId");
 
         if (!cart || cart.Products.length === 0) {
-            return res.render("user/checkout", { userId, userLoggedIn, addresses, defaultAddress, totalPrice: 0, orderItems: [] });
+            const deliveryCharge = 0;
+            return res.render("user/checkout", {
+                user: userId,
+                userId,
+                userLoggedIn,
+                addresses,
+                defaultAddress,
+                totalPrice: 0,
+                orderItems: [],
+                deliveryCharge,
+            });
         }
+
         const orderItems = cart.Products.map((item) => ({
             productName: item.ProductId.name,
             productTotal: item.Price * item.Quantity,
@@ -180,13 +197,134 @@ const getCheckout = async (req, res) => {
 
         const subtotal = orderItems.reduce((sum, item) => sum + item.productTotal, 0);
 
-        const deliveryCharge = 10;
-
+        const deliveryCharge = subtotal > 1500 ? 0 : 20;
         const totalPrice = subtotal + deliveryCharge;
 
-        res.render("user/checkout", { userId, userLoggedIn, addresses, defaultAddress, totalPrice, orderItems, deliveryCharge });
+        res.render("user/checkout", {
+            user: userId,
+            userId,
+            userLoggedIn,
+            addresses,
+            defaultAddress,
+            totalPrice,
+            orderItems,
+            deliveryCharge, // Pass deliveryCharge here
+        });
     } catch (error) {
         console.error("Error from get checkout page : \n ", error);
+    }
+};
+
+const creatingOrder = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const { addressId, paymentMethod } = req.body;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.redirect("/login");
+        }
+
+        console.log("addressId : ", addressId);
+        console.log("PaymentMethod : ", paymentMethod);
+
+        const cart = await Cart.findOne({ UserId: userId }).populate("Products.ProductId");
+        const address = await Address.findById(addressId);
+
+        if (!cart || cart.Products.length === 0) {
+            return res.status(400).json({ message: "Cart is empty." });
+        }
+        if (!address) {
+            return res.status(400).json({ message: "Invalid address." });
+        }
+
+        const orderItems = cart.Products.map((item) => {
+            return {
+                productId: item.ProductId._id,
+                quantity: item.Quantity,
+                price: item.Price * item.Quantity,
+            };
+        });
+
+        // console.log("order items :", orderItems);
+
+        const subtotal = orderItems.reduce((sum, item) => {
+            return sum + (item.price || 0);
+        }, 0);
+
+        console.log("subtotal : ", subtotal);
+
+        const deliveryCharge = subtotal > 1500 ? 0 : 20;
+        const total = subtotal + deliveryCharge;
+
+        if (isNaN(total)) {
+            return res.status(500).json({ message: "Failed to calculate total." });
+        }
+
+        const order = new Order({
+            userId: userId,
+            products: orderItems,
+            paymentMethod: paymentMethod,
+            total: total,
+            shippingCost: deliveryCharge,
+            Address: address._id,
+        });
+
+        await order.save();
+
+        req.session.orderPlaced = true;
+        // Clear the cart after placing the order
+        cart.Products = [];
+        await cart.save();
+
+        res.redirect(`/${userId}/cart/checkout/order-placed/${order._id}`);
+    } catch (error) {
+        console.error("Error from post place order : \n", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+const getPlaceOrder = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const userLoggedIn = req.session.userId ? true : false;
+        const orderId = req.params.orderId;
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.redirect("/login");
+        }
+
+        const order = await Order.findById(orderId).populate("products.productId");
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        const orderItems = order.products.map((item) => ({
+            productName: item.productId.name,
+            quantity: item.quantity,
+            price: item.productId.price,
+        }));
+
+        const orderTotal = orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
+        const deliveryCharge = orderTotal > 1500 ? 0 : 20;
+        const totalPrice = orderTotal + deliveryCharge;
+
+        res.render("user/orderplaced", {
+            userId,
+            user,
+            orderItems,
+            orderTotal,
+            totalPrice,
+            deliveryCharge,
+            orderNumber: order._id,
+            userLoggedIn,
+            order,
+        });
+    } catch (error) {
+        console.error("Error from get place order : \n", error);
     }
 };
 
@@ -196,4 +334,6 @@ module.exports = {
     updateCart,
     delete_item,
     getCheckout,
+    getPlaceOrder,
+    creatingOrder,
 };
