@@ -1,269 +1,508 @@
-<%- include('partials/head.ejs') %>
-<body class="animsition">
-    <!-- Header -->
-    <%- include('partials/header.ejs') %>
+<!DOCTYPE html>
+<html lang="en">
+    <!-- molla/category-list.html  22 Nov 2019 10:02:52 GMT -->
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>Molla - Bootstrap eCommerce Template</title>
+        <meta name="keywords" content="HTML5 Template" />
+        <meta name="description" content="Molla - Bootstrap eCommerce Template" />
+        <meta name="author" content="p-themes" />
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/favicon-16x16.png" />
+        <link rel="manifest" href="/assets/images/icons/site.html" />
+        <link rel="mask-icon" href="/assets/images/icons/safari-pinned-tab.svg" color="#666666" />
+        <link rel="shortcut icon" href="/assets/images/icons/favicon.ico" />
+        <meta name="apple-mobile-web-app-title" content="Molla" />
+        <meta name="application-name" content="Molla" />
+        <meta name="msapplication-TileColor" content="#cc9966" />
+        <meta name="msapplication-config" content="/assets/images/icons/browserconfig.xml" />
+        <meta name="theme-color" content="#ffffff" />
+        <!-- Plugins CSS File -->
+        <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+        <!-- Main CSS File -->
+        <link rel="stylesheet" href="/assets/css/style.css" />
+        <link rel="stylesheet" href="/assets/css/plugins/owl-carousel/owl.carousel.css" />
+        <link rel="stylesheet" href="/assets/css/plugins/magnific-popup/magnific-popup.css" />
+        <link rel="stylesheet" href="/assets/css/plugins/nouislider/nouislider.css" />
+    </head>
 
-    <!-- Product -->
-    <div class="bg0 m-t-23 p-b-140 d-flex">
-        <div class="filter-container">
-            <h2><strong>Categories</strong></h2>
-            <div class="categories">
-                <% categories.forEach(category => { %>
-                <div class="category">
-                    <span><%= category.name %></span>
-                    <span class="count"><%= category.productCount %></span>
-                    <!-- Display the count of products -->
-                </div>
-                <% }) %>
-            </div>
-
-            <h2><strong>Price</strong></h2>
-            <div class="price-range">
-                <input type="range" min="340" max="1350" value="340" />
-                <div class="price-inputs">
-                    <div class="price-input">
-                        <input type="number" value="340" min="340" max="1350" />
-                    </div>
-                    <div class="price-input">
-                        <input type="number" value="1350" min="340" max="1350" />
-                    </div>
-                </div>
-            </div>
-
-            <h2><strong>Brand</strong></h2>
-            <div class="brand">
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" checked /> Apple </label>
-                    <span class="count">13</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" checked /> Asus </label>
-                    <span class="count">47</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> Cobra </label>
-                    <span class="count">53</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> Dell </label>
-                    <span class="count">98</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> Lenovo </label>
-                    <span class="count">153</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> XE Gaming </label>
-                    <span class="count">13</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> Asbeck </label>
-                    <span class="count">35</span>
-                </div>
-                <div class="show-all">Show all</div>
-            </div>
-
-            <h2><strong>SSD Size</strong></h2>
-            <div class="ssd-size">
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> 2 TB </label>
-                    <span class="count">13</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> 1 TB </label>
-                    <span class="count">25</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> 512 GB </label>
-                    <span class="count">47</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> 256 GB </label>
-                    <span class="count">98</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> 128 GB </label>
-                    <span class="count">98</span>
-                </div>
-                <div class="checkbox-item">
-                    <label> <input type="checkbox" /> 64 GB or less </label>
-                    <span class="count">151</span>
-                </div>
-            </div>
-
-            <h2>Color</h2>
-            <div class="colors">
-                <div class="color-option color-green"></div>
-                <div class="color-option color-coral"></div>
-                <div class="color-option color-pink"></div>
-                <div class="color-option color-blue"></div>
-                <div class="color-option color-black"></div>
-                <div class="color-option color-white"></div>
-            </div>
-        </div>
-        <div class="container">
-            <div style="height: 70px"></div>
-
-            <div class="row isotope-grid" style="margin-right: 4px">
-                <% products.forEach(product => { %>
-                <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item <%= product.category %>">
-                    <div class="unique-container">
-                        <a href="/shop/product-detail/<%= product._id %>" class="unique-product-card">
-                            <!-- Link to product detail page -->
-                            <div class="unique-product-image">
-                                <img src="<%= product.images[0] %>" alt="Product Image" />
-                                <button class="unique-wishlist-btn" aria-label="Add to wishlist">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </a>
-                        <div class="unique-product-info">
-                            <h3 class="unique-product-title"><%= product.name %></h3>
-                            <div class="unique-product-price-rating">
-                                <p class="unique-product-price">$<%= product.price.toFixed(2) %></p>
-                                <div class="unique-product-rating">
-                                    <span class="unique-rating-star">★</span>
-                                    <span class="unique-rating-star">★</span>
-                                    <span class="unique-rating-star">★</span>
-                                    <span class="unique-rating-star">★</span>
-                                    <span class="unique-rating-value">(4.5)</span>
-                                </div>
-                            </div>
-                            <button class="unique-add-to-cart-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px">
-                                    <circle cx="9" cy="21" r="1"></circle>
-                                    <circle cx="20" cy="21" r="1"></circle>
-                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                </svg>
-                                Add to Cart
+    <body>
+        <div class="page-wrapper">
+            <header class="header">
+                <div class="header-middle sticky-header">
+                    <div class="container">
+                        <div class="header-left">
+                            <button class="mobile-menu-toggler">
+                                <span class="sr-only">Toggle mobile menu</span>
+                                <i class="icon-bars"></i>
                             </button>
+
+                            <a href="#" class="logo">
+                                <span style="font-size: 2.5rem; font-weight: 600; color: black">Byteverse</span>
+                            </a>
+
+                            <nav class="main-nav">
+                                <ul class="menu sf-arrows">
+                                    <li class="megamenu-container active">
+                                        <a href="index.html">Home</a>
+                                    </li>
+                                    <li>
+                                        <a href="category.html">Shop</a>
+                                    </li>
+                                    <li>
+                                        <a href="product.html">About</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Contact</a>
+                                    </li>
+                                    <li>
+                                        <a href="blog.html">Help</a>
+                                    </li>
+                                    <!-- <li>
+                                        <a href="elements-list.html">Elements</a>
+                                    </li> -->
+                                </ul>
+                                <!-- End .menu -->
+                            </nav>
+                            <!-- End .main-nav -->
                         </div>
+                        <!-- End .header-left -->
+
+                        <div class="header-right">
+                            <div class="header-search">
+                                <a href="#" class="search-toggle" role="button" title="Search"><i class="icon-search"></i></a>
+                                <form action="#" method="get">
+                                    <div class="header-search-wrapper">
+                                        <label for="q" class="sr-only">Search</label>
+                                        <input type="search" class="form-control" name="q" id="q" placeholder="Search in..." required />
+                                    </div>
+                                    <!-- End .header-search-wrapper -->
+                                </form>
+                            </div>
+                            <!-- End .header-search -->
+
+                            <div class="dropdown cart-dropdown">
+                                <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                                    <i class="icon-shopping-cart"></i>
+                                </a>
+                            </div>
+                            <!-- End .cart-dropdown -->
+                        </div>
+                        <!-- End .header-right -->
                     </div>
+                    <!-- End .container -->
                 </div>
-                <% }) %>
-            </div>
+                <!-- End .header-middle -->
+            </header>
+            <!-- End .header -->
 
-            <!-- Pagination -->
-            <div class="flex-c-m flex-w w-full p-t-38" id="pagination-container">
-                <!-- Previous Button -->
-                <% if (currentPage > 1) { %>
-                <a href="/shop?page=<%= currentPage - 1 %>" class="flex-c-m trans-04 m-all-7 pagination-previous"> Previous </a>
-                <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/shop?page=<%= i %>" class="flex-c-m how-pagination1 trans-04 m-all-7 <%= i === currentPage ? 'active-pagination1' : '' %>"> <%= i %> </a>
-                <% } %>
+            <main class="main">
+                <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
+                    <div class="container">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">List</li>
+                        </ol>
+                    </div>
+                    <!-- End .container -->
+                </nav>
+                <!-- End .breadcrumb-nav -->
 
-                <!-- Next Button -->
-                <% if (currentPage < totalPages) { %>
-                <a href="/shop?page=<%= currentPage + 1 %>" class="flex-c-m how-pagination1 trans-04 m-all-7 pagination-next"> Next </a>
-                <% } %>
-            </div>
+                <div class="page-content">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-9">
+                                <div class="toolbox">
+                                    <div class="toolbox-left">
+                                        <!-- <div class="toolbox-info">Showing <span>9 of 56</span> Products</div> -->
+                                        <!-- End .toolbox-info -->
+                                    </div>
+                                    <!-- End .toolbox-left -->
+
+                                    <div class="toolbox-right">
+                                        <div class="toolbox-sort">
+                                            <label for="sortby">Sort by:</label>
+                                            <form action="/shop" method="GET">
+                                                <div class="select-custom">
+                                                    <select name="sortby" id="sortby" class="form-control" onchange="this.form.submit()">
+                                                        <option value="popularity" <%= sortby === "popularity" ? "selected" : "" %>>Most Popular</option>
+                                                        <option value="price_low" <%= sortby === "price_low" ? "selected" : "" %>>Low to High</option>
+                                                        <option value="price_high" <%= sortby === "price_high" ? "selected" : "" %>>High to Low</option>
+                                                        <option value="average_rating" <%= sortby === "average_rating" ? "selected" : "" %>>Average Ratings</option>
+                                                        <option value="new_arrivals" <%= sortby === "new_arrivals" ? "selected" : "" %>>New Arrivals</option> 
+                                                        <option value="a_to_z" <%= sortby === "a_to_z" ? "selected" : "" %>>A - Z</option>
+                                                        <option value="z_to_a" <%= sortby === "z_to_a" ? "selected" : "" %>>Z - A</option>
+                                                    </select>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- End .toolbox-right -->
+                                </div>
+                                <!-- End .toolbox -->
+
+                                <div class="products mb-3">
+                                    <% products.forEach(product => { %>
+                                    <div class="product product-list">
+                                        <div class="row">
+                                            <div class="col-6 col-lg-3">
+                                                <figure class="product-media">
+                                                    <!-- <span class="product-label label-new">New</span> -->
+                                                    <a href="product.html">
+                                                        <img src="<%= product.images[0] %>" alt="Product image" class="product-image" />
+                                                    </a>
+                                                </figure>
+                                                <!-- End .product-media -->
+                                            </div>
+                                            <!-- End .col-sm-6 col-lg-3 -->
+
+                                            <div class="col-6 col-lg-3 order-lg-last d-flex align-items-center">
+                                                <div class="product-list-action">
+                                                    <div class="product-price">$<%= product.price.toFixed(2) %></div>
+                                                    <!-- End .product-price -->
+                                                    <div class="ratings-container">
+                                                        <div class="ratings">
+                                                            <div class="ratings-val"></div>
+                                                            <!-- End .ratings-val -->
+                                                        </div>
+                                                        <!-- End .ratings -->
+                                                        <span class="ratings-text">( <%= product.reviews || 0 %> Reviews )</span>
+                                                    </div>
+                                                    <!-- End .ratings-container -->
+
+                                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                                </div>
+                                                <!-- End .product-list-action -->
+                                            </div>
+                                            <!-- End .col-sm-6 col-lg-3 -->
+
+                                            <div class="col-lg-6 d-flex align-items-center">
+                                                <div class="product-body product-action-inner">
+                                                    <a href="#" class="btn-product btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
+                                                    <div class="product-cat">
+                                                        <a href="#"> <%= product.brand %> </a>
+                                                    </div>
+                                                    <!-- End .product-cat -->
+                                                    <h3 class="product-title" style="width: 43rem;"><a href="product.html"><%= product.name %></a></h3>
+                                                    <!-- End .product-title -->
+
+                                                    <div class="product-content">
+                                                        <p><%= product.description %></p>
+                                                    </div>
+                                                    <!-- End .product-content -->
+
+                                                    <div class="product-nav product-nav-thumbs">
+                                                        <% product.images.forEach((image, index) => { %>
+                                                        <a href="#" class="<%= index === 0 ? 'active' : '' %>">
+                                                            <img src="<%= image %>" alt="product desc" />
+                                                        </a>
+                                                        <% }); %>
+                                                    </div>
+                                                    <!-- End .product-nav -->
+                                                </div>
+                                                <!-- End .product-body -->
+                                            </div>
+                                            <!-- End .col-lg-6 -->
+                                        </div>
+                                        <!-- End .row -->
+                                    </div>
+                                    <!-- End .product -->
+                                    <% }); %>
+                                </div>
+
+                                <!-- End .products -->
+
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <li class="page-item disabled">
+                                            <a class="page-link page-link-prev" href="#" aria-label="Previous" tabindex="-1" aria-disabled="true">
+                                                <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                                            </a>
+                                        </li>
+                                        <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item-total">of 6</li>
+                                        <li class="page-item">
+                                            <a class="page-link page-link-next" href="#" aria-label="Next">
+                                                Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                            <!-- End .col-lg-9 -->
+                            <aside class="col-lg-3 order-lg-first">
+                                <div class="sidebar sidebar-shop">
+                                    <div class="widget widget-clean">
+                                        <label>Filters:</label>
+                                        <a href="#" class="sidebar-filter-clear">Clean All</a>
+                                    </div>
+                                    <!-- End .widget widget-clean -->
+
+                                    <div class="widget widget-collapsible">
+                                        <h3 class="widget-title">
+                                            <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1"> Category </a>
+                                        </h3>
+                                        <!-- End .widget-title -->
+
+                                        <div class="collapse show" id="widget-1">
+                                            <div class="widget-body">
+                                                <div class="filter-items filter-items-count">
+                                                    <% categories.forEach(category => { %>
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="cat-<%= category._id %>" name="categories" value="<%= category._id %>" />
+                                                            <label class="custom-control-label" for="cat-<%= category._id %>"><%= category.name %></label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                        <span class="item-count"><%= category.productCount %></span>
+                                                    </div>
+                                                    <!-- End .filter-item -->
+                                                    <% }) %>
+                                                </div>
+                                                <!-- End .filter-items -->
+                                            </div>
+                                            <!-- End .widget-body -->
+                                        </div>
+                                        <!-- End .collapse -->
+                                    </div>
+
+                                    <div class="widget widget-collapsible">
+                                        <h3 class="widget-title">
+                                            <a data-toggle="collapse" href="#widget-4" role="button" aria-expanded="true" aria-controls="widget-4"> Brand </a>
+                                        </h3>
+                                        <!-- End .widget-title -->
+
+                                        <div class="collapse show" id="widget-4">
+                                            <div class="widget-body">
+                                                <div class="filter-items">
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-1" value="Apple" />
+                                                            <label class="custom-control-label" for="brand-1">Apple</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-2" value="Dell" />
+                                                            <label class="custom-control-label" for="brand-2">Dell</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-3" value="HP" />
+                                                            <label class="custom-control-label" for="brand-3">HP</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-4" value="Lenovo" />
+                                                            <label class="custom-control-label" for="brand-4">Lenovo</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-5" value="Asus" />
+                                                            <label class="custom-control-label" for="brand-5">Asus</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-6" value="Acer" />
+                                                            <label class="custom-control-label" for="brand-6">Acer</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-7" value="Microsoft" />
+                                                            <label class="custom-control-label" for="brand-7">Microsoft</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-8" value="MSI" />
+                                                            <label class="custom-control-label" for="brand-8">MSI</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-9" value="Razer" />
+                                                            <label class="custom-control-label" for="brand-9">Razer</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-10" value="Samsung" />
+                                                            <label class="custom-control-label" for="brand-10">Samsung</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-11" value="Toshiba" />
+                                                            <label class="custom-control-label" for="brand-11">Toshiba</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-12" value="Sony" />
+                                                            <label class="custom-control-label" for="brand-12">Sony</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-13" value="Huawei" />
+                                                            <label class="custom-control-label" for="brand-13">Huawei</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-14" value="Xiaomi" />
+                                                            <label class="custom-control-label" for="brand-14">Xiaomi</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-15" value="Alienware" />
+                                                            <label class="custom-control-label" for="brand-15">Alienware</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-16" value="Gigabyte" />
+                                                            <label class="custom-control-label" for="brand-16">Gigabyte</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="brand-17" value="LG" />
+                                                            <label class="custom-control-label" for="brand-17">LG</label>
+                                                        </div>
+                                                        <!-- End .custom-checkbox -->
+                                                    </div>
+                                                    <!-- End .filter-item -->
+                                                </div>
+                                                <!-- End .filter-items -->
+                                            </div>
+                                            <!-- End .widget-body -->
+                                        </div>
+                                        <!-- End .collapse -->
+                                    </div>
+                                    <!-- End .widget -->
+
+                                    <!-- End .widget -->
+
+                                    <div class="widget widget-collapsible">
+                                        <h3 class="widget-title">
+                                            <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true" aria-controls="widget-5"> Price </a>
+                                        </h3>
+                                        <!-- End .widget-title -->
+
+                                        <div class="collapse show" id="widget-5">
+                                            <div class="widget-body">
+                                                <div class="filter-price">
+                                                    <div class="filter-price-text">
+                                                        Price Range:
+                                                        <span id="filter-price-range"></span>
+                                                    </div>
+                                                    <!-- End .filter-price-text -->
+
+                                                    <div id="price-slider"></div>
+                                                    <!-- End #price-slider -->
+                                                </div>
+                                                <!-- End .filter-price -->
+                                            </div>
+                                            <!-- End .widget-body -->
+                                        </div>
+                                        <!-- End .collapse -->
+                                    </div>
+                                    <!-- End .widget -->
+                                </div>
+                                <!-- End .sidebar sidebar-shop -->
+                            </aside>
+                            <!-- End .col-lg-3 -->
+                        </div>
+                        <!-- End .row -->
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .page-content -->
+            </main>
+            <!-- End .main -->
+
+            <!-- End .footer -->
         </div>
-    </div>
+        <!-- End .page-wrapper -->
+        <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
-    <!-- Footer -->
-    <%- include('partials/footer.ejs') %>
+        <!-- Plugins JS File -->
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/jquery.hoverIntent.min.js"></script>
+        <script src="/assets/js/jquery.waypoints.min.js"></script>
+        <script src="/assets/js/superfish.min.js"></script>
+        <script src="/assets/js/owl.carousel.min.js"></script>
+        <script src="/assets/js/wNumb.js"></script>
+        <script src="/assets/js/bootstrap-input-spinner.js"></script>
+        <script src="/assets/js/jquery.magnific-popup.min.js"></script>
+        <script src="/assets/js/nouislider.min.js"></script>
+        <!-- Main JS File -->
+        <script src="/assets/js/main.js"></script>
+    </body>
 
-    <!--===============================================================================================-->
-    <script src="/vendor/jquery/jquery-3.2.1.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="/vendor/animsition/js/animsition.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="/vendor/bootstrap/js/popper.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="/vendor/select2/select2.min.js"></script>
-    <script>
-        $(".js-select2").each(function () {
-            $(this).select2({
-                minimumResultsForSearch: 20,
-                dropdownParent: $(this).next(".dropDownSelect2"),
-            });
-        });
-    </script>
-    <!--===============================================================================================-->
-    <script src="/vendor/daterangepicker/moment.min.js"></script>
-    <script src="/vendor/daterangepicker/daterangepicker.js"></script>
-    <!--===============================================================================================-->
-    <script src="/vendor/slick/slick.min.js"></script>
-    <script src="/js/slick-custom.js"></script>
-    <!--===============================================================================================-->
-    <script src="/vendor/parallax100/parallax100.js"></script>
-    <script>
-        $(".parallax100").parallax100();
-    </script>
-    <!--===============================================================================================-->
-    <script src="/vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
-    <script>
-        $(".gallery-lb").each(function () {
-            // the containers for all your galleries
-            $(this).magnificPopup({
-                delegate: "a", // the selector for gallery item
-                type: "image",
-                gallery: {
-                    enabled: true,
-                },
-                mainClass: "mfp-fade",
-            });
-        });
-    </script>
-    <!--===============================================================================================-->
-    <script src="/vendor/isotope/isotope.pkgd.min.js"></script>
-    <!--===============================================================================================-->
-    <script src="/vendor/sweetalert/sweetalert.min.js"></script>
-    <script>
-        $(".js-addwish-b2, .js-addwish-detail").on("click", function (e) {
-            e.preventDefault();
-        });
-
-        $(".js-addwish-b2").each(function () {
-            var nameProduct = $(this).parent().parent().find(".js-name-b2").html();
-            $(this).on("click", function () {
-                swal(nameProduct, "is added to wishlist !", "success");
-
-                $(this).addClass("js-addedwish-b2");
-                $(this).off("click");
-            });
-        });
-
-        $(".js-addwish-detail").each(function () {
-            var nameProduct = $(this).parent().parent().parent().find(".js-name-detail").html();
-
-            $(this).on("click", function () {
-                swal(nameProduct, "is added to wishlist !", "success");
-
-                $(this).addClass("js-addedwish-detail");
-                $(this).off("click");
-            });
-        });
-
-        /*---------------------------------------------*/
-
-        $(".js-addcart-detail").each(function () {
-            var nameProduct = $(this).parent().parent().parent().parent().find(".js-name-detail").html();
-            $(this).on("click", function () {
-                swal(nameProduct, "is added to cart !", "success");
-            });
-        });
-    </script>
-    <!--===============================================================================================-->
-    <script src="/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-    <script>
-        $(".js-pscroll").each(function () {
-            $(this).css("position", "relative");
-            $(this).css("overflow", "hidden");
-            var ps = new PerfectScrollbar(this, {
-                wheelSpeed: 1,
-                scrollingThreshold: 1000,
-                wheelPropagation: false,
-            });
-
-            $(window).on("resize", function () {
-                ps.update();
-            });
-        });
-    </script>
-    <!--===============================================================================================-->
-    <script src="/js/main.js"></script>
-</body>
+    <!-- molla/category-list.html  22 Nov 2019 10:02:52 GMT -->
+</html>

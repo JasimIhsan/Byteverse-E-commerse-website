@@ -61,6 +61,14 @@ router.get("/shop/product-detail/:productId", shop.getProductDetail);
 
 router.get("/:userId/profile", profile.getProfile);
 
+//---- order -----//
+
+router.get("/:userId/profile/orders", profile.getOrders);
+
+router.post("/profile/orders/cancel-order", profile.cancelOrder);
+
+//---- address -----//
+
 router.get("/:userId/profile/address", profile.getAddress);
 
 router.get("/:userId/profile/address/add-address", profile.getAddAddress);

@@ -19,6 +19,87 @@ const getProfile = async (req, res) => {
     }
 };
 
+//------------------- orders ---------------//
+
+const getOrders = async (req, res) => {
+    try {
+        const title = "Orders | Byteverse E-commerce";
+        const userLoggedIn = req.session.userId ? true : false;
+        const userId = req.session.userId;
+
+        const user = await User.findById(userId);
+        if (!user) return res.redirect("/login");
+
+        let filter = { userId: userId };
+
+        //filter based on status
+        const { status, dateRange } = req.query;
+        if (status && status !== "all") {
+            filter.deliveryStatus = status;
+        }
+
+        //filter based on date
+        const currentDate = new Date();
+        if (dateRange) {
+            switch (dateRange) {
+                case "week":
+                    filter.orderDate = { $gte: new Date(currentDate.setDate(currentDate.getDate() - 7)) };
+                    break;
+                case "twoWeeks":
+                    filter.orderDate = { $gte: new Date(currentDate.setDate(currentDate.getDate() - 14)) };
+                    break;
+                case "month":
+                    filter.orderDate = { $gte: new Date(currentDate.setMonth(currentDate.getMonth() - 1)) };
+                    break;
+                case "threeMonths":
+                    filter.orderDate = { $gte: new Date(currentDate.setMonth(currentDate.getMonth() - 3)) };
+                    break;
+            }
+        }
+
+        const orders = await Orders.find(filter).populate("products.productId").populate("Address").sort({ orderTime: -1 });
+
+        res.render("user/orders", { title, userLoggedIn, user, orders, userId });
+    } catch (error) {
+        console.error("Error fetching orders: ", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+const cancelOrder = async (req, res) => {
+    const { orderId, reason, needsApproval } = req.body;
+    console.log(req.body);
+    console.log(1234);
+
+    try {
+        const order = await Orders.findById(orderId);
+        if (!order) {
+            return res.json({ success: false, message: "Order not found." });
+        }
+
+        if (needsApproval) {
+            // Mark the order for admin approval
+            order.deliveryStatus = "Cancellation Requested";
+            order.cancellationReason = reason;
+            order.isPendingAdminApproval = true;
+        } else {
+            // Cancel the order immediately
+            order.deliveryStatus = "Cancelled";
+            order.cancellationReason = reason;
+            order.isCancelled = true;
+        }
+
+        await order.save();
+
+        return res.json({ success: true, message: "Order cancelled successfully." });
+    } catch (err) {
+        console.error(err);
+        return res.json({ success: false, message: "Something went wrong." });
+    }
+};
+
+//------------------ address -------------------//
+
 const getAddress = async (req, res) => {
     try {
         const title = "Address page | Byteverse E-commerce";
@@ -176,4 +257,6 @@ module.exports = {
     deleteAddress,
     editAddress,
     updateAddress,
+    getOrders,
+    cancelOrder,
 };

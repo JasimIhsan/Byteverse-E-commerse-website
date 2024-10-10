@@ -58,6 +58,17 @@ const orderSchema = new mongoose.Schema({
         ref: "Address",
         required: true,
     },
+    cancellationReason: {
+        type: String,
+    },
+    isPendingAdminApproval: {
+        type: Boolean,
+        default: false,
+    },
+    isCancelled: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const Order = mongoose.model("Order", orderSchema);

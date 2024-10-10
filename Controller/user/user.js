@@ -76,7 +76,7 @@ const getHome = async (req, res) => {
 
         const totalProducts = await Products.countDocuments({ name: { $regex: search, $options: "i" }, status: "listed" }).populate({ path: "category", match: { status: "listed" } });
         const totalPages = Math.ceil(totalProducts / limit);
-        
+
         const userLoggedIn = req.session.user ? true : false;
         if (userLoggedIn) {
             const userId = req.session.userId;

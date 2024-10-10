@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title><%= title %></title>
+        <meta name="keywords" content="HTML5 Template" />
+        <meta name="description" content="Molla - Bootstrap eCommerce Template" />
+        <meta name="author" content="p-themes" />
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/favicon-16x16.png" />
+        <link rel="manifest" href="/assets/images/icons/site.html" />
+        <link rel="mask-icon" href="/assets/images/icons/safari-pinned-tab.svg" color="#666666" />
+        <link rel="shortcut icon" href="/assets/images/icons/favicon.ico" />
+        <meta name="apple-mobile-web-app-title" content="Molla" />
+        <meta name="application-name" content="Molla" />
+        <meta name="msapplication-TileColor" content="#cc9966" />
+        <meta name="msapplication-config" content="/assets/images/icons/browserconfig.xml" />
+        <meta name="theme-color" content="#ffffff" />
+        <!-- Plugins CSS File -->
+        <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+        <!-- Main CSS File -->
+        <link rel="stylesheet" href="/assets/css/style.css" />
+        <link rel="stylesheet" href="/css/user/main.css" />
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <style>
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 2rem 1rem;
+            }
+            h1 {
+                font-size: 2rem;
+                font-weight: bold;
+                margin-bottom: 2rem;
+            }
+            .search-filter {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            @media (min-width: 768px) {
+                .search-filter {
+                    flex-direction: row;
+                }
+            }
+            .search-container {
+                flex: 1;
+                position: relative;
+            }
+            .search-icon {
+                position: absolute;
+                left: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 1rem;
+                height: 1rem;
+                color: #6b7280;
+            }
+            .search-input {
+                width: 100%;
+                padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.375rem;
+                font-size: 1.5rem;
+            }
+            .filter-select {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.375rem;
+                font-size: 1rem;
+                background-color: white;
+            }
+            @media (min-width: 768px) {
+                .filter-select {
+                    width: 12rem;
+                }
+            }
+            .card {
+                background-color: white;
+                border-radius: 0.5rem;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                margin-bottom: 1.5rem;
+            }
+            .card-header {
+                padding: 1rem 1.5rem;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            .card-title {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 1.5rem;
+                font-weight: bold;
+            }
+            .card-date {
+                font-size: 1.3rem;
+                font-weight: normal;
+                color: #6b7280;
+            }
+            .card-content {
+                padding: 1.5rem;
+            }
+            .order-summary {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+            }
+            @media (min-width: 768px) {
+                .order-summary {
+                    flex-direction: row;
+                }
+            }
+            .order-total {
+                font-weight: 600;
+                font-size: 1.5rem;
+            }
+            .order-items {
+                font-size: 1.3rem;
+                color: #6b7280;
+            }
+            .order-status {
+                display: inline-block;
+                padding: 1rem 2.5rem;
+                border-radius: 9999px;
+                font-size: 1rem;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+
+            .status-delivered {
+                background-color: #d1fae5;
+                color: #065f46;
+            }
+            .status-processing {
+                background-color: #dbeafe;
+                color: #1e40af;
+            }
+            .status-shipped {
+                background-color: #fef3c7;
+                color: #92400e;
+            }
+            .status-pending {
+                background-color: rgb(191, 220, 255);
+                color: blue;
+            }
+            .status-cancelled {
+                background-color: rgb(255, 149, 149);
+                color: rgb(98, 0, 0);
+            }
+            .item-list {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
+            .item {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            .item:last-child {
+                border-bottom: none;
+            }
+            .card-footer {
+                display: flex;
+                justify-content: space-between;
+                padding: 1rem 1.5rem;
+                border-top: 1px solid #e5e7eb;
+            }
+            .btn {
+                padding: 0.5rem 1rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.375rem;
+                font-size: 0.875rem;
+                font-weight: 500;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            .btn-outline {
+                background-color: transparent;
+                color: #374151;
+            }
+            .btn-outline:hover {
+                background-color: #f3f4f6;
+            }
+            .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                right: 0;
+                background-color: white;
+                min-width: 160px;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                z-index: 1;
+                border-radius: 0.375rem;
+                border: 1px solid #e5e7eb;
+            }
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
+            .dropdown-item {
+                padding: 0.5rem 1rem;
+                text-decoration: none;
+                display: block;
+                color: #374151;
+            }
+            .dropdown-item:hover {
+                background-color: #f3f4f6;
+            }
+            .dropdown-label {
+                padding: 0.5rem 1rem;
+                font-weight: 600;
+                color: #6b7280;
+                border-bottom: 1px solid #e5e7eb;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="page-wrapper">
+            <%- include('partials/header.ejs') %>
+            <main class="main">
+                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); margin-top: 63px; padding: 20px">
+                    <div class="container">
+                        <h1 class="page-title">Order Details<span>Shop</span></h1>
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .page-header -->
+                <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+                    <div class="container">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+                        </ol>
+                    </div>
+                    <!-- End .container -->
+                </nav>
+                <!-- End .breadcrumb-nav -->
+
+                <div class="page-content">
+                    <div class="container">
+                        <div class="dashboard">
+                            <div class="row">
+                                <aside class="col-md-4 col-lg-3">
+                                    <ul class="nav nav-dashboard flex-column mb-3 mb-md-0">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/<%= user._id %>/dashboard">Dashboard</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link active" href="#">Orders</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Downloads</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/<%= user._id %>/profile/address">Addresses</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Account Details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/logout">Sign Out</a>
+                                        </li>
+                                    </ul>
+                                </aside>
+                                <!-- End .col-lg-3 -->
+
+                                <div class="col-md-8 col-lg-9">
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade active show" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                                            <h1>Order History</h1>
+                                            <form id="filterForm" method="GET" action="/<%= user._id %>/profile/orders" style="margin-bottom: 15px">
+                                                <select name="status" class="filter-select" style="font-size: 12px; margin-right: 10px">
+                                                    <option value="all">All</option>
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="Shipped">Shipped</option>
+                                                    <option value="Delivered">Delivered</option>
+                                                    <option value="Cancelled">Cancelled</option>
+                                                </select>
+
+                                                <select name="dateRange" class="filter-select" style="font-size: 12px; margin-right: 10px">
+                                                    <option value="all">All Dates</option>
+                                                    <option value="week">Last Week</option>
+                                                    <option value="twoWeeks">Last 2 Weeks</option>
+                                                    <option value="month">Last Month</option>
+                                                    <option value="threeMonths">Last 3 Months</option>
+                                                </select>
+
+                                                <button type="submit" class="btn btn-outline" style="font-size: 12px">Apply Filters</button>
+                                            </form>
+
+                                            <div class="order-list">
+                                                <% if (orders && orders.length > 0) { %> <% orders.forEach(order => { %>
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <div class="card-title">
+                                                            <span>Order ORD-<%= order._id %></span>
+                                                            <span class="card-date"><%= order.orderDate.toDateString() %></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-content">
+                                                        <div class="order-summary">
+                                                            <div>
+                                                                <p class="order-total">Total: $<%= order.total.toFixed(2) %></p>
+                                                                <p class="order-items"><%= order.products.length %> item(s)</p>
+                                                            </div>
+                                                            <div>
+                                                                <span class="order-status status-<%= order.deliveryStatus.toLowerCase() %>"><%= order.deliveryStatus %></span>
+                                                            </div>
+                                                        </div>
+                                                        <ul class="item-list">
+                                                            <% order.products.forEach(product => { %>
+                                                            <li class="item d-flex align-items-center">
+                                                                <img src="/<%= product.productId.images[0] %>" alt="<%= product.productId.name %>" style="width: 75px; height: 75px" />
+                                                                <span><%= product.productId.name %> (x<%= product.quantity %>)</span>
+                                                                <span>$<%= product.price.toFixed(2) %></span>
+                                                            </li>
+                                                            <% }); %>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="card-footer">
+                                                        <button class="btn btn-outline" style="font-size: 12px" onclick="cancelOrder('<%= order._id %>', '<%= order.deliveryStatus %>')">Cancel Order</button>
+                                                    </div>
+                                                </div>
+                                                <% }); %> <% } else { %>
+                                                <p>No orders found.</p>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- End .col-lg-9 -->
+                            </div>
+
+                            <!-- End .row -->
+                        </div>
+                        <!-- End .dashboard -->
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .page-content -->
+            </main>
+            <!-- End .main -->
+            <%- include('partials/footer.ejs') %>
+        </div>
+        <!-- End .page-wrapper -->
+
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            function cancelOrder(orderId, status) {
+                // SweetAlert for getting the reason for cancellation
+                Swal.fire({
+                    title: "Cancel Order",
+                    input: "textarea",
+                    inputPlaceholder: "Enter reason for cancellation",
+                    showCancelButton: true,
+                    confirmButtonText: "Submit",
+                    cancelButtonText: "Close",
+                    preConfirm: (reason) => {
+                        if (!reason) {
+                            Swal.showValidationMessage("Reason is required for cancellation.");
+                        }
+                        return { reason: reason };
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const reason = result.value.reason;
+                        Swal.fire({
+                            title: "Are you sure?",
+                            text: `You are about to cancel this order.`,
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes, cancel it!",
+                            cancelButtonText: "No, keep it",
+                        }).then((confirmation) => {
+                            if (confirmation.isConfirmed) {
+                                console.log(status);
+                                // Check if the status allows cancellation
+                                if (status === "Pending") {
+                                    // Directly cancel the order
+                                    console.log(orderId, reason);
+
+                                    sendCancellation(orderId, reason, false);
+                                } else if (status === "Shipped") {
+                                    // Send cancellation request for admin approval
+                                    sendCancellation(orderId, reason, true);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            function sendCancellation(orderId, reason, needsApproval) {
+                // console.log(orderId, reason, needsApproval, userId);
+                console.log("erexytcuvygibuhnij");
+
+                axios
+                    .post(`/profile/orders/cancel-order`, {
+                        orderId: orderId,
+                        reason: reason,
+                        needsApproval: needsApproval,
+                    })
+                    .then((response) => {
+                        if (response.data.success) {
+                            Swal.fire("Cancelled!", response.data.message, "success").then(() => location.reload()); // Reload the page to reflect changes
+                        } else {
+                            Swal.fire("Error!", response.data.message || "Failed to cancel the order.", "error");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                        Swal.fire("Error!", "Something went wrong.", "error");
+                    });
+            }
+        </script>
+    </body>
+</html>
