@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-    <!-- molla/category-list.html  22 Nov 2019 10:02:52 GMT -->
     <head>
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <title>Molla - Bootstrap eCommerce Template</title>
+        <title>Shope | Byteverse E-commerce</title>
         <meta name="keywords" content="HTML5 Template" />
         <meta name="description" content="Molla - Bootstrap eCommerce Template" />
         <meta name="author" content="p-themes" />
-        <!-- Favicon -->
         <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/favicon-16x16.png" />
@@ -21,13 +19,17 @@
         <meta name="msapplication-TileColor" content="#cc9966" />
         <meta name="msapplication-config" content="/assets/images/icons/browserconfig.xml" />
         <meta name="theme-color" content="#ffffff" />
-        <!-- Plugins CSS File -->
         <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
-        <!-- Main CSS File -->
         <link rel="stylesheet" href="/assets/css/style.css" />
         <link rel="stylesheet" href="/assets/css/plugins/owl-carousel/owl.carousel.css" />
         <link rel="stylesheet" href="/assets/css/plugins/magnific-popup/magnific-popup.css" />
         <link rel="stylesheet" href="/assets/css/plugins/nouislider/nouislider.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+                <!-- Include SweetAlert2 CSS -->
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+
+                <!-- Include SweetAlert2 JS -->
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     </head>
 
     <body>
@@ -47,71 +49,75 @@
 
                             <nav class="main-nav">
                                 <ul class="menu sf-arrows">
-                                    <li class="megamenu-container active">
-                                        <a href="index.html">Home</a>
+                                    <li>
+                                        <a href="/">Home</a>
                                     </li>
                                     <li>
-                                        <a href="category.html">Shop</a>
+                                        <a class="megamenu-container active" href="#">Shop</a>
                                     </li>
                                     <li>
-                                        <a href="product.html">About</a>
+                                        <a href="#">About</a>
                                     </li>
                                     <li>
                                         <a href="#">Contact</a>
                                     </li>
                                     <li>
-                                        <a href="blog.html">Help</a>
-                                    </li>
-                                    <!-- <li>
-                                        <a href="elements-list.html">Elements</a>
-                                    </li> -->
+                                        <a href="#">Help</a>
                                 </ul>
-                                <!-- End .menu -->
                             </nav>
-                            <!-- End .main-nav -->
                         </div>
-                        <!-- End .header-left -->
 
                         <div class="header-right">
-                            <div class="header-search">
-                                <a href="#" class="search-toggle" role="button" title="Search"><i class="icon-search"></i></a>
-                                <form action="#" method="get">
-                                    <div class="header-search-wrapper">
-                                        <label for="q" class="sr-only">Search</label>
-                                        <input type="search" class="form-control" name="q" id="q" placeholder="Search in..." required />
-                                    </div>
-                                    <!-- End .header-search-wrapper -->
+                            <div class="product-search-filter">
+                                <form action="/shop" method="get" style="position: relative; display: flex; align-items: center;">
+                                    <input type="text" name="search" id="search-input" placeholder="Search products..." class="rounded-pill"
+                                        value="<%= search %>" style="padding-right: 40px; padding-left: 40px; width: 100%;" />
+                            
+                                    <button class="search-button" id="search-button" type="submit" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: black;">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                            
+                                    <button type="button" id="clear-search" style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; display: none;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </form>
                             </div>
-                            <!-- End .header-search -->
+                            
+                            
+                            
+                            
 
-                            <div class="dropdown cart-dropdown">
-                                <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-                                    <i class="icon-shopping-cart"></i>
+                            <div class="dropdown cart-dropdown ">
+                                <a  href="/cart" >
+                                    <img style="width: 30px;" src="/images/icons/cart.png" alt="Account">
                                 </a>
                             </div>
-                            <!-- End .cart-dropdown -->
+                            <div class="dropdown cart-dropdown">
+                                <% if (user) { %>
+                                    <a href="/<%= user._id %>/profile">
+                                        <img style="width: 30px;" src="/images/icons/user.png" alt="Account">
+                                    </a>
+                                <% } else { %>
+                                    <a href="/login">
+                                        <img style="width: 30px;" src="/images/icons/user.png" alt="Account">
+                                    </a>
+                                <% } %>
+                            </div>
+                            
                         </div>
-                        <!-- End .header-right -->
                     </div>
-                    <!-- End .container -->
                 </div>
-                <!-- End .header-middle -->
             </header>
-            <!-- End .header -->
 
             <main class="main">
                 <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
                     <div class="container">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                            <li class="breadcrumb-item"><a href="#">Shop</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">List</li>
+                            <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item active"><a href="#">Shop</a></li>
                         </ol>
                     </div>
-                    <!-- End .container -->
                 </nav>
-                <!-- End .breadcrumb-nav -->
 
                 <div class="page-content">
                     <div class="container">
@@ -119,10 +125,7 @@
                             <div class="col-lg-9">
                                 <div class="toolbox">
                                     <div class="toolbox-left">
-                                        <!-- <div class="toolbox-info">Showing <span>9 of 56</span> Products</div> -->
-                                        <!-- End .toolbox-info -->
                                     </div>
-                                    <!-- End .toolbox-left -->
 
                                     <div class="toolbox-right">
                                         <div class="toolbox-sort">
@@ -143,9 +146,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- End .toolbox-right -->
                                 </div>
-                                <!-- End .toolbox -->
 
                                 <div class="products mb-3">
                                     <% products.forEach(product => { %>
@@ -153,34 +154,31 @@
                                         <div class="row">
                                             <div class="col-6 col-lg-3">
                                                 <figure class="product-media">
-                                                    <!-- <span class="product-label label-new">New</span> -->
-                                                    <a href="product.html">
+                                                    <a href="/shop/product-detail/<%= product._id %>">
                                                         <img src="<%= product.images[0] %>" alt="Product image" class="product-image" />
                                                     </a>
                                                 </figure>
-                                                <!-- End .product-media -->
                                             </div>
-                                            <!-- End .col-sm-6 col-lg-3 -->
 
                                             <div class="col-6 col-lg-3 order-lg-last d-flex align-items-center">
                                                 <div class="product-list-action">
                                                     <div class="product-price">$<%= product.price.toFixed(2) %></div>
-                                                    <!-- End .product-price -->
                                                     <div class="ratings-container">
                                                         <div class="ratings">
                                                             <div class="ratings-val"></div>
-                                                            <!-- End .ratings-val -->
                                                         </div>
-                                                        <!-- End .ratings -->
                                                         <span class="ratings-text">( <%= product.reviews || 0 %> Reviews )</span>
                                                     </div>
-                                                    <!-- End .ratings-container -->
-
-                                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                                    <form class="add-to-cart-form" data-user-id="<%= user ? user._id : '' %>">
+                                                        <input type="hidden" name="productId" value="<%= product._id %>" />
+                                                        <button type="submit" style="border: none; background-color: transparent; width: 200px;">
+                                                            <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                                        </button>
+                                                    </form>
                                                 </div>
-                                                <!-- End .product-list-action -->
                                             </div>
-                                            <!-- End .col-sm-6 col-lg-3 -->
+                                            
+                                            
 
                                             <div class="col-lg-6 d-flex align-items-center">
                                                 <div class="product-body product-action-inner">
@@ -188,14 +186,20 @@
                                                     <div class="product-cat">
                                                         <a href="#"> <%= product.brand %> </a>
                                                     </div>
-                                                    <!-- End .product-cat -->
-                                                    <h3 class="product-title" style="width: 43rem;"><a href="product.html"><%= product.name %></a></h3>
-                                                    <!-- End .product-title -->
+                                                    <h3 class="product-title" style="width: 43rem;"><a href="/shop/product-detail/<%= product._id %>"><%= product.name %></a></h3>
 
                                                     <div class="product-content">
                                                         <p><%= product.description %></p>
                                                     </div>
-                                                    <!-- End .product-content -->
+
+                                                    <div class="product-stock-status" style="margin-bottom: .7rem;">
+                                                        <% if (product.stock === 0) { %>
+                                                            <span style="color: red; ">Out of Stock</span>
+                                                        <% } else if (product.stock > 0 && product.stock < 5) { %>
+                                                            <span style="color: red; ">Only <%= product.stock %> left in stock!</span>
+                                                        <% } %>
+                                                         
+                                                    </div>
 
                                                     <div class="product-nav product-nav-thumbs">
                                                         <% product.images.forEach((image, index) => { %>
@@ -204,19 +208,13 @@
                                                         </a>
                                                         <% }); %>
                                                     </div>
-                                                    <!-- End .product-nav -->
                                                 </div>
-                                                <!-- End .product-body -->
                                             </div>
-                                            <!-- End .col-lg-6 -->
                                         </div>
-                                        <!-- End .row -->
                                     </div>
-                                    <!-- End .product -->
                                     <% }); %>
                                 </div>
 
-                                <!-- End .products -->
 
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination">
@@ -237,259 +235,94 @@
                                     </ul>
                                 </nav>
                             </div>
-                            <!-- End .col-lg-9 -->
                             <aside class="col-lg-3 order-lg-first">
                                 <div class="sidebar sidebar-shop">
+
                                     <div class="widget widget-clean">
-                                        <label>Filters:</label>
-                                        <a href="#" class="sidebar-filter-clear">Clean All</a>
+                                        <a href="javascript:void(0);" class="sidebar-filter-clear" onclick="document.getElementById('filterForm').reset(); window.location.href='/shop';">Clear All Filters</a>
                                     </div>
-                                    <!-- End .widget widget-clean -->
 
-                                    <div class="widget widget-collapsible">
-                                        <h3 class="widget-title">
-                                            <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1"> Category </a>
-                                        </h3>
-                                        <!-- End .widget-title -->
-
-                                        <div class="collapse show" id="widget-1">
-                                            <div class="widget-body">
-                                                <div class="filter-items filter-items-count">
-                                                    <% categories.forEach(category => { %>
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="cat-<%= category._id %>" name="categories" value="<%= category._id %>" />
-                                                            <label class="custom-control-label" for="cat-<%= category._id %>"><%= category.name %></label>
+                                    <form id="filterForm" method="GET" action="/shop">
+                                        <div class="widget widget-collapsible">
+                                            <h3 class="widget-title">
+                                                <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1"> Category </a>
+                                            </h3>
+                                        
+                                            <div class="collapse show" id="widget-1">
+                                                <div class="widget-body">
+                                                    <div class="filter-items filter-items-count">
+                                                        <% categoriesWithCounts.forEach(category => { %>
+                                                        <div class="filter-item">
+                                                            <div class="custom-control custom-checkbox">
+                                                                <input type="checkbox" class="custom-control-input" id="cat-<%= category._id %>" name="categories" value="<%= category._id %>" 
+                                                                <% if (selectedCategories.includes(category._id.toString())) { %> checked <% } %> />
+                                                                <label class="custom-control-label" for="cat-<%= category._id %>"><%= category.name %></label>
+                                                            </div>
+                                                            <span class="item-count"><%= category.productCount %></span>
                                                         </div>
-                                                        <!-- End .custom-checkbox -->
-                                                        <span class="item-count"><%= category.productCount %></span>
+                                                        <% }) %>
                                                     </div>
-                                                    <!-- End .filter-item -->
-                                                    <% }) %>
                                                 </div>
-                                                <!-- End .filter-items -->
                                             </div>
-                                            <!-- End .widget-body -->
                                         </div>
-                                        <!-- End .collapse -->
-                                    </div>
-
-                                    <div class="widget widget-collapsible">
-                                        <h3 class="widget-title">
-                                            <a data-toggle="collapse" href="#widget-4" role="button" aria-expanded="true" aria-controls="widget-4"> Brand </a>
-                                        </h3>
-                                        <!-- End .widget-title -->
-
-                                        <div class="collapse show" id="widget-4">
-                                            <div class="widget-body">
-                                                <div class="filter-items">
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-1" value="Apple" />
-                                                            <label class="custom-control-label" for="brand-1">Apple</label>
+                                        
+                                        <div class="widget widget-collapsible">
+                                            <h3 class="widget-title">
+                                                <a data-toggle="collapse" href="#widget-4" role="button" aria-expanded="true" aria-controls="widget-4"> Brand </a>
+                                            </h3>
+                                        
+                                            <div class="collapse show" id="widget-4">
+                                                <div class="widget-body">
+                                                    <div class="filter-items">
+                                                        <% ['Apple', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'Microsoft', 'MSI', 'Razer', 'Samsung', 'Toshiba', 'Sony', 'Huawei', 'Xiaomi', 'Alienware', 'Gigabyte', 'LG'].forEach((brand, index) => { %>
+                                                        <div class="filter-item">
+                                                            <div class="custom-control custom-checkbox">
+                                                                <input type="checkbox" class="custom-control-input" id="brand-<%= index + 1 %>" name="brands" value="<%= brand %>" 
+                                                                <% if (selectedBrands.includes(brand)) { %> checked <% } %> />
+                                                                <label class="custom-control-label" for="brand-<%= index + 1 %>"><%= brand %></label>
+                                                            </div>
                                                         </div>
-                                                        <!-- End .custom-checkbox -->
+                                                        <% }) %>
                                                     </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-2" value="Dell" />
-                                                            <label class="custom-control-label" for="brand-2">Dell</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-3" value="HP" />
-                                                            <label class="custom-control-label" for="brand-3">HP</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-4" value="Lenovo" />
-                                                            <label class="custom-control-label" for="brand-4">Lenovo</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-5" value="Asus" />
-                                                            <label class="custom-control-label" for="brand-5">Asus</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-6" value="Acer" />
-                                                            <label class="custom-control-label" for="brand-6">Acer</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-7" value="Microsoft" />
-                                                            <label class="custom-control-label" for="brand-7">Microsoft</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-8" value="MSI" />
-                                                            <label class="custom-control-label" for="brand-8">MSI</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-9" value="Razer" />
-                                                            <label class="custom-control-label" for="brand-9">Razer</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-10" value="Samsung" />
-                                                            <label class="custom-control-label" for="brand-10">Samsung</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-11" value="Toshiba" />
-                                                            <label class="custom-control-label" for="brand-11">Toshiba</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-12" value="Sony" />
-                                                            <label class="custom-control-label" for="brand-12">Sony</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-13" value="Huawei" />
-                                                            <label class="custom-control-label" for="brand-13">Huawei</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-14" value="Xiaomi" />
-                                                            <label class="custom-control-label" for="brand-14">Xiaomi</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-15" value="Alienware" />
-                                                            <label class="custom-control-label" for="brand-15">Alienware</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-16" value="Gigabyte" />
-                                                            <label class="custom-control-label" for="brand-16">Gigabyte</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
-
-                                                    <div class="filter-item">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="brand-17" value="LG" />
-                                                            <label class="custom-control-label" for="brand-17">LG</label>
-                                                        </div>
-                                                        <!-- End .custom-checkbox -->
-                                                    </div>
-                                                    <!-- End .filter-item -->
                                                 </div>
-                                                <!-- End .filter-items -->
                                             </div>
-                                            <!-- End .widget-body -->
                                         </div>
-                                        <!-- End .collapse -->
-                                    </div>
-                                    <!-- End .widget -->
-
-                                    <!-- End .widget -->
-
-                                    <div class="widget widget-collapsible">
-                                        <h3 class="widget-title">
-                                            <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true" aria-controls="widget-5"> Price </a>
-                                        </h3>
-                                        <!-- End .widget-title -->
-
-                                        <div class="collapse show" id="widget-5">
-                                            <div class="widget-body">
-                                                <div class="filter-price">
-                                                    <div class="filter-price-text">
-                                                        Price Range:
-                                                        <span id="filter-price-range"></span>
+                                        
+                                        
+                                        
+                            
+                                        <div class="widget widget-collapsible">
+                                            <h3 class="widget-title">
+                                                <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true" aria-controls="widget-5"> Price </a>
+                                            </h3>
+                            
+                                            <div class="collapse show" id="widget-5">
+                                                <div class="widget-body">
+                                                    <div class="filter-price">
+                                                        <div class="filter-price-text">
+                                                            Price Range: <span id="filter-price-range"></span>
+                                                        </div>
+                                                        <input type="number" name="minPrice" placeholder="Min Price" />
+                                                        <input type="number" name="maxPrice" placeholder="Max Price" />
                                                     </div>
-                                                    <!-- End .filter-price-text -->
-
-                                                    <div id="price-slider"></div>
-                                                    <!-- End #price-slider -->
                                                 </div>
-                                                <!-- End .filter-price -->
                                             </div>
-                                            <!-- End .widget-body -->
                                         </div>
-                                        <!-- End .collapse -->
-                                    </div>
-                                    <!-- End .widget -->
+                            
+                                        <div class="widget widget-clean">
+                                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                        </div>
+                                    </form>
                                 </div>
-                                <!-- End .sidebar sidebar-shop -->
                             </aside>
-                            <!-- End .col-lg-3 -->
                         </div>
-                        <!-- End .row -->
                     </div>
-                    <!-- End .container -->
                 </div>
-                <!-- End .page-content -->
             </main>
-            <!-- End .main -->
 
-            <!-- End .footer -->
         </div>
-        <!-- End .page-wrapper -->
         <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
-        <!-- Plugins JS File -->
         <script src="/assets/js/jquery.min.js"></script>
         <script src="/assets/js/bootstrap.bundle.min.js"></script>
         <script src="/assets/js/jquery.hoverIntent.min.js"></script>
@@ -500,9 +333,108 @@
         <script src="/assets/js/bootstrap-input-spinner.js"></script>
         <script src="/assets/js/jquery.magnific-popup.min.js"></script>
         <script src="/assets/js/nouislider.min.js"></script>
-        <!-- Main JS File -->
         <script src="/assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const clearSearchButton = document.getElementById('clear-search');
+                const searchInput = document.getElementById('search-input');
+                
+                if (clearSearchButton) {
+                    clearSearchButton.addEventListener('click', function() {
+                        searchInput.value = '';
+                        
+                        clearSearchButton.closest('form').submit();
+                    });
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const clearSearchButton = document.getElementById('clear-search');
+                const searchInput = document.getElementById('search-input');
+                const searchButton = document.getElementById('search-button');
+                
+                function toggleClearButton() {
+                    if (searchInput.value.trim() !== "") {
+                        clearSearchButton.style.display = "inline-block";
+                        clearSearchButton.style.right = '10px';
+                        searchButton.style.right = '30px';
+                    } else {
+                        clearSearchButton.style.display = "none"; 
+                    }
+                }
+
+                toggleClearButton();
+
+                searchInput.addEventListener('input', toggleClearButton);
+
+                clearSearchButton.addEventListener('click', function () {
+                    searchInput.value = '';
+                    toggleClearButton();
+                    searchInput.closest('form').submit();
+                });
+            });
+
+
+document.querySelectorAll('.add-to-cart-form').forEach(form => {
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent the default form submission
+
+        const userId = form.getAttribute('data-user-id'); // Get the user ID from data attribute
+        const productId = form.querySelector('input[name="productId"]').value;
+
+        if (!userId) {
+            // Show SweetAlert asking the user to log in
+            Swal.fire({
+                title: 'Please Log In',
+                text: 'You need to be logged in to add products to the cart!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Log In',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to the login page
+                    window.location.href = '/login';
+                }
+            });
+        } else {
+            try {
+                // Send the POST request to add the product to the cart
+                const response = await axios.post(`/${userId}/add-to-cart`, { productId });
+
+                // Show SweetAlert based on the response
+                if (response.data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.data.message,
+                        icon: 'success',
+                        confirmButtonText: 'Ok'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: response.data.message || 'Something went wrong!',
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    });
+                }
+            } catch (error) {
+                console.error('Error adding product to cart:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.response.data.message,
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                });
+            }
+        }
+    });
+});
+
+        </script>
     </body>
 
-    <!-- molla/category-list.html  22 Nov 2019 10:02:52 GMT -->
 </html>

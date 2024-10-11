@@ -41,17 +41,21 @@ app.use(
 
 app.use(bodyParser.json());
 
-// Initialize Passport after session
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(methodOverride("_method")); // Using `_method` as the key to check for method overrides
+app.use(methodOverride("_method")); 
 
 app.use("/", userRoutes);
 app.use("/admin", adminRoutes);
 
 app.use((req, res) => {
-    res.render("admin/404");
+    if (req.originalUrl.startsWith('/admin')) {
+        res.render('admin/404', { redirectUrl: '/admin/dashboard' });  
+    } else {
+        res.render('admin/404', { redirectUrl: '/' }); 
+    }
 });
 
 connectDB();

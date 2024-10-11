@@ -61,7 +61,7 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-lg-9">
-                                    <form action="/<%= user._id %>/cart/update" method="POST">
+                                    <form action="/cart/update" method="POST">
                                         <table class="table table-cart table-mobile">
                                             <thead>
                                                 <tr>
@@ -91,9 +91,10 @@
                                                     <td class="price-col">$<%= item.price.toFixed(2) %></td>
                                                     <td class="quantity-col">
                                                         <div class="cart-product-quantity">
-                                                            <input type="number" name="quantity[<%= item.id %>]" class="form-control" value="<%= item.quantity %>" min="1" max="10" step="1" required />
+                                                            <input type="number" name="quantity[<%= item.id %>]" class="form-control quantity-input" value="<%= item.quantity %>" min="1" max="10" step="1" required data-stock="<%= item.stock %>" />
                                                         </div>
                                                     </td>
+
                                                     <td class="total-col">$<%= (item.price * item.quantity).toFixed(2) %></td>
                                                     <td class="remove-col">
                                                         <button type="button" class="btn-remove" data-product-id="<%= item.id %>">
@@ -173,11 +174,11 @@
                                             </tbody>
                                         </table>
                                         <% if (cartItems.length > 0) { %>
-                                            <!-- If cart has items, show checkout button -->
-                                            <a href="/<%= user._id %>/cart/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                                        <!-- If cart has items, show checkout button -->
+                                        <a href="/<%= user._id %>/cart/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
                                         <% } else { %>
-                                            <!-- If cart is empty, show message instead of checkout button -->
-                                            <p class="text-center text-muted">Your cart is empty. Please <a href="/shop">choose items</a> from the shop.</p>
+                                        <!-- If cart is empty, show message instead of checkout button -->
+                                        <p class="text-center text-muted">Your cart is empty. Please <a href="/shop">choose items</a> from the shop.</p>
                                         <% } %>
                                     </div>
 
@@ -276,6 +277,36 @@
                             }
                         }
                     });
+                });
+            });
+
+            document.querySelectorAll(".quantity-input").forEach((input) => {
+                input.addEventListener("input", (event) => {
+                    const maxLimit = 10;
+                    const stock = parseInt(input.getAttribute("data-stock"), 10);
+                    const quantity = parseInt(input.value, 10);
+
+                    // Check if quantity exceeds the max purchase limit
+                    if (quantity > maxLimit) {
+                        Swal.fire({
+                            title: "Max Purchase Limit Reached",
+                            text: `You can only purchase a maximum of ${maxLimit} items.`,
+                            icon: "warning",
+                            confirmButtonText: "Ok",
+                        });
+                        input.value = maxLimit; // Reset to the max limit
+                    }
+
+                    // Check if quantity exceeds the available stock
+                    if (quantity > stock) {
+                        Swal.fire({
+                            title: "Out of Stock",
+                            text: `There are only ${stock} items available in stock.`,
+                            icon: "error",
+                            confirmButtonText: "Ok",
+                        });
+                        input.value = stock > 0 ? stock : 1; // Reset to the available stock or 1
+                    }
                 });
             });
         </script>

@@ -57,6 +57,8 @@ router.get("/shop", shop.getShop);
 
 router.get("/shop/product-detail/:productId", shop.getProductDetail);
 
+// router.post('/shop/filter', shop.shopFilter)
+
 //------------------------------ User profile page -----------------------------------//
 
 router.get("/:userId/profile", profile.getProfile);
@@ -69,32 +71,32 @@ router.post("/profile/orders/cancel-order", profile.cancelOrder);
 
 //---- address -----//
 
-router.get("/:userId/profile/address", profile.getAddress);
+router.get("/:userId/profile/address", auth.checkSession, profile.getAddress);
 
-router.get("/:userId/profile/address/add-address", profile.getAddAddress);
+router.get("/:userId/profile/address/add-address", auth.checkSession, profile.getAddAddress);
 
-router.post("/:userId/profile/address/add-address", profile.postAddAddress);
+router.post("/:userId/profile/address/add-address", auth.checkSession, profile.postAddAddress);
 
-router.delete("/:userId/profile/address/:addressId", profile.deleteAddress);
+router.delete("/:userId/profile/address/:addressId", auth.checkSession, profile.deleteAddress);
 
-router.get("/:userId/profile/address/:addressId/edit-address", profile.editAddress);
+router.get("/:userId/profile/address/:addressId/edit-address", auth.checkSession, profile.editAddress);
 
-router.post("/:userId/profile/address/:addressId/edit-address", profile.updateAddress);
+router.post("/:userId/profile/address/:addressId/edit-address", auth.checkSession, profile.updateAddress);
 
 //------------------------------ Checkout -----------------------------------//
 
-router.get("/:userId/cart", checkout.getCart);
+router.get("/cart", auth.checkSession, checkout.getCart);
 
-router.post("/:userId/add-to-cart", checkout.postAddtoCart);
+router.post("/:userId/add-to-cart", auth.checkSession, checkout.postAddtoCart);
 
-router.post("/:userId/cart/update", checkout.updateCart);
+router.post("/cart/update", auth.checkSession, checkout.updateCart);
 
-router.post("/:userId/cart/:productId/delete-item", checkout.delete_item);
+router.post("/:userId/cart/:productId/delete-item", auth.checkSession, checkout.delete_item);
 
-router.get("/:userId/cart/checkout", auth.checkOrderPlaced, checkout.getCheckout);
+router.get("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.getCheckout);
 
-router.post("/:userId/cart/checkout", auth.checkOrderPlaced, checkout.creatingOrder);
+router.post("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.creatingOrder);
 
-router.get("/:userId/cart/checkout/order-placed/:orderId", checkout.getPlaceOrder);
+router.get("/:userId/cart/checkout/order-placed/:orderId", auth.checkSession, checkout.getPlaceOrder);
 
 module.exports = router;

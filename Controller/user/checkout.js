@@ -14,10 +14,6 @@ const getCart = async (req, res) => {
 
         req.session.orderPlaced = false;
 
-        if (!user) {
-            return res.redirect("/login");
-        }
-
         if (!cart || cart.Products.length === 0) {
             return res.render("user/cart", { cartItems: [], subtotal: 0, total: 0, userLoggedIn, user });
         }
@@ -31,7 +27,7 @@ const getCart = async (req, res) => {
         }));
 
         const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-        const shippingCost = 10;
+        const shippingCost = 20;
         const total = subtotal + shippingCost;
 
         res.render("user/cart", { cartItems, subtotal, total, userLoggedIn, user });
@@ -51,13 +47,13 @@ const postAddtoCart = async (req, res) => {
         console.log("Quantity:", quantity);
 
         if (!userId) {
-            return res.status(401).json({ message: "User not logged in. Please log in to add items to your cart." });
+            return res.status(401).json({ success: false, message: "User not logged in. Please log in to add items to your cart." });
         }
 
         const product = await Product.findById(productId);
 
         if (!product) {
-            return res.status(404).json({ message: "Product not found" });
+            return res.status(404).json({ success: false, message: "Product not found" });
         }
 
         let cart = await Cart.findOne({ UserId: userId });
@@ -76,17 +72,17 @@ const postAddtoCart = async (req, res) => {
             const newQuantity = cart.Products[productIndex].Quantity + quantity;
 
             if (newQuantity > 10) {
-                return res.status(400).json({ message: "Maximum quantity limit of 10 reached for this product." });
+                return res.status(400).json({ success: false, message: "Maximum quantity limit of 10 reached for this product." });
             }
 
             if (newQuantity > product.stock) {
-                return res.status(400).json({ message: `Cannot add more than ${product.stock} of this product to the cart.` });
+                return res.status(400).json({ success: false, message: `Cannot add more than ${product.stock} of this product to the cart. Maximum stock reached !` });
             }
 
             cart.Products[productIndex].Quantity = newQuantity;
         } else {
             if (quantity > product.stock) {
-                return res.status(400).json({ message: `Cannot add more than ${product.stock} of this product to the cart.` });
+                return res.status(400).json({ success: false, message: `Cannot add more than ${product.stock} of this product to the cart. Maximum stock reached !` });
             }
 
             cart.Products.push({
@@ -98,7 +94,7 @@ const postAddtoCart = async (req, res) => {
 
         await cart.save();
 
-        res.status(200).json({ message: "Product added to cart successfully" });
+        res.status(200).json({ success: true, message: "Product added to cart successfully" });
     } catch (error) {
         console.error("Error adding product to cart:", error);
         res.status(500).json({ message: "Error adding product to cart" });
@@ -110,8 +106,8 @@ const updateCart = async (req, res) => {
         const userId = req.session.userId;
         const quantity = req.body.quantity;
 
-        // console.log(userId);
-        // console.log(quantity);
+        console.log(userId);
+        console.log(quantity);
 
         const cart = await Cart.findOne({ UserId: userId });
 
@@ -132,7 +128,7 @@ const updateCart = async (req, res) => {
         });
 
         await cart.save();
-        res.redirect(`/${userId}/cart`);
+        res.redirect(`/cart`);
     } catch (error) {
         console.error("Error from updating cart : \n ", error);
     }
@@ -168,9 +164,6 @@ const getCheckout = async (req, res) => {
         const userLoggedIn = req.session.userLoggedIn ? true : false;
 
         const user = await User.findById(userId);
-        if (!user) {
-            return res.redirect("/login");
-        }
 
         const addresses = await Address.find({ userId: userId });
         const defaultAddress = addresses.find((address) => address.isDefault);
@@ -221,9 +214,6 @@ const creatingOrder = async (req, res) => {
         const { addressId, paymentMethod } = req.body;
 
         const user = await User.findById(userId);
-        if (!user) {
-            return res.redirect("/login");
-        }
 
         console.log("addressId : ", addressId);
         console.log("PaymentMethod : ", paymentMethod);
@@ -291,10 +281,6 @@ const getPlaceOrder = async (req, res) => {
         const orderId = req.params.orderId;
 
         const user = await User.findById(userId);
-
-        if (!user) {
-            return res.redirect("/login");
-        }
 
         const order = await Order.findById(orderId).populate("products.productId");
 

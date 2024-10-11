@@ -53,6 +53,8 @@ router.post("/product-management/edit-product/:id", auth.checkSession, productIm
 
 //----------- Order management -----------------//
 
+router.get("/order-management", order.getOrderManagement);
+
 router.post("/order-management/update-status/:orderId", order.updateOrderStatus);
 
 module.exports = router;

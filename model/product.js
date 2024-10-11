@@ -47,7 +47,7 @@ const productSchema = new mongoose.Schema(
         warranty: { type: String, required: true },
         images: {
             type: [String],
-            require: true,
+            required: true,
         },
         status: {
             type: String,
