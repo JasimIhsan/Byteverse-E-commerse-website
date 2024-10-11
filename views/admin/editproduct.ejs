@@ -96,14 +96,20 @@
                 <div class="form-group">
                     <label for="processor-model">Processor Model:</label>
                     <input type="text" id="processor-model" name="specifications[processor][model]" value="<%= product.specifications.processor.model %>" >
+                    <span class="error" id="processor-model-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="processor-cores">Processor Cores:</label>
                     <input type="number" id="processor-cores" name="specifications[processor][cores]" value="<%= product.specifications.processor.cores %>" >
+                    <span class="error" id="processor-cores-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="processor-speed">Processor Speed:</label>
                     <input type="text" id="processor-speed" name="specifications[processor][speed]" value="<%= product.specifications.processor.speed %>" >
+                    <span class="error" id="processor-speed-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="ram-size">RAM Size (GB):</label>
@@ -114,6 +120,8 @@
                         <option value="16" <%= product.specifications.ram.size == '16' ? 'selected' : '' %>>16 GB</option>
                         <option value="32" <%= product.specifications.ram.size == '32' ? 'selected' : '' %>>32 GB</option>
                     </select>
+                    <span class="error" id="ram-size-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="ram-type">RAM Type:</label>
@@ -122,6 +130,8 @@
                         <option value="DDR4" <%= product.specifications.ram.type === 'DDR4' ? 'selected' : '' %>>DDR4</option>
                         <option value="DDR5" <%= product.specifications.ram.type === 'DDR5' ? 'selected' : '' %>>DDR5</option>
                     </select>
+                    <span class="error" id="ram-type-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="storage-type">Storage Type:</label>
@@ -131,6 +141,8 @@
                         <option value="HDD" <%= product.specifications.storage.type === 'HDD' ? 'selected' : '' %>>HDD</option>
                         <option value="Hybrid" <%= product.specifications.storage.type === 'Hybrid' ? 'selected' : '' %>>Hybrid</option>
                     </select>
+                    <span class="error" id="storage-type-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="storage-capacity">Storage Capacity:</label>
@@ -141,15 +153,21 @@
                         <option value="1TB" <%= product.specifications.storage.capacity === '1TB' ? 'selected' : '' %>>1 TB</option>
                         <option value="2TB" <%= product.specifications.storage.capacity === '2TB' ? 'selected' : '' %>>2 TB</option>
                     </select>
+                    <span class="error" id="storage-capacity-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="display-size">Display Size:</label>
                     <input type="text" id="display-size" name="specifications[display][size]" value="<%= product.specifications.display && product.specifications.display.size ? product.specifications.display.size : '' %>" >
+                    <span class="error" id="display-size-error"></span>
+
                 </div>
                 
                 <div class="form-group">
                     <label for="display-resolution">Display Resolution:</label>
                     <input type="text" id="display-resolution" name="specifications[display][resolution]" value="<%= product.specifications.display && product.specifications.display.resolution ? product.specifications.display.resolution : '' %>" >
+                    <span class="error" id="display-resolution-error"></span>
+                    
                 </div>
                 <div class="form-group">
                     <label for="graphics-brand">Graphics Card Brand:</label>
@@ -158,14 +176,20 @@
                         <option value="NVIDIA" <%= product.specifications.graphics && product.specifications.graphics.brand === 'NVIDIA' ? 'selected' : '' %>>NVIDIA</option>
                         <option value="AMD" <%= product.specifications.graphics && product.specifications.graphics.brand === 'AMD' ? 'selected' : '' %>>AMD</option>
                     </select>
+                    <span class="error" id="graphics-brand-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="graphics-model">Graphics Model:</label>
                     <input type="text" id="graphics-model" name="specifications[graphics][model]" value="<%= product.specifications.graphics && product.specifications.graphics.model || '' %>" >
+                    <span class="error" id="graphics-model-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="graphics-memory">Graphics Memory:</label>
                     <input type="text" id="graphics-memory" name="specifications[graphics][memory]" value="<%= product.specifications.graphics && product.specifications.graphics.memory || '' %>" >
+                    <span class="error" id="graphics-memory-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="battery-type">Battery Type:</label>
@@ -174,10 +198,14 @@
                         <option value="Lithium-ion" <%= product.specifications.battery && product.specifications.battery.type === 'Lithium-ion' ? 'selected' : '' %>>Lithium-ion</option>
                         <option value="Lithium-polymer" <%= product.specifications.battery && product.specifications.battery.type === 'Lithium-polymer' ? 'selected' : '' %>>Lithium-polymer</option>
                     </select>
+                    <span class="error" id="battery-type-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="battery-capacity">Battery Capacity:</label>
                     <input type="text" id="battery-capacity" name="specifications[battery][capacity]" value="<%= product.specifications.battery && product.specifications.battery.capacity || '' %>" >
+                    <span class="error" id="battery-capacity-error"></span>
+
                 </div>
                 
                 <div class="form-group">
@@ -189,10 +217,48 @@
                         <option value="Linux" <%= product.specifications.os === 'Linux' ? 'selected' : '' %>>Linux</option>
                         <option value="Chrome OS" <%= product.specifications.os === 'Chrome OS' ? 'selected' : '' %>>Chrome OS</option>
                     </select>
+                    <span class="error" id="os-error"></span>
+
                 </div>
+
+                <div class="form-group">
+                    <label for="weight">Weight:</label>
+                    <input type="text" id="weight" name="specifications[weight]" 
+                           value="<%= product.specifications.weight || '' %>" 
+                           oninput="validateWeight()" />
+                    <span class="error" id="weight-error"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="width">Width:</label>
+                    <input type="number" id="width" name="specifications[dimensions][width]" 
+                           value="<%= product.specifications.dimensions && product.specifications.dimensions.width || '' %>" 
+                           oninput="validateWidth()" />
+                    <span class="error" id="width-error"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="height">Height:</label>
+                    <input type="number" id="height" name="specifications[dimensions][height]" 
+                           value="<%= product.specifications.dimensions && product.specifications.dimensions.height || '' %>" 
+                           oninput="validateHeight()" />
+                    <span class="error" id="height-error"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="depth">Depth:</label>
+                    <input type="number" id="depth" name="specifications[dimensions][depth]" 
+                           value="<%= product.specifications.dimensions && product.specifications.dimensions.depth || '' %>" 
+                           oninput="validateDepth()" />
+                    <span class="error" id="depth-error"></span>
+                </div>
+                
+
                 <div class="form-group">
                     <label for="warranty">Warranty:</label>
                     <input type="text" id="warranty" name="warranty" value="<%= product.warranty || '' %>" >
+                    <span class="error" id="warranty-error"></span>
+
                 </div>
                 <div class="form-group">
                     <label for="images">Upload Product Images (Minimum 3):</label>
@@ -214,6 +280,8 @@
                 <button type="submit">Update Product</button>
             </form>
         </div>
+
+        <!-- <script src="/javascripts/admin/formvalidation.js"></script> -->
 
         <script src="/javascripts/admin/product"></script>
         <script>

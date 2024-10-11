@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>OTP Verification</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f3f4f6;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+            .card {
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 2rem;
+                width: 100%;
+                max-width: 400px;
+            }
+            .card-title {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin-bottom: 0.5rem;
+            }
+            .card-description {
+                color: #6b7280;
+                margin-bottom: 1.5rem;
+            }
+            .form-group {
+                margin-bottom: 1rem;
+            }
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: bold;
+            }
+            .otp-inputs {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: space-between;
+            }
+            .otp-input {
+                width: 2.5rem;
+                height: 2.5rem;
+                text-align: center;
+                font-size: 1.25rem;
+                border: 1px solid #d1d5db;
+                border-radius: 4px;
+            }
+            .timer {
+                font-size: 0.875rem;
+                color: #6b7280;
+                margin-top: 1rem;
+            }
+            .resend-button {
+                background: none;
+                border: none;
+                color: #3b82f6;
+                cursor: pointer;
+                font-size: 0.875rem;
+                padding: 0;
+                text-decoration: underline;
+            }
+            .resend-button:disabled {
+                color: #6b7280;
+                cursor: not-allowed;
+                text-decoration: none;
+            }
+            .submit-button {
+                width: 100%;
+                padding: 0.75rem;
+                background-color: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                margin-top: 1rem;
+            }
+            .submit-button:hover {
+                background-color: #2563eb;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h2 class="card-title">Enter OTP</h2>
+            <p class="card-description">We've sent a one-time password to your email</p>
+            <form id="otp-form">
+                <div class="form-group">
+                    <label for="otp-1">One-Time Password</label>
+                    <div class="otp-inputs">
+                        <input type="text" id="otp-1" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-2" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-3" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-4" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-5" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-6" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                    </div>
+                </div>
+                <div class="timer" id="timer">Resend OTP in 30 seconds</div>
+                <button type="button" id="resend-button" class="resend-button" disabled>Resend OTP</button>
+                <button type="submit" class="submit-button">Verify OTP</button>
+            </form>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const otpInputs = document.querySelectorAll('.otp-input');
+                const form = document.getElementById('otp-form');
+                const timerElement = document.getElementById('timer');
+                const resendButton = document.getElementById('resend-button');
+                let timer = 30;
+                let interval;
+
+                function startTimer() {
+                    timer = 30;
+                    resendButton.disabled = true;
+                    interval = setInterval(() => {
+                        timer--;
+                        if (timer > 0) {
+                            timerElement.textContent = `Resend OTP in ${timer} seconds`;
+                        } else {
+                            clearInterval(interval);
+                            timerElement.textContent = '';
+                            resendButton.disabled = false;
+                        }
+                    }, 1000);
+                }
+
+                startTimer();
+
+                otpInputs.forEach((input, index) => {
+                    input.addEventListener('input', (e) => {
+                        if (e.target.value.length === 1) {
+                            if (index < otpInputs.length - 1) {
+                                otpInputs[index + 1].focus();
+                            }
+                        }
+                    });
+
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Backspace' && e.target.value.length === 0 && index > 0) {
+                            otpInputs[index - 1].focus();
+                        }
+                    });
+                });
+
+                resendButton.addEventListener('click', () => {
+                    // Implement your resend OTP logic here
+                    console.log('Resending OTP...');
+                    startTimer();
+                });
+
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const otp = Array.from(otpInputs).map(input => input.value).join('');
+                    // Implement your OTP verification logic here
+                    console.log('Verifying OTP:', otp);
+                });
+            });
+        </script>
+    </body>
+</html>

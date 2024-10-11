@@ -44,7 +44,6 @@ const getAddProduct = async (req, res) => {
     try {
         const categories = await Category.find();
 
-
         const error_msg = req.query.error;
         const success_msg = req.query.success;
         res.render("admin/addproduct", { categories, error_msg, success_msg });
@@ -155,27 +154,17 @@ const getEditProduct = async (req, res) => {
 const postEditProduct = async (req, res) => {
     try {
         const productId = req.params.id;
+        console.log("controlleril ethi");
 
-        // const isExist = await Products.findOne({ name: req.body.name });
+        const existingProduct = await Products.findById(productId);
+        if (!existingProduct) {
+            return res.redirect("/admin/product-management?error=Product not found");
+        }
 
-        // if (isExist) {
-        //     return res.redirect("/admin/product-management?error=Product already exists");
-        // }
+        // Map new images if they exist, otherwise keep existing ones
+        const imageName = req.files.length > 0 ? req.files.map((file) => file.filename) : existingProduct.images;
 
-        const imageName = req.files.map((file) => {
-            // console.log(file.filename);
-
-            return file.filename;
-        });
-
-        // if (imageName.length < 3) {
-        //     return res.redirect("/admin/product-management?error=Atleast 3 images needed");
-        // }
-
-        // console.log("req.body of edit page : \n", req.body);
-        // console.log("req.files of edit page : \n", req.files);
-        // console.log("req.name : \n", req.body.name);
-
+        // Prepare updated product data
         const updatedProductData = {
             name: req.body.name,
             brand: req.body.brand,
@@ -219,21 +208,15 @@ const postEditProduct = async (req, res) => {
                 },
             },
             warranty: req.body.warranty || "",
-            images: imageName.length > 0 ? imageName : req.body.images || [],
+            images: imageName, // Use the updated or existing images
             status: req.body.status || "listed",
         };
-
-        // console.log(updatedProductData);
 
         const updatedProduct = await Products.findByIdAndUpdate(productId, updatedProductData, { new: true });
 
         if (!updatedProduct) {
             return res.redirect("/admin/product-management?error=Product not found");
         }
-
-        // console.log("Product ID: ", productId);
-        // console.log("Updated Data: ", updatedProductData);
-        // console.log("Files: ", req.files);
 
         res.redirect(`/admin/product-management?success=Product updated successfully`);
     } catch (error) {

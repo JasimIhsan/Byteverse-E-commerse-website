@@ -5,9 +5,6 @@ function validateName() {
     if (name.trim().length === 0) {
         name_error.textContent = "Product name cannot be empty or contain only spaces";
         return false;
-    } else if (name.includes(" ")) {
-        name_error.textContent = "Product name cannot contain spaces";
-        return false;
     } else if (name.length < 3) {
         name_error.textContent = "Product name must be at least 3 characters long";
         return false;
@@ -49,12 +46,6 @@ function validatePrice() {
 
     if (price < 0) {
         price_error.textContent = "Price must be a positive number.";
-        return false;
-    } else if (stock == "e" || stock == "E") {
-        price_error.textContent = "Price cannot contain 'e'.";
-        return false;
-    } else if (price.includes("e") || price.includes("E")) {
-        price_error.textContent = "Price cannot contain 'e'.";
         return false;
     } else {
         price_error.textContent = "";
@@ -440,7 +431,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const isHeightValid = validateHeight();
         const isDepthValid = validateDepth();
         const isWarrantyValid = validateWarranty();
-        const areImagesValid = validateImages();
+        // const areImagesValid = validateImages();
 
         // Check if all validations pass
         const isFormValid =
@@ -469,8 +460,8 @@ document.addEventListener("DOMContentLoaded", function () {
             isWidthValid &&
             isHeightValid &&
             isDepthValid &&
-            isWarrantyValid &&
-            areImagesValid;
+            isWarrantyValid;
+        // areImagesValid;
 
         if (isFormValid) {
             // If form is valid, submit it
@@ -490,11 +481,11 @@ function displayErrors() {
     }
 
     // Create a new error message container
-    const newErrorDiv = document.createElement("div");
-    newErrorDiv.id = "error-messages";
-    newErrorDiv.style.color = "red";
-    newErrorDiv.innerHTML = "<p>Please correct the highlighted fields before submitting.</p>";
-    document.querySelector("form").prepend(newErrorDiv);
+    // const newErrorDiv = document.createElement("div");
+    // newErrorDiv.id = "error-messages";
+    // newErrorDiv.style.color = "red";
+    // newErrorDiv.innerHTML = "<p>Please correct the highlighted fields before submitting.</p>";
+    // document.querySelector("form").prepend(newErrorDiv);
 
     // Highlight fields with validation errors
     highlightInvalidField("name", validateName());
@@ -523,7 +514,7 @@ function displayErrors() {
     highlightInvalidField("height", validateHeight());
     highlightInvalidField("depth", validateDepth());
     highlightInvalidField("warranty", validateWarranty());
-    highlightInvalidField("images", validateImages());
+    // highlightInvalidField("images", validateImages());
 }
 
 function highlightInvalidField(fieldName, isValid) {

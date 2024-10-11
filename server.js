@@ -41,20 +41,19 @@ app.use(
 
 app.use(bodyParser.json());
 
-
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(methodOverride("_method")); 
+app.use(methodOverride("_method"));
 
 app.use("/", userRoutes);
 app.use("/admin", adminRoutes);
 
 app.use((req, res) => {
-    if (req.originalUrl.startsWith('/admin')) {
-        res.render('admin/404', { redirectUrl: '/admin/dashboard' });  
+    if (req.originalUrl.startsWith("/admin")) {
+        res.render("admin/404", { redirectUrl: "/admin/dashboard" });
     } else {
-        res.render('admin/404', { redirectUrl: '/' }); 
+        res.render("admin/404", { redirectUrl: "/" });
     }
 });
 

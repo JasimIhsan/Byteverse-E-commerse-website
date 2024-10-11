@@ -27,6 +27,10 @@ router.post("/signup/resend-otp", auth.isLogged, home.resendOTP);
 
 router.post("/logout", home.Logout);
 
+router.get('/login/enter-email', home.forgotPasswordEmailEnter);
+
+router.get('/login/enter-email/otp-enter', home.forgotOtp)
+
 router.get(
     "/auth/google",
     auth.isLogged,

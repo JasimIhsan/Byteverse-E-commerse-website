@@ -265,6 +265,23 @@ const handleGoogleAuth = async (req, res) => {
     res.redirect("/");
 };
 
+const forgotPasswordEmailEnter = async (req, res) => {
+    try {
+        const error_message = req.query.error;
+        res.render("user/forgot_password/emailenter", { message: error_message });
+    } catch (error) {
+        console.error("Error from forgot password email enter : \n", error);
+    }
+};
+
+const forgotOtp = async (req, res) => {
+    try {
+        res.render("user/forgot_password/otp");
+    } catch (error) {
+        console.error("Error from forgot otp password : \n", error);
+    }
+};
+
 //----------------------------- product detail page ------------------------------//
 
 const getProductDetail = async (req, res) => {
@@ -350,4 +367,6 @@ module.exports = {
     //product detail page
     getProductDetail,
     Logout,
+    forgotPasswordEmailEnter,
+    forgotOtp,
 };
