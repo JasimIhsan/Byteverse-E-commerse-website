@@ -41,7 +41,10 @@ function validateCategory() {
 }
 
 function validatePrice() {
-    const price = document.getElementById("price").value;
+    let price = document.getElementById("price").value;
+    if (price) {
+        price = parseInt(price);
+    }
     const price_error = document.getElementById("price-error");
 
     if (price < 0) {
@@ -49,7 +52,9 @@ function validatePrice() {
         return false;
     } else {
         price_error.textContent = "";
+        return true;
     }
+    return true;
 }
 
 function validateStock() {

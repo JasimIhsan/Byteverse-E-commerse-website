@@ -77,19 +77,39 @@
             #emailError {
                 color: red;
             }
+
+            .error-message {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+                padding: 10px 15px;
+                border-radius: 5px;
+                font-size: 14px;
+                font-weight: bold;
+                margin: 10px 0;
+                text-align: center;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
         </style>
     </head>
     <body>
         <div class="card">
             <h2 class="card-title">Forget Password</h2>
             <p class="card-description">Enter your Email to get OTP</p>
-            <form id="login-form">
+
+            <% if (message) { %>
+            <p class="error-message" id="error"><%= message %></p>
+            <% } %>
+
+            <form id="login-form" action="/login/enter-email" method="post">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="name@example.com" onkeyup="validateEmail()" />
+                    <input type="email" name="email" id="email" placeholder="name@example.com" onkeyup="validateEmail()" />
                     <div class="error" id="emailError"></div>
                 </div>
-                <button type="submit" class="submit-button">Sign In</button>
+                <button type="submit" class="submit-button">Send OTP</button>
             </form>
         </div>
 
@@ -112,6 +132,13 @@
                     emailError.textContent = "";
                     return true;
                 }
+            }
+
+            const error = document.getElementById("error");
+            if (error) {
+                setTimeout(() => {
+                    error.style.display = "none";
+                }, 3000);
             }
         </script>
     </body>

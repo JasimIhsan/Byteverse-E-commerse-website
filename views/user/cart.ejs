@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <title>Molla - Bootstrap eCommerce Template</title>
+        <title>Cart | Byteverse E-commerce</title>
         <meta name="keywords" content="HTML5 Template" />
         <meta name="description" content="Molla - Bootstrap eCommerce Template" />
         <meta name="author" content="p-themes" />
@@ -61,6 +61,13 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-lg-9">
+                                    
+                                    <% if (error_msg) { %>
+                                    <div class="error-message" id="error"><%= error_msg %></div>
+                                    <% } %> <% if (success_msg) { %>
+                                    <div class="success-message" id="error"><%= success_msg %></div>
+                                    <% } %>
+
                                     <form action="/cart/update" method="POST">
                                         <table class="table table-cart table-mobile">
                                             <thead>
@@ -74,7 +81,7 @@
                                             </thead>
 
                                             <tbody>
-                                                <% if (cartItems.length > 0) { %> <% cartItems.forEach(item => { %>
+                                                <% if (cartItems.length > 0) { %> <% let isStockAvailable = true; %> <% cartItems.forEach(item => { %>
                                                 <tr>
                                                     <td class="product-col">
                                                         <div class="product">
@@ -91,18 +98,30 @@
                                                     <td class="price-col">$<%= item.price.toFixed(2) %></td>
                                                     <td class="quantity-col">
                                                         <div class="cart-product-quantity">
+                                                            <% if (item.stock === 0) { %>
+                                                            <input type="number" name="quantity[<%= item.id %>]" class="form-control quantity-input" value="<%= item.quantity %>" min="0" max="0" step="1" disabled />
+                                                            <% } else { %>
                                                             <input type="number" name="quantity[<%= item.id %>]" class="form-control quantity-input" value="<%= item.quantity %>" min="1" max="10" step="1" required data-stock="<%= item.stock %>" />
+                                                            <% } %>
                                                         </div>
                                                     </td>
 
-                                                    <td class="total-col">$<%= (item.price * item.quantity).toFixed(2) %></td>
+                                                    <td class="total-col">
+                                                        <% if (item.stock === 0) { %>
+                                                        <span>Out of Stock</span>
+                                                        <% } else { %> $<%= (item.price * item.quantity).toFixed(2) %> <% } %>
+                                                    </td>
                                                     <td class="remove-col">
                                                         <button type="button" class="btn-remove" data-product-id="<%= item.id %>">
                                                             <i class="icon-close"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
-                                                <% }) %> <% } else { %>
+                                                <% if (item.stock === 0) { isStockAvailable = false; } %> <% }) %> <% if (!isStockAvailable) { %>
+                                                <tr>
+                                                    <td colspan="5" class="text-center">Some items in your cart are out of stock. Please update your cart.</td>
+                                                </tr>
+                                                <% } %> <% } else { %>
                                                 <tr>
                                                     <td colspan="5" class="text-center">Your cart is empty.</td>
                                                 </tr>
@@ -173,11 +192,11 @@
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <% if (cartItems.length > 0) { %>
-                                        <!-- If cart has items, show checkout button -->
+                                        <% if (cartItems.length > 0) { %> <% let isStockAvailable = true; %> <% cartItems.forEach(item => { if (item.stock === 0) isStockAvailable = false; }) %> <% if (isStockAvailable) { %>
                                         <a href="/<%= user._id %>/cart/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
                                         <% } else { %>
-                                        <!-- If cart is empty, show message instead of checkout button -->
+                                        <p class="text-center text-muted">Some items are out of stock. Please update your cart.</p>
+                                        <% } %> <% } else { %>
                                         <p class="text-center text-muted">Your cart is empty. Please <a href="/shop">choose items</a> from the shop.</p>
                                         <% } %>
                                     </div>

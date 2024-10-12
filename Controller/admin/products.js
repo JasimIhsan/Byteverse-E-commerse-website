@@ -154,17 +154,25 @@ const getEditProduct = async (req, res) => {
 const postEditProduct = async (req, res) => {
     try {
         const productId = req.params.id;
-        console.log("controlleril ethi");
+
+        console.log("price : ", req.body.price);
 
         const existingProduct = await Products.findById(productId);
         if (!existingProduct) {
             return res.redirect("/admin/product-management?error=Product not found");
         }
 
-        // Map new images if they exist, otherwise keep existing ones
-        const imageName = req.files.length > 0 ? req.files.map((file) => file.filename) : existingProduct.images;
+        let updatedImages = existingProduct.images;
 
-        // Prepare updated product data
+        if (req.body.existingImages && Array.isArray(req.body.existingImages)) {
+            updatedImages = req.body.existingImages;
+        }
+
+        if (req.files.length > 0) {
+            const newImages = req.files.map((file) => file.filename);
+            updatedImages = [...updatedImages, ...newImages];
+        }
+
         const updatedProductData = {
             name: req.body.name,
             brand: req.body.brand,
@@ -208,7 +216,7 @@ const postEditProduct = async (req, res) => {
                 },
             },
             warranty: req.body.warranty || "",
-            images: imageName, // Use the updated or existing images
+            images: updatedImages,
             status: req.body.status || "listed",
         };
 

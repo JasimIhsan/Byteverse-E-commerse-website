@@ -299,10 +299,9 @@
                  return new File([u8arr], filename, { type: mime });
              }
  
-             let croppers = []; // Store cropper instances
-             let croppedImages = []; // Store cropped images for form submission
+             let croppers = [];
+             let croppedImages = [];
  
-             // Initialize Cropper.js when an image is selected
              function initializeCropper(input, index) {
                  if (input.files && input.files[0]) {
                      const reader = new FileReader();
@@ -312,13 +311,12 @@
                          imgElement.src = e.target.result;
                          imgElement.style.display = "block";
  
-                         // Initialize cropper after image is loaded
                          if (croppers[index]) {
-                             croppers[index].destroy(); // Destroy any existing cropper before initializing a new one
+                             croppers[index].destroy();
                          }
  
                          croppers[index] = new Cropper(imgElement, {
-                             aspectRatio: 1, // Adjust aspect ratio as needed
+                             aspectRatio: 1,
                              viewMode: 1,
                              background: false,
                          });
@@ -327,40 +325,31 @@
                  }
              }
  
-             // Crop the image and replace the preview with the cropped version
              function cropImage(index) {
-                //  console.log(index);
                  const cropper = croppers[index];
                  if (cropper) {
                      const croppedCanvas = cropper.getCroppedCanvas();
-                     // Convert the cropped image to a base64 string for JSON submission
                      const base64Image = croppedCanvas.toDataURL("image/jpeg");
  
-                     croppedImages[index] = base64Image; // Store base64 image in the array
- 
-                     // Convert Base64 to File
+                     croppedImages[index] = base64Image;
                      const file = base64ToFile(croppedImages[index], `image[${index}].png`);
  
-                     // Create a DataTransfer object to set the file input
                      const dataTransfer = new DataTransfer();
                      dataTransfer.items.add(file);
  
-                     // Set the file input's files to the DataTransfer object
                      const fileInput = document.getElementById(`croppedImage-${index}`);
                      fileInput.files = dataTransfer.files;
  
-                     // Replace the canvas with the actual cropped image preview
                      const imgElement = document.getElementById(`image-preview-${index}`);
-                     imgElement.src = base64Image; // Set the cropped image as the new source
-                     imgElement.style.display = "block"; // Ensure it's visible
+                     imgElement.src = base64Image;
+                     imgElement.style.display = "block";
  
-                     // Destroy the cropper instance
+                    
                      cropper.destroy();
-                     croppers[index] = null; // Clear the cropper instance
+                     croppers[index] = null;
                  }
              }
  
-             // Add more image upload inputs dynamically
              document.getElementById("add-image-btn").addEventListener("click", function () {
                  const container = document.getElementById("image-upload-container");
                  const newIndex = container.getElementsByClassName("image-upload").length;

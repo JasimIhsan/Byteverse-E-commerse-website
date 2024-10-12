@@ -27,9 +27,15 @@ router.post("/signup/resend-otp", auth.isLogged, home.resendOTP);
 
 router.post("/logout", home.Logout);
 
-router.get('/login/enter-email', home.forgotPasswordEmailEnter);
+router.get("/login/enter-email", home.forgotPasswordEmailEnter);
 
-router.get('/login/enter-email/otp-enter', home.forgotOtp)
+router.post("/login/enter-email", home.postForgotPasswordEmailEnter);
+
+router.get("/login/enter-email/otp-enter", home.forgotOtp);
+
+router.post("/login/enter-email/otp-enter", home.verifyForgotPasswordOTP);
+
+router.get("/login/enter-email/otp-enter/new-password", home.getNewPassword);
 
 router.get(
     "/auth/google",
@@ -65,13 +71,13 @@ router.get("/shop/product-detail/:productId", shop.getProductDetail);
 
 //------------------------------ User profile page -----------------------------------//
 
-router.get("/:userId/profile", profile.getProfile);
+router.get("/:userId/profile", auth.checkSession, profile.getProfile);
 
 //---- order -----//
 
-router.get("/:userId/profile/orders", profile.getOrders);
+router.get("/:userId/profile/orders", auth.checkSession, profile.getOrders);
 
-router.post("/profile/orders/cancel-order", profile.cancelOrder);
+router.post("/profile/orders/cancel-order", auth.checkSession, profile.cancelOrder);
 
 //---- address -----//
 

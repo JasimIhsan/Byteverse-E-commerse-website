@@ -274,11 +274,85 @@ const forgotPasswordEmailEnter = async (req, res) => {
     }
 };
 
+const postForgotPasswordEmailEnter = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.redirect("/login/enter-email?error=User not found");
+        }
+
+        const otp = generateOTP();
+
+        await sendOTPEmail(email, otp);
+
+        const otpEntry = new OTP({
+            email,
+            otp,
+            createdAt: Date.now(),
+        });
+
+        await otpEntry.save();
+
+        res.redirect("/login/enter-email/otp-enter");
+    } catch (error) {
+        console.error("Error in forgot password:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 const forgotOtp = async (req, res) => {
     try {
-        res.render("user/forgot_password/otp");
+        const error_msg = req.query.error;
+        res.render("user/forgot_password/otp", { message: error_msg });
     } catch (error) {
         console.error("Error from forgot otp password : \n", error);
+    }
+};
+
+const verifyForgotPasswordOTP = async (req, res) => {
+    try {
+        const { email, otp1, otp2, otp3, otp4, otp5, otp6 } = req.body;
+        const otp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
+
+        console.log("otp : ", otp);
+        console.log("email : ", email);
+
+        const otpRecord = await OTP.findOne({ email: email });
+
+        if (!otpRecord) {
+            return res.redirect("/login/enter-email/otp-enter?error=OTP not found");
+        }
+
+        const currentTime = Date.now();
+        const otpCreatedAt = otpRecord.createdAt.getTime();
+        const otpAge = currentTime - otpCreatedAt;
+        const otpDuration = Number(process.env.OTP_VALIDITY_DURATION) || 180000;
+
+        if (otpAge > otpDuration) {
+            return res.redirect("/login/enter-email/otp-enter?error=OTP has expired");
+        }
+
+        const isMatched = await bcrypt.compare(otp, otpRecord.otp);
+
+        if (isMatched) {
+            req.session.emailForPasswordReset = email;
+            return res.redirect("/login/enter-email/otp-enter/new-password");
+        } else {
+            return res.redirect("/login/enter-email/otp-enter?error=Invalid OTP");
+        }
+    } catch (error) {
+        console.error("Error in verifying OTP for forgot password: \n", error);
+        return res.redirect("/forgot-password?error=Something went wrong");
+    }
+};
+
+const getNewPassword = async (req, res) => {
+    try {
+        const error_msg = req.query.error;
+        res.render("user/forgot_password/resetpassword", { message: error_msg });
+    } catch (error) {
+        console.error("Error from get new Password in forget passowrd : \n", error);
     }
 };
 
@@ -342,6 +416,8 @@ const getProductDetail = async (req, res) => {
 
 const Logout = async (req, res) => {
     try {
+        console.log("logout");
+
         req.session.destroy((err) => {
             if (err) {
                 console.error("Unable to destroy user session", err);
@@ -364,9 +440,11 @@ module.exports = {
     varifyOTP,
     resendOTP,
     handleGoogleAuth,
-    //product detail page
     getProductDetail,
     Logout,
     forgotPasswordEmailEnter,
     forgotOtp,
+    getNewPassword,
+    postForgotPasswordEmailEnter,
+    verifyForgotPasswordOTP,
 };

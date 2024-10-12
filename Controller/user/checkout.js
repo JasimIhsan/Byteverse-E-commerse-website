@@ -15,7 +15,9 @@ const getCart = async (req, res) => {
         req.session.orderPlaced = false;
 
         if (!cart || cart.Products.length === 0) {
-            return res.render("user/cart", { cartItems: [], subtotal: 0, total: 0, userLoggedIn, user });
+            const error = req.query.error || null;
+            const success = req.query.success || null;
+            return res.render("user/cart", { cartItems: [], subtotal: 0, total: 0, userLoggedIn, user, error_msg: error, success_msg: success });
         }
 
         const cartItems = cart.Products.map((item) => ({
@@ -30,7 +32,9 @@ const getCart = async (req, res) => {
         const shippingCost = 20;
         const total = subtotal + shippingCost;
 
-        res.render("user/cart", { cartItems, subtotal, total, userLoggedIn, user });
+        const error = req.query.error || null;
+        const success = req.query.success || null;
+        res.render("user/cart", { cartItems, subtotal, total, userLoggedIn, user, error_msg: error, success_msg: success });
     } catch (error) {
         console.error("Error fetching cart:", error);
         res.status(500).json({ message: "Error fetching cart" });
@@ -106,31 +110,32 @@ const updateCart = async (req, res) => {
         const userId = req.session.userId;
         const quantity = req.body.quantity;
 
-        console.log(userId);
-        console.log(quantity);
-
-        const cart = await Cart.findOne({ UserId: userId });
-
-        // console.log(cart);
+        const cart = await Cart.findOne({ UserId: userId }).populate({
+            path: "Products.ProductId",
+            select: "name stock price", // Select relevant fields
+        });
 
         if (!cart) {
             return res.redirect("/login");
         }
 
-        cart.Products.forEach((product) => {
-            if (quantity[product.ProductId]) {
-                const newQuantity = parseInt(quantity[product.ProductId], 10);
+        // Update quantities based on the input
+        for (const product of cart.Products) {
+            const newQuantity = parseInt(quantity[product.ProductId._id], 10); // Use _id for lookup
 
-                if (newQuantity >= 1) {
-                    product.Quantity = newQuantity;
-                }
+            if (newQuantity > product.ProductId.stock) {
+                // If requested quantity exceeds available stock, return an error message
+                return res.redirect(`/cart?error=Cannot update ${product.ProductId.name}: Requested quantity (${newQuantity}) exceeds available stock (${product.ProductId.stock})`);
+            } else if (newQuantity >= 1) {
+                product.Quantity = newQuantity; // Update quantity if valid
             }
-        });
+        }
 
-        await cart.save();
+        await cart.save(); // Save updated cart
         res.redirect(`/cart`);
     } catch (error) {
-        console.error("Error from updating cart : \n ", error);
+        console.error("Error from updating cart: \n", error);
+        res.redirect(`/cart?error=Something went wrong while updating the cart.`);
     }
 };
 
@@ -214,12 +219,11 @@ const creatingOrder = async (req, res) => {
         const { addressId, paymentMethod } = req.body;
 
         const user = await User.findById(userId);
+        const cart = await Cart.findOne({ UserId: userId }).populate("Products.ProductId");
+        const address = await Address.findById(addressId);
 
         console.log("addressId : ", addressId);
         console.log("PaymentMethod : ", paymentMethod);
-
-        const cart = await Cart.findOne({ UserId: userId }).populate("Products.ProductId");
-        const address = await Address.findById(addressId);
 
         if (!cart || cart.Products.length === 0) {
             return res.status(400).json({ message: "Cart is empty." });
@@ -228,20 +232,27 @@ const creatingOrder = async (req, res) => {
             return res.status(400).json({ message: "Invalid address." });
         }
 
-        const orderItems = cart.Products.map((item) => {
-            return {
-                productId: item.ProductId._id,
-                quantity: item.Quantity,
-                price: item.Price * item.Quantity,
-            };
-        });
+        // Check stock availability for each product
+        const orderItems = [];
+        for (const item of cart.Products) {
+            const product = item.ProductId;
+            const requestedQuantity = item.Quantity;
 
-        // console.log("order items :", orderItems);
+            // Check if the requested quantity exceeds available stock
+            if (requestedQuantity > product.stock) {
+                return res.status(400).json({
+                    message: `Cannot order ${requestedQuantity} of ${product.name}. Only ${product.stock} available in stock.`,
+                });
+            }
 
-        const subtotal = orderItems.reduce((sum, item) => {
-            return sum + (item.price || 0);
-        }, 0);
+            orderItems.push({
+                productId: product._id,
+                quantity: requestedQuantity,
+                price: product.price * requestedQuantity,
+            });
+        }
 
+        const subtotal = orderItems.reduce((sum, item) => sum + (item.price || 0), 0);
         console.log("subtotal : ", subtotal);
 
         const deliveryCharge = subtotal > 1500 ? 0 : 20;
@@ -262,8 +273,16 @@ const creatingOrder = async (req, res) => {
 
         await order.save();
 
+        await User.findByIdAndUpdate(userId, { $inc: { orders: 1 } });
+
+        // Decrease stock
+        for (const item of orderItems) {
+            await Product.findByIdAndUpdate(item.productId, {
+                $inc: { stock: -item.quantity },
+            });
+        }
+
         req.session.orderPlaced = true;
-        // Clear the cart after placing the order
         cart.Products = [];
         await cart.save();
 

@@ -6,7 +6,7 @@ const getShop = async (req, res) => {
     try {
         const title = "Shop | Byteverse E-commerce";
         const { search = "", page = 1, sortby = "popularity", categories = [], brands = [] } = req.query;
-        const limit = 12;
+        const limit = 8;
         const skip = (page - 1) * limit;
         const regex = new RegExp("^" + search, "i");
         const userId = req.session.userId;

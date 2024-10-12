@@ -101,16 +101,16 @@
                             </td>
                             
                             <td style="display: flex">
-                                <form action="/admin/user-management/user-details" method="GET">
+                                <form style="margin: 14px 0px;" action="/admin/user-management/user-details" method="GET">
                                     <button class="action-btn view-btn" type="submit">View</button>
                                 </form>
-                                <form id="status-form-<%= products._id %>">
+                                <form style="margin: 13px 0px;" id="status-form-<%= products._id %>">
                                     <button type="button" class="status-btn <%= products.status === 'listed' ? 'unlist-btn' : 'list-btn' %>" 
                                         onclick="toggleProductStatus('<%= products._id %>', '<%= products.status %>')">
                                         <%= products.status === 'listed' ? 'Unlist' : 'List' %>
                                     </button>
                                 </form>                                
-                                <form action="/admin/product-management/edit-product/<%= products._id %>" method="GET">
+                                <form style="margin: 13px 0px;" action="/admin/product-management/edit-product/<%= products._id %>" method="GET">
                                     <button class="action-btn edit-btn" type="submit">Edit</button>
                                 </form>
                             </td>

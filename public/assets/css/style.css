@@ -15008,7 +15008,7 @@ button:focus {
     opacity: 0;
     z-index: 2;
     visibility: hidden;
-    -webkit-backface-visibility: hidden
+    /* -webkit-backface-visibility: hidden */
 }
 
 .portfolio-overlay .portfolio-content.portfolio-content-center {
@@ -17796,7 +17796,7 @@ button:focus {
     font-family: "molla";
     font-style: normal;
     font-weight: normal;
-    speak: none;
+    /* speak: none; */
     display: inline-block;
     text-decoration: inherit;
     text-align: center;
@@ -19942,4 +19942,59 @@ button:focus {
 .product-search-filter .btn-close:hover {
     color: #007bff;
     /* Blue hover effect */
+}
+
+.error-message {
+
+    background-color: #f8d7da;
+    /* Light red background */
+    color: #721c24;
+    /* Dark red text color */
+    border: 1px solid #f5c6cb;
+    /* Border matching the background color */
+    padding: 10px 15px;
+    /* Padding for spacing inside the box */
+    border-radius: 5px;
+    /* Rounded corners */
+    font-size: 14px;
+    /* Font size */
+    font-weight: bold;
+    /* Bold text */
+    margin: 10px 0;
+    /* Margin to separate from other elements */
+    text-align: center;
+    /* Center the text */
+    width: 700px;
+    /* Optional: to control the width */
+    margin-left: auto;
+    /* Optional: center the box horizontally */
+    margin-right: auto;
+    /* Optional: center the box horizontally */
+}
+
+.success-message {
+    background-color: #d4edda;
+    /* Light green background */
+    color: #155724;
+    /* Dark green text color */
+    border: 1px solid #c3e6cb;
+    /* Border matching the background color */
+    padding: 10px 15px;
+    /* Padding for spacing inside the box */
+    border-radius: 5px;
+    /* Rounded corners */
+    font-size: 14px;
+    /* Font size */
+    font-weight: bold;
+    /* Bold text */
+    margin: 10px 0;
+    /* Margin to separate from other elements */
+    text-align: center;
+    /* Center the text */
+    width: 700px;
+    /* Optional: to control the width */
+    margin-left: auto;
+    /* Optional: center the box horizontally */
+    margin-right: auto;
+    /* Optional: center the box horizontally */
 }

@@ -57,22 +57,24 @@
                                 <aside class="col-md-4 col-lg-3">
                                     <ul class="nav nav-dashboard flex-column mb-3 mb-md-0">
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/account/dashboard">Dashboard</a>
+                                            <a class="nav-link" href="/<%= user._id %>/profile">Dashboard</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/account/orders">Orders</a>
+                                            <a class="nav-link" href="/<%= user._id %>/profile/orders">Orders</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/account/downloads">Downloads</a>
+                                            <a class="nav-link" href="#">Downloads</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link active" href="/account/addresses">Addresses</a>
+                                            <a class="nav-link active" href="/<%= user._id %>/profile/address">Addresses</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/account/details">Account Details</a>
+                                            <a class="nav-link" href="#">Account Details</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="/logout">Sign Out</a>
+                                        <li class="nav-item" style="margin-top: 10px">
+                                            <form action="/logout" method="POST" style="display: inline">
+                                                <button type="submit" class="nav-link" style="border: none; background: none; padding: 0">Sign Out</button>
+                                            </form>
                                         </li>
                                     </ul>
                                 </aside>

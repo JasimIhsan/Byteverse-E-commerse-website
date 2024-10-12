@@ -21,11 +21,13 @@
                 padding: 2rem;
                 width: 100%;
                 max-width: 400px;
+                text-align: center;
             }
             .card-title {
                 font-size: 1.5rem;
                 font-weight: bold;
                 margin-bottom: 0.5rem;
+                text-align: center;
             }
             .card-description {
                 color: #6b7280;
@@ -42,7 +44,8 @@
             .otp-inputs {
                 display: flex;
                 gap: 0.5rem;
-                justify-content: space-between;
+                justify-content: center;
+                margin: 30px 0px;
             }
             .otp-input {
                 width: 2.5rem;
@@ -60,7 +63,7 @@
             .resend-button {
                 background: none;
                 border: none;
-                color: #3b82f6;
+                color: #5c59e8;
                 cursor: pointer;
                 font-size: 0.875rem;
                 padding: 0;
@@ -74,7 +77,7 @@
             .submit-button {
                 width: 100%;
                 padding: 0.75rem;
-                background-color: #3b82f6;
+                background-color: #5c59e8;
                 color: white;
                 border: none;
                 border-radius: 4px;
@@ -84,7 +87,22 @@
                 margin-top: 1rem;
             }
             .submit-button:hover {
-                background-color: #2563eb;
+                background-color: #3533a9;
+            }
+
+            .error-message {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+                padding: 10px 15px;
+                border-radius: 5px;
+                font-size: 14px;
+                font-weight: bold;
+                margin: 10px 0;
+                text-align: center;
+                max-width: 400px;
+                margin-left: auto;
+                margin-right: auto;
             }
         </style>
     </head>
@@ -92,52 +110,75 @@
         <div class="card">
             <h2 class="card-title">Enter OTP</h2>
             <p class="card-description">We've sent a one-time password to your email</p>
-            <form id="otp-form">
+
+            <% if (message) { %>
+            <p class="error-message" id="error"><%= message %></p>
+            <% } %>
+
+            <form id="otp-form" action="/login/enter-email/otp-enter" method="post">
                 <div class="form-group">
                     <label for="otp-1">One-Time Password</label>
                     <div class="otp-inputs">
-                        <input type="text" id="otp-1" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
-                        <input type="text" id="otp-2" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
-                        <input type="text" id="otp-3" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
-                        <input type="text" id="otp-4" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
-                        <input type="text" id="otp-5" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
-                        <input type="text" id="otp-6" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-1" name="otp1" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-2" name="otp2" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-3" name="otp3" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-4" name="otp4" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-5" name="otp5" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
+                        <input type="text" id="otp-6" name="otp6" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" required />
                     </div>
                 </div>
-                <div class="timer" id="timer">Resend OTP in 30 seconds</div>
+                <div class="timer" id="timer" style="color: red">Resend OTP in 30 seconds</div>
                 <button type="button" id="resend-button" class="resend-button" disabled>Resend OTP</button>
                 <button type="submit" class="submit-button">Verify OTP</button>
             </form>
         </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const otpInputs = document.querySelectorAll('.otp-input');
-                const form = document.getElementById('otp-form');
-                const timerElement = document.getElementById('timer');
-                const resendButton = document.getElementById('resend-button');
+            document.addEventListener("DOMContentLoaded", function () {
+                const otpInputs = document.querySelectorAll(".otp-input");
+                const form = document.getElementById("otp-form");
+                const timerElement = document.getElementById("timer");
+                const resendButton = document.getElementById("resend-button");
                 let timer = 30;
                 let interval;
 
+                // Retrieve remaining time from localStorage
+                const remainingTime = localStorage.getItem("otpTimer");
+                if (remainingTime) {
+                    timer = Math.max(0, remainingTime - Math.floor((Date.now() - parseInt(localStorage.getItem("otpStartTime"))) / 1000));
+                }
+
                 function startTimer() {
-                    timer = 30;
                     resendButton.disabled = true;
                     interval = setInterval(() => {
                         timer--;
+                        localStorage.setItem("otpTimer", timer);
+                        localStorage.setItem("otpStartTime", Date.now());
+
                         if (timer > 0) {
                             timerElement.textContent = `Resend OTP in ${timer} seconds`;
                         } else {
                             clearInterval(interval);
-                            timerElement.textContent = '';
+                            timerElement.textContent = "";
                             resendButton.disabled = false;
+                            localStorage.removeItem("otpTimer"); // Clear the timer on expiry
+                            localStorage.removeItem("otpStartTime");
                         }
                     }, 1000);
                 }
 
-                startTimer();
+                // Start timer only if time is greater than 0
+                if (timer > 0) {
+                    startTimer();
+                    timerElement.textContent = `Resend OTP in ${timer} seconds`;
+                } else {
+                    resendButton.disabled = false; // Enable the resend button if timer is expired
+                }
 
                 otpInputs.forEach((input, index) => {
-                    input.addEventListener('input', (e) => {
+                    input.addEventListener("input", (e) => {
                         if (e.target.value.length === 1) {
                             if (index < otpInputs.length - 1) {
                                 otpInputs[index + 1].focus();
@@ -145,24 +186,39 @@
                         }
                     });
 
-                    input.addEventListener('keydown', (e) => {
-                        if (e.key === 'Backspace' && e.target.value.length === 0 && index > 0) {
+                    input.addEventListener("keydown", (e) => {
+                        if (e.key === "Backspace" && e.target.value.length === 0 && index > 0) {
                             otpInputs[index - 1].focus();
                         }
                     });
                 });
 
-                resendButton.addEventListener('click', () => {
-                    // Implement your resend OTP logic here
-                    console.log('Resending OTP...');
-                    startTimer();
+                resendButton.addEventListener("click", () => {
+                    console.log("Resending OTP...");
+
+                    axios
+                        .post("/login/enter-email/resend-otp")
+                        .then((response) => {
+                            if (response.status === 200) {
+                                console.log("OTP resent successfully:", response.data);
+                                startTimer();
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error resending OTP:", error);
+                        });
                 });
 
-                form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const otp = Array.from(otpInputs).map(input => input.value).join('');
-                    // Implement your OTP verification logic here
-                    console.log('Verifying OTP:', otp);
+                form.addEventListener("submit", (e) => {
+                    const otp = Array.from(otpInputs)
+                        .map((input) => input.value)
+                        .join("");
+
+                    const hiddenInput = document.createElement("input");
+                    hiddenInput.type = "hidden";
+                    hiddenInput.name = "otp";
+                    hiddenInput.value = otp;
+                    form.appendChild(hiddenInput);
                 });
             });
         </script>
