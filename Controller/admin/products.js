@@ -170,7 +170,7 @@ const postEditProduct = async (req, res) => {
 
         if (req.files.length > 0) {
             const newImages = req.files.map((file) => file.filename);
-            updatedImages = [...updatedImages, ...newImages];
+            updatedImages = [...newImages, ...updatedImages];
         }
 
         const updatedProductData = {

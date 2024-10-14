@@ -1,3 +1,5 @@
+// Passport Configuration for Google Strategy
+
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../model/user");
@@ -14,22 +16,32 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                const existUser = await User.findOne({ googleId: profile.id });
-                console.log(existUser);
+                // Check if user already exists by googleId
+                let existUser = await User.findOne({ googleId: profile.id });
+
                 if (existUser) {
-                    if (existUser.status == "Blocked") {
+                    // Handle blocked users
+                    if (existUser.status === "Blocked") {
                         return done(null, false, { message: "User is blocked" });
-                    } else {
-                        return done(null, false, { message: "User already exists. " });
                     }
+                    // Sign-In the existing user
+                    return done(null, existUser);
                 }
 
-                const existingEmailUser = await User.findOne({ email: profile.emails[0].value });
-                if (existingEmailUser) {
-                    return done(null, false, { message: "Email is already in use. " });
-                }
-                console.log(existUser);
+                // Check if user already exists by email (sign-in case)
+                existUser = await User.findOne({ email: profile.emails[0].value });
 
+                if (existUser) {
+                    if (existUser.status === "Blocked") {
+                        return done(null, false, { message: "User is blocked" });
+                    }
+                    // Link the Google account if email exists but no googleId
+                    existUser.googleId = profile.id;
+                    await existUser.save();
+                    return done(null, existUser);
+                }
+
+                // Sign-Up (new user)
                 const password = crypto.randomInt(10000000, 99999999).toString();
                 const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -41,10 +53,6 @@ passport.use(
                 });
 
                 await newUser.save();
-
-                const user = await User.findOne({ email });
-                req.session.userId = user._id;
-
                 done(null, newUser);
             } catch (error) {
                 console.error("Error from passport setup: \n", error);
@@ -53,6 +61,7 @@ passport.use(
         }
     )
 );
+// Serialization and Deserialization
 
 passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -64,4 +73,4 @@ passport.deserializeUser((id, done) => {
     });
 });
 
-module.exports = passport; // Export passport
+module.exports = passport; // Export the configured passport

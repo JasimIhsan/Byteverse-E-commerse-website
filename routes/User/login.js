@@ -6,6 +6,7 @@ const passport = require("../../config/passportSetup");
 const shop = require("../../Controller/user/shop");
 const profile = require("../../Controller/user/profile");
 const checkout = require("../../Controller/user/checkout");
+const User = require("../../model/user");
 
 //------------------- login and sign up -----------------------//
 
@@ -27,15 +28,42 @@ router.post("/signup/resend-otp", auth.isLogged, home.resendOTP);
 
 router.post("/logout", home.Logout);
 
-router.get("/login/enter-email", home.forgotPasswordEmailEnter);
+// router.get("/login/enter-email", home.forgotPasswordEmailEnter);
 
-router.post("/login/enter-email", home.postForgotPasswordEmailEnter);
+// router.post("/login/enter-email", home.postForgotPasswordEmailEnter);
 
-router.get("/login/enter-email/otp-enter", home.forgotOtp);
+// router.get("/login/enter-email/otp-enter", home.forgotOtp);
 
-router.post("/login/enter-email/otp-enter", home.verifyForgotPasswordOTP);
+// router.post("/login/enter-email/otp-enter", home.verifyForgotPasswordOTP);
 
-router.get("/login/enter-email/otp-enter/new-password", home.getNewPassword);
+// router.get("/login/enter-email/otp-enter/new-password", home.getNewPassword);
+
+// router.get(
+//     "/auth/google",
+//     auth.isLogged,
+//     passport.authenticate("google", {
+//         scope: ["profile", "email"],
+//     })
+// );
+
+// router.get("/auth/google/callback", auth.isLogged, (req, res, next) => {
+//     passport.authenticate("google", (err, user, info) => {
+//         if (err) {
+//             return next(err);
+//         }
+//         if (!user) {
+//             return res.redirect(`/login?error=${encodeURIComponent(info.message)}`);
+//         }
+//         req.logIn(user, (err) => {
+//             if (err) {
+//                 return next(err);
+//             }
+//             return res.redirect("/");
+//         });
+//     })(req, res, next);
+// });
+
+// Google Authentication Routes
 
 router.get(
     "/auth/google",
@@ -51,16 +79,20 @@ router.get("/auth/google/callback", auth.isLogged, (req, res, next) => {
             return next(err);
         }
         if (!user) {
-            return res.redirect(`/login?error=${encodeURIComponent(info.message)}`);
+            return res.redirect(`/login?error=${encodeURIComponent(info?.message || "Authentication failed")}`);
         }
         req.logIn(user, (err) => {
             if (err) {
                 return next(err);
             }
+            req.session.user = true;
+            req.session.userId = user._id;
+
             return res.redirect("/");
         });
     })(req, res, next);
 });
+
 // ----------------------------- shope ----------------------------------------------//
 
 router.get("/shop", shop.getShop);

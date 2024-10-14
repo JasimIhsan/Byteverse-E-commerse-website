@@ -53,15 +53,26 @@ function validateEmail() {
 
 // Function for validating password
 function validatePassword() {
-    const password = document.getElementById("password").value || document.getElementById("signinPassword").value;
+    const passwordInput = document.getElementById("password") || document.getElementById("signinPassword");
     const passwordError = document.getElementById("passwordError") || document.getElementById("signinPasswordError");
 
-    if (password.length < 6) {
-        passwordError.textContent = "Password must be at least 6 characters long";
-        return false;
+    // Strong password regex: Minimum 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (passwordInput.value.trim() === "") {
+        passwordError.textContent = "Password cannot be empty.";
+        passwordError.style.color = "red";
+    } else if (passwordInput.value.includes(" ")) {
+        passwordError.textContent = "Password cannot contain spaces.";
+        passwordError.style.color = "red";
+    } else if (passwordInput.value.length < 8) {
+        passwordError.textContent = "Password must be at least 8 characters long.";
+        passwordError.style.color = "red";
+    } else if (!strongPasswordRegex.test(passwordInput.value)) {
+        passwordError.textContent = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+        passwordError.style.color = "red";
     } else {
         passwordError.textContent = "";
-        return true;
     }
 }
 
@@ -137,16 +148,31 @@ function checkPasswordInput() {
     const passwordInput = document.getElementById("signinPassword");
     const passwordError = document.getElementById("signinPasswordError");
 
+    // Strong password regex: At least one uppercase letter, one lowercase letter, one number, one special character, minimum 6 characters
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+
+    // Remove leading/trailing spaces and check if empty
     if (passwordInput.value.trim() === "") {
         passwordError.textContent = "Password cannot be empty.";
         passwordError.style.color = "red";
-    } else if (passwordInput.value.includes(" ")) {
+    }
+    // Check for spaces in the password
+    else if (passwordInput.value.includes(" ")) {
         passwordError.textContent = "Password cannot contain spaces.";
         passwordError.style.color = "red";
-    } else if (passwordInput.value.length < 6) {
+    }
+    // Check minimum length
+    else if (passwordInput.value.length < 6) {
         passwordError.textContent = "Password must be at least 6 characters long.";
         passwordError.style.color = "red";
-    } else {
+    }
+    // Validate strong password requirements
+    else if (!strongPasswordRegex.test(passwordInput.value)) {
+        passwordError.textContent = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+        passwordError.style.color = "red";
+    }
+    // If all checks pass
+    else {
         passwordError.textContent = "";
     }
 }

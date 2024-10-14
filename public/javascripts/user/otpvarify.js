@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
-    let countdown = 5; // Set countdown in seconds
+    const defaultCountdown = 120; // Set default countdown to 2 minutes (120 seconds)
+    let countdown = sessionStorage.getItem("countdown") ? parseInt(sessionStorage.getItem("countdown")) : defaultCountdown;
+
     const timerElement = document.getElementById("timer");
     const resendLink = document.getElementById("resend-otp");
     const otpInputs = document.querySelectorAll(".input-field input");
@@ -52,10 +54,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const countdownInterval = setInterval(() => {
             if (countdown > 0) {
                 countdown--;
-                timerElement.textContent = countdown;
+                sessionStorage.setItem("countdown", countdown); // Store countdown in sessionStorage
+
+                // Convert seconds to minutes and seconds
+                const minutes = Math.floor(countdown / 60);
+                const seconds = countdown % 60;
+
+                // Format to display as MM:SS
+                timerElement.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
             } else {
                 clearInterval(countdownInterval);
                 enableResendLink();
+                sessionStorage.removeItem("countdown"); // Clear countdown when it reaches zero
             }
         }, 1000);
     };
@@ -68,8 +78,12 @@ document.addEventListener("DOMContentLoaded", function () {
         timerElement.textContent = "";
     };
 
-    // Start initial countdown
-    startCountdown();
+    // Start countdown or enable resend link if countdown is expired
+    if (countdown > 0) {
+        startCountdown();
+    } else {
+        enableResendLink();
+    }
 
     // Resend OTP function
     resendLink.addEventListener("click", async function (e) {
@@ -89,18 +103,44 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             if (response.ok) {
-                const data = await response.text();
-                alert("OTP has been resent!"); // Notify the user
+                // SweetAlert2 success notification
+                Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: "OTP has been resent!",
+                    confirmButtonText: "OK",
+                    customClass: {
+                        confirmButton: "customClass", // Optional: Add your custom class
+                    },
+                });
             } else {
-                alert("Failed to resend OTP. Please try again.");
+                // SweetAlert2 error notification
+                Swal.fire({
+                    icon: "error",
+                    title: "Error!",
+                    text: "Failed to resend OTP. Please try again.",
+                    confirmButtonText: "OK",
+                    customClass: {
+                        confirmButton: "customClass",
+                    },
+                });
             }
         } catch (error) {
             console.error("Error resending OTP:", error);
-            alert("An error occurred. Please try again later.");
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "An error occurred. Please try again later.",
+                confirmButtonText: "OK",
+                customClass: {
+                    confirmButton: "customClass",
+                },
+            });
         }
 
         // Restart the countdown after resending OTP
-        countdown = 5;
+        countdown = 120; // Reset to 2 minutes (120 seconds) after resending OTP
+        sessionStorage.setItem("countdown", countdown); // Store new countdown in sessionStorage
         startCountdown();
     });
 });

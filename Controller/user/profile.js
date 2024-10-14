@@ -1,21 +1,31 @@
 const User = require("../../model/user");
 const Orders = require("../../model/orders");
 const Address = require("../../model/Address");
+const Products = require("../../model/product");
 
 const getProfile = async (req, res) => {
     try {
-        const title = "Dashboard | Byteverse E-commerse";
-
+        const title = "Dashboard | Byteverse E-commerce";
         const userId = req.session.userId;
 
-        const user = await User.findById(userId);
-
-        if (user == null) return res.redirect("/login");
-
+        
         const userLoggedIn = req.session.user ? true : false;
-        res.render("user/dashboard", { title, userLoggedIn, user });
+
+        
+        const user = await User.findById(userId).populate("defaultAddress").exec();
+        const orders = await Orders.find({ userId }).populate("products.productId").exec();
+        
+
+        // Render the user dashboard with retrieved data
+        res.render("user/dashboard", {
+            user,
+            userLoggedIn,
+            orders,
+            title,
+        });
     } catch (error) {
-        console.error("Error from get dashboard of user : \n", error);
+        console.error("Error from get dashboard of user: \n", error);
+        
     }
 };
 
@@ -87,6 +97,19 @@ const cancelOrder = async (req, res) => {
             order.deliveryStatus = "Cancelled";
             order.cancellationReason = reason;
             order.isCancelled = true;
+
+            //restore stock
+            for (const item of order.products) {
+                const productId = item.productId; // Get the product ID
+                const product = await Products.findById(productId); // Fetch the complete product document
+
+                if (product) {
+                    product.stock += item.quantity; // Restore the stock by adding the quantity
+                    await product.save(); // Save the updated product
+                } else {
+                    console.error(`Product not found: ${productId}`);
+                }
+            }
         }
 
         await order.save();

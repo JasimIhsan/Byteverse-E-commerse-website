@@ -25,6 +25,13 @@
         <!-- Main CSS File -->
         <link rel="stylesheet" href="/assets/css/style.css" />
         <link rel="stylesheet" href="/css/user/main.css" />
+        <style>
+            .error {
+                color: red;
+                font-size: 1.3rem;
+                margin-top: 5px;
+            }
+        </style>
     </head>
 
     <body>
@@ -89,53 +96,53 @@
                                             <!-- Add Address Form should be here -->
                                             <div class="card card-dashboard mb-3">
                                                 <div class="card-body">
-                                                    <form action="/<%= user._id %>/profile/address/add-address" method="POST">
+                                                    <form action="/<%= user._id %>/profile/address/add-address" method="POST" onsubmit="return validateForm();">
                                                         <div class="form-group">
                                                             <label for="firstName">First Name</label>
-                                                            <input type="text" class="form-control" id="firstName" name="firstName" required />
-                                                            <small id="firstNameError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="firstName" name="firstName" />
+                                                            <span class="error" id="firstNameError"></span>
                                                             <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="lastName">Last Name</label>
-                                                            <input type="text" class="form-control" id="lastName" name="lastName" required />
-                                                            <small id="lastNameError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="lastName" name="lastName" />
+                                                            <span class="error" id="lastNameError"></span>
                                                             <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="phoneNumber">Phone Number</label>
-                                                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required />
-                                                            <small id="phoneNumberError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" />
+                                                            <span class="error" id="phoneNumberError"></span>
                                                             <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="street">Street Address</label>
-                                                            <input type="text" class="form-control" id="street" name="street" required />
-                                                            <small id="streetError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="street" name="street" />
+                                                            <span class="error" id="streetError"></span>
                                                             <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="city">City</label>
-                                                            <input type="text" class="form-control" id="city" name="city" required />
-                                                            <small id="cityError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="city" name="city" />
+                                                            <span class="error" id="cityError"></span>
                                                             <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="state">State</label>
-                                                            <input type="text" class="form-control" id="state" name="state" required />
-                                                            <small id="stateError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="state" name="state" />
+                                                            <span class="error" id="stateError"></span>
                                                             <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="postalCode">Postal Code</label>
-                                                            <input type="text" class="form-control" id="postalCode" name="postalCode" required />
-                                                            <small id="postalCodeError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="postalCode" name="postalCode" />
+                                                            <span class="error" id="postalCodeError"></span>
                                                             <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="country">Country</label>
-                                                            <input type="text" class="form-control" id="country" name="country" required />
-                                                            <small id="countryError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="country" name="country" />
+                                                            <span class="error" id="countryError"></span>
                                                             <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
@@ -282,9 +289,23 @@
                 }
             }
 
+            function validateForm() {
+                // Validate all fields
+                const isFirstNameValid = validateFirstName();
+                const isPhoneNumberValid = validatePhoneNumber();
+                const isStreetValid = validateStreet();
+                const isCityValid = validateCity();
+                const isStateValid = validateState();
+                const isPostalCodeValid = validatePostalCode();
+                const isCountryValid = validateCountry();
+
+                // Return true if all fields are valid
+                return isFirstNameValid && isPhoneNumberValid && isStreetValid && isCityValid && isStateValid && isPostalCodeValid && isCountryValid;
+            }
+
             // Call validation functions on keyup events
             document.addEventListener("DOMContentLoaded", function () {
-                document.getElementById("firstName").onkeyup = validateFullName;
+                document.getElementById("firstName").onkeyup = validateFirstName;
                 document.getElementById("phoneNumber").onkeyup = validatePhoneNumber;
                 document.getElementById("street").onkeyup = validateStreet;
                 document.getElementById("city").onkeyup = validateCity;

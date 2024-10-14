@@ -57,4 +57,8 @@ router.get("/order-management", order.getOrderManagement);
 
 router.post("/order-management/update-status/:orderId", order.updateOrderStatus);
 
+router.get('/order-management/order-detail/:orderId', order.getOrderDetail)
+
+router.post("/remove-order-item", order.cancelOrderItem)
+
 module.exports = router;

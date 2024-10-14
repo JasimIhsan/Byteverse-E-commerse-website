@@ -32,7 +32,7 @@ const orderSchema = new mongoose.Schema({
     deliveryStatus: {
         type: String,
         required: true,
-        enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
+        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
         default: "Pending",
     },
     paymentMethod: {
@@ -69,6 +69,15 @@ const orderSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+});
+
+orderSchema.pre("save", function (next) {
+    if (this.paymentMethod === "Cash on Delivery") {
+        this.deliveryStatus = "Processing";
+    } else {
+        this.deliveryStatus = "Pending";
+    }
+    next();
 });
 
 const Order = mongoose.model("Order", orderSchema);

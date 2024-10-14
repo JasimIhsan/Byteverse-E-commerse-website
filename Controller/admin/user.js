@@ -25,7 +25,13 @@ const updateUserStatus = async (req, res) => {
         const userId = req.params.id;
         const newStatus = req.body.status;
 
-        await User.findByIdAndUpdate(userId, { status: newStatus });
+        const updatedUser = await User.findByIdAndUpdate(userId, { status: newStatus });
+
+        if (updatedUser && newStatus == "Blocked") {
+            req.session.userId = null;
+            req.session.user = false;
+            console.log(`User with ID ${userId} has been blocked and their session cleared.`);
+        }
 
         res.json({ success: true });
     } catch (error) {

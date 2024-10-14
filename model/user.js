@@ -4,7 +4,6 @@ const userSchema = mongoose.Schema({
     username: {
         type: String,
         required: true,
-        unique: true,
     },
     email: {
         type: String,
@@ -17,7 +16,7 @@ const userSchema = mongoose.Schema({
     },
     googleId: {
         type: String,
-        unique: true,
+        // unique: true,
     },
     joinedDate: {
         type: Date,
@@ -35,6 +34,11 @@ const userSchema = mongoose.Schema({
         type: String,
         enum: ["Unblocked", "Blocked"],
         default: "Unblocked",
+    },
+    defaultAddress: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address", 
+        default: null,
     },
 });
 

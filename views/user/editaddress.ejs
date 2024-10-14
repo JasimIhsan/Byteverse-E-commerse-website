@@ -25,6 +25,13 @@
         <!-- Main CSS File -->
         <link rel="stylesheet" href="/assets/css/style.css" />
         <link rel="stylesheet" href="/css/user/main.css" />
+        <style>
+            .error {
+                color: red;
+                font-size: 1.3rem;
+                margin-top: 5px;
+            }
+        </style>
     </head>
 
     <body>
@@ -87,46 +94,54 @@
                                             <!-- Add Address Form should be here -->
                                             <div class="card card-dashboard mb-3">
                                                 <div class="card-body">
-                                                    <form action="/<%= user._id %>/profile/address/<%= address._id %>/edit-address" method="POST">
+                                                    <form action="/<%= user._id %>/profile/address/<%= address._id %>/edit-address" method="POST" onsubmit="return validateForm();">
                                                         <div class="form-group">
                                                             <label for="firstName">First Name</label>
-                                                            <input type="text" class="form-control" id="firstName" name="firstName" value="<%= address.firstName %>" required />
-                                                            <small id="firstNameError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="firstName" name="firstName" value="<%= address.firstName %>" />
+                                                            <span class="error" id="firstNameError"></span>
+                                                            <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="lastName">Last Name</label>
-                                                            <input type="text" class="form-control" id="lastName" name="lastName" value="<%= address.lastName %>" required />
-                                                            <small id="lastNameError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="lastName" name="lastName" value="<%= address.lastName %>" />
+                                                            <span class="error" id="lastNameError"></span>
+                                                            <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="phoneNumber">Phone Number</label>
-                                                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="<%= address.phoneNumber %>" required />
-                                                            <small id="phoneNumberError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="<%= address.phoneNumber %>" />
+                                                            <span class="error" id="phoneNumberError"></span>
+                                                            <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="street">Street Address</label>
-                                                            <input type="text" class="form-control" id="street" name="street" value="<%= address.street %>" required />
-                                                            <small id="streetError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="street" name="street" value="<%= address.street %>" />
+                                                            <span class="error" id="streetError"></span>
+                                                            <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="city">City</label>
-                                                            <input type="text" class="form-control" id="city" name="city" value="<%= address.city %>" required />
-                                                            <small id="cityError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="city" name="city" value="<%= address.city %>" />
+                                                            <span class="error" id="cityError"></span>
+                                                            <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="state">State</label>
-                                                            <input type="text" class="form-control" id="state" name="state" value="<%= address.state %>" required />
-                                                            <small id="stateError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="state" name="state" value="<%= address.state %>" />
+                                                            <span class="error" id="stateError"></span>
+                                                            <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="postalCode">Postal Code</label>
-                                                            <input type="text" class="form-control" id="postalCode" name="postalCode" value="<%= address.postalCode %>" required />
-                                                            <small id="postalCodeError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="postalCode" name="postalCode" value="<%= address.postalCode %>" />
+                                                            <span class="error" id="postalCodeError"></span>
+                                                            <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="country">Country</label>
-                                                            <input type="text" class="form-control" id="country" name="country" value="<%= address.country %>" required />
-                                                            <small id="countryError" class="text-danger"></small>
+                                                            <input type="text" class="form-control" id="country" name="country" value="<%= address.country %>" />
+                                                            <span class="error" id="countryError"></span>
+                                                            <!-- Error message -->
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="additionalInfo">Additional Info</label>
@@ -172,18 +187,35 @@
                 }
             }
 
+            function validateLastName() {
+                const lastName = document.getElementById("lastName").value;
+                const lastNameError = document.getElementById("lastNameError");
+
+                if (lastName.trim().length === 0) {
+                    lastNameError.textContent = "Last name cannot be empty.";
+                    return false;
+                } else if (lastName.includes("  ")) {
+                    lastNameError.textContent = "Last name cannot contain consecutive spaces.";
+                    return false;
+                } else if (lastName.length < 2) {
+                    lastNameError.textContent = "Last name must be at least 2 characters long.";
+                    return false;
+                } else {
+                    lastNameError.textContent = ""; // Clear the error message
+                    return true;
+                }
+            }
+
             function validatePhoneNumber() {
                 const phoneNumber = document.getElementById("phoneNumber").value;
                 const phoneNumberError = document.getElementById("phoneNumberError");
-
-                // Indian phone number regex
-                const phoneRegex = /^(\+91[-\s]?)?[0-9]{10}$/;
+                const phoneRegex = /^(\\+91[-\\s]?)?[0-9]{10}$/; // Adjust regex if needed
 
                 if (phoneNumber.trim().length === 0) {
                     phoneNumberError.textContent = "Phone number cannot be empty.";
                     return false;
                 } else if (!phoneRegex.test(phoneNumber)) {
-                    phoneNumberError.textContent = "Phone number must be a valid 10-digit number (e.g., 1234567890 or +91 1234567890).";
+                    phoneNumberError.textContent = "Phone number must be a valid 10-digit number.";
                     return false;
                 } else {
                     phoneNumberError.textContent = ""; // Clear the error message
@@ -233,15 +265,13 @@
             function validatePostalCode() {
                 const postalCode = document.getElementById("postalCode").value;
                 const postalCodeError = document.getElementById("postalCodeError");
-
-                // Indian postal code regex
-                const postalCodeRegex = /^[1-9][0-9]{5}$/;
+                const postalCodeRegex = /^[1-9][0-9]{5}$/; // Adjust regex if needed
 
                 if (postalCode.trim().length === 0) {
                     postalCodeError.textContent = "Postal code cannot be empty.";
                     return false;
                 } else if (!postalCodeRegex.test(postalCode)) {
-                    postalCodeError.textContent = "Postal code must be a 6-digit number (e.g., 110001).";
+                    postalCodeError.textContent = "Postal code must be a 6-digit number.";
                     return false;
                 } else {
                     postalCodeError.textContent = ""; // Clear the error message
@@ -262,9 +292,25 @@
                 }
             }
 
+            function validateForm() {
+                // Validate all fields
+                const isFirstNameValid = validateFirstName();
+                const isLastNameValid = validateLastName();
+                const isPhoneNumberValid = validatePhoneNumber();
+                const isStreetValid = validateStreet();
+                const isCityValid = validateCity();
+                const isStateValid = validateState();
+                const isPostalCodeValid = validatePostalCode();
+                const isCountryValid = validateCountry();
+
+                // Return true if all fields are valid
+                return isFirstNameValid && isLastNameValid && isPhoneNumberValid && isStreetValid && isCityValid && isStateValid && isPostalCodeValid && isCountryValid;
+            }
+
             // Call validation functions on keyup events
             document.addEventListener("DOMContentLoaded", function () {
-                document.getElementById("firstName").onkeyup = validateFullName;
+                document.getElementById("firstName").onkeyup = validateFirstName;
+                document.getElementById("lastName").onkeyup = validateLastName;
                 document.getElementById("phoneNumber").onkeyup = validatePhoneNumber;
                 document.getElementById("street").onkeyup = validateStreet;
                 document.getElementById("city").onkeyup = validateCity;
