@@ -1,0 +1,337 @@
+/* CSS styles remain unchanged */
+:root {
+    --primary-color: #5c59e8;
+    --secondary-color: #c21000;
+    --bg-color: #f8f9fa;
+    --sidebar-bg: #f0f1f7;
+    --table-bg: #ffffff;
+    --text-color: #333;
+    --header-bg: #ffffff;
+    --low-stock-color: #f39c12;
+    --active-status: #148800;
+    --blocked-status: #a40e00;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.unique-sidebar {
+    width: 250px;
+    background-color: var(--sidebar-bg);
+    padding: 20px;
+}
+
+.unique-sidebar-header h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+.unique-sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.unique-sidebar-menu li {
+    margin: 10px 0;
+}
+
+.unique-sidebar-menu li a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: bold;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.unique-sidebar-menu li a:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+}
+
+.unique-sidebar-menu li.active a {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Main Content */
+.product-list-container {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.product-list-container h1 {
+    font-size: 1.8rem;
+    color: var(--text-color);
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
+}
+
+.breadcrumbs a {
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-right: 5px;
+}
+
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumbs span {
+    margin-right: 5px;
+}
+
+.product-search-filter {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-div {
+    display: flex;
+}
+
+.search-input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 60%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-product-btn {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+.add-product-btn:hover {
+    background-color: #4e54d4;
+    transform: scale(1.05);
+}
+
+.product-table {
+    width: 100%;
+    background-color: var(--table-bg);
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.product-table th,
+.product-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.product-table th {
+    background-color: #f0f4ff;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.product-table td {
+    color: var(--text-color);
+}
+
+.action-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 5px;
+    transition: background-color 0.3s;
+}
+
+.edit-btn {
+    background-color: var(--low-stock-color);
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #cd820b;
+    transform: scale(1.05);
+
+}
+
+.delete-btn {
+    background-color: red;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: rgb(203, 0, 0);
+    transform: scale(1.05);
+}
+
+.view-btn {
+    background-color: var(--low-stock-color);
+    color: white;
+}
+
+.view-btn:hover {
+    background-color: #ca7d01;
+    transform: scale(1.05);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    /* Center pagination items */
+    align-items: center;
+    margin: 20px 0;
+    /* Add margin for spacing */
+}
+
+.pagination span {
+    color: var(--text-color);
+    margin: 0 10px;
+    /* Add space between text and buttons */
+}
+
+.pagination-buttons {
+    display: flex;
+}
+
+.page-btn {
+    padding: 5px 10px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: var(--primary-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    /* Add color transition */
+    font-weight: bold;
+    /* Make text bold */
+    background-color: white;
+    /* Default background color */
+}
+
+.page-btn:hover {
+    background-color: var(--primary-color);
+    /* Change background on hover */
+    color: white;
+    /* Change text color on hover */
+}
+
+.page-btn.active {
+    background-color: var(--primary-color);
+    /* Active button background */
+    color: white;
+    /* Active button text color */
+    border: none;
+    /* Remove border from active button */
+}
+
+.page-btn.disabled {
+    color: #ccc;
+    /* Color for disabled buttons */
+    cursor: not-allowed;
+    /* Change cursor for disabled buttons */
+}
+
+/* Modal Background */
+.custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Modal Content */
+.custom-modal-content {
+    background-color: #ffffff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    /* Responsive width */
+    max-width: 500px;
+    /* Maximum width */
+}
+
+/* Close Button */
+.custom-modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.custom-modal-close:hover,
+.custom-modal-close:focus {
+    color: black;
+    text-decoration: none;
+    transition: background-color 0.3s;
+
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.btn {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #3e3cc4;
+    transition: background-color 0.3s;
+
+}

@@ -604,68 +604,90 @@
     <!--===============================================================================================-->
     <script src="/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         document.querySelectorAll(".unique-add-to-cart-form").forEach((form) => {
-    form.addEventListener("submit", (event) => {
-        event.preventDefault(); // Prevent default form submission
+            form.addEventListener("submit", (event) => {
+                event.preventDefault(); // Prevent default form submission
 
-        const formData = new FormData(form);
-        const actionUrl = form.action;
+                const formData = new FormData(form);
+                const actionUrl = form.action;
 
-        // Convert FormData to a regular object for Axios
-        const data = Object.fromEntries(formData.entries());
+                // Convert FormData to a regular object for Axios
+                const data = Object.fromEntries(formData.entries());
 
-        axios
-            .post(actionUrl, data)
-            .then((response) => {
-                console.log(response);
-                console.log(response.data.message);
+                axios
+                    .post(actionUrl, data)
+                    .then((response) => {
+                        console.log("Response received:", response); // Debugging to see the response
+                        console.log("Message:", response.data.message); // Check if message is correct
 
-                // SweetAlert2 for success notification
-                Swal.fire({
-                    title: 'Success!',
-                    text: response.data.message, // Display the success message
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    customClass: {
-                        confirmButton: 'custom-confirm-button' // Use your custom class for styling
-                    }
-                });
-            })
-            .catch((error) => {
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    // that falls out of the range of 2xx
-                    console.error("Error:", error.response.data.message);
-
-                    // SweetAlert2 for error notification
-                    Swal.fire({
-                        title: 'Error!',
-                        text: error.response.data.message, // Display the specific error message
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'custom-confirm-button' // Use your custom class for styling
+                        if (response.data.success) {
+                            // SweetAlert for success notification
+                            Swal.fire({
+                                title: "Success!",
+                                text: response.data.message,
+                                icon: "success",
+                                confirmButtonText: "Ok",
+                                customClass: {
+                                    confirmButton: "custom-confirm-button", // Your custom styling
+                                },
+                            });
+                        } else if (response.data.exists) {
+                            // Product already exists case
+                            Swal.fire({
+                                title: "Already in Cart",
+                                text: "This product is already in your cart. Go to cart to view it!",
+                                icon: "info",
+                                showCancelButton: true,
+                                confirmButtonText: "Go to Cart",
+                                cancelButtonText: "Continue Shopping",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "/cart"; // Redirect to cart
+                                }
+                            });
+                        } else {
+                            // Error notification
+                            Swal.fire({
+                                title: "Error!",
+                                text: response.data.message || "Something went wrong!",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                                customClass: {
+                                    confirmButton: "custom-confirm-button", // Your custom styling
+                                },
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.log("Error received:", error); // Debugging the error response
+                        if (error.response) {
+                            // SweetAlert for error notification
+                            Swal.fire({
+                                title: "Error!",
+                                text: error.response.data.message || "Failed to add product to cart.",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                                customClass: {
+                                    confirmButton: "custom-confirm-button", // Your custom styling
+                                },
+                            });
+                        } else {
+                            // SweetAlert for general error notification
+                            Swal.fire({
+                                title: "Error!",
+                                text: "An unexpected error occurred.",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                                customClass: {
+                                    confirmButton: "custom-confirm-button", // Your custom styling
+                                },
+                            });
                         }
                     });
-                } else {
-                    // Something happened in setting up the request that triggered an Error
-                    console.error("Error:", error.message);
-
-                    // SweetAlert2 for general error notification
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Failed to add product to cart.',
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'custom-confirm-button' // Use your custom class for styling
-                        }
-                    });
-                }
             });
-    });
-});
-
+        });
     </script>
 </body>

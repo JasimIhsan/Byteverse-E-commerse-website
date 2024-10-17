@@ -38,12 +38,12 @@ const addressSchema = new mongoose.Schema({
         required: true,
     },
     additionalInfo: {
-        type: String, // Optional field for any special instructions or apartment numbers
+        type: String,
         default: "",
     },
     isDefault: {
         type: Boolean,
-        default: false, // To mark an address as default for quick selection
+        default: false,
     },
 });
 

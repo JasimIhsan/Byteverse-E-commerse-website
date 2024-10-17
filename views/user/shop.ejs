@@ -26,7 +26,6 @@
         <link rel="stylesheet" href="/assets/css/plugins/nouislider/nouislider.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
                 <!-- Include SweetAlert2 CSS -->
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
 
                 <!-- Include SweetAlert2 JS -->
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
@@ -82,11 +81,6 @@
                                     </button>
                                 </form>
                             </div>
-                            
-                            
-                            
-                            
-
                             <div class="dropdown cart-dropdown ">
                                 <a  href="/cart" >
                                     <img style="width: 30px;" src="/images/icons/cart.png" alt="Account">
@@ -357,9 +351,7 @@
         <script src="/assets/js/jquery.magnific-popup.min.js"></script>
         <script src="/assets/js/nouislider.min.js"></script>
         <script src="/assets/js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const clearSearchButton = document.getElementById('clear-search');
@@ -401,7 +393,7 @@
             });
 
 
-document.querySelectorAll('.add-to-cart-form').forEach(form => {
+            document.querySelectorAll('.add-to-cart-form').forEach(form => {
     form.addEventListener('submit', async (event) => {
         event.preventDefault(); // Prevent the default form submission
 
@@ -425,8 +417,6 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
             });
         } else {
             try {
-
-                
                 // Send the POST request to add the product to the cart
                 const response = await axios.post(`/${userId}/add-to-cart`, { productId });
 
@@ -437,6 +427,20 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
                         text: response.data.message,
                         icon: 'success',
                         confirmButtonText: 'Ok'
+                    });
+                } else if (response.data.exists) {
+                    // If the product already exists in the cart, show a SweetAlert with a "Go to Cart" button
+                    Swal.fire({
+                        title: 'Already in Cart',
+                        text: 'This product is already in your cart. Would you like to go to the cart?',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Go to Cart',
+                        cancelButtonText: 'Continue Shopping'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/cart'; // Redirect to the cart page
+                        }
                     });
                 } else {
                     Swal.fire({
@@ -450,7 +454,7 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
                 console.error('Error adding product to cart:', error);
                 Swal.fire({
                     title: 'Error!',
-                    text: error.response.data.message,
+                    text: error.response?.data?.message || 'Failed to add product to cart.',
                     icon: 'error',
                     confirmButtonText: 'Ok'
                 });
@@ -458,6 +462,7 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
         }
     });
 });
+
 
         </script>
     </body>

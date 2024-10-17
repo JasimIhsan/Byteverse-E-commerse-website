@@ -20,7 +20,7 @@
                     <li><a href="/admin/product-management">Products</a></li>
                     <li><a href="/admin/order-management">Orders</a></li>
                     <li><a href="/admin/category-management">Categories</a></li>
-                    <li><a href="#">Coupon</a></li>
+                    <li><a href="/admin/coupon-management">Coupon</a></li>
                     <li><a href="#">Offers</a></li>
                     <li><a href="#">Support</a></li>
                     <li><a href="#">Settings</a></li>
@@ -80,7 +80,7 @@
                             </td>
                             <td><%= users.joinedDate ? new Date(users.joinedDate).toLocaleDateString() : 'N/A' %></td>
                             <td style="display: flex">
-                                <form action="/admin/user-management/user-details" method="GET">
+                                <form action="/admin/user-management/user-details/<%= users._id %>" method="GET">
                                     <button class="action-btn view-btn" type="submit">View</button>
                                 </form>
                             </td>

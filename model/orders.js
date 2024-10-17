@@ -38,7 +38,7 @@ const orderSchema = new mongoose.Schema({
     paymentMethod: {
         type: String,
         required: true,
-        enum: ["Credit Card", "PayPal", "Bank Transfer", "Cash on Delivery"],
+        enum: ["UPI Payment", "Wallet Payments", "Cash on Delivery"],
     },
     total: {
         type: Number,
@@ -61,13 +61,13 @@ const orderSchema = new mongoose.Schema({
     cancellationReason: {
         type: String,
     },
-    isPendingAdminApproval: {
-        type: Boolean,
-        default: false,
+    couponCode: {
+        type: String,
+        default: null,
     },
-    isCancelled: {
-        type: Boolean,
-        default: false,
+    couponDiscount: {
+        type: Number,
+        default: 0,
     },
 });
 

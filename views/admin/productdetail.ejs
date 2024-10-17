@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Product Detail - Admin Dashboard</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            h1,
+            h2,
+            h3 {
+                margin-top: 0;
+            }
+            .button {
+                background-color: #5c59e8;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+            .button-outline {
+                background-color: transparent;
+                color: #5c59e8;
+                border: 1px solid #5c59e8;
+            }
+            .button-danger {
+                background-color: #dc3545;
+            }
+            .grid {
+                display: grid;
+                gap: 20px;
+            }
+            .card {
+                background-color: white;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            label {
+                display: block;
+                margin-bottom: 5px;
+            }
+            input,
+            textarea,
+            select {
+                width: 95%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            .stats {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+            .tabs {
+                display: flex;
+                border-bottom: 1px solid #ddd;
+                margin-bottom: 20px;
+            }
+            .tab {
+                padding: 10px 20px;
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+            }
+            .tab.active {
+                border-bottom-color: #5c59e8;
+            }
+            .tab-content {
+                display: none;
+            }
+            .tab-content.active {
+                display: block;
+            }
+            .chart-placeholder {
+                background-color: #eee;
+                height: 300px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 24px;
+                color: #999;
+            }
+            @media (min-width: 768px) {
+                .grid {
+                    grid-template-columns: 2fr 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Product Details</h1>
+                
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>Product Information</h2>
+                    <div >
+                        <h3>Product Images</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px">
+                            <% product.images.forEach((image) => { %>
+                            <img src="/<%= image %>" alt="Product" style="width: 100%; max-width: 200px; height: auto; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px" />
+                            <% }); %>
+                        </div>
+                    </div>
+
+                    <form id="productForm" style="margin-top: 50px;">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" value="<%= product.name %>" readonly disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="brand">Brand</label>
+                            <input type="text" id="brand" value="<%= product.brand %>" readonly disabled />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price">Price</label>
+                            <input type="number" id="price" value="<%= product.price %>" readonly disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" readonly disabled>
+                                <option value="<%= product.category._id %>" selected><%= product.category.name %></option>
+                                <!-- Add other categories if needed -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="stock">Stock</label>
+                            <input type="number" id="stock" value="<%= product.stock %>" readonly disabled />
+                        </div>
+                        <div class="form-group">
+                            <label for="warranty">Warranty</label>
+                            <input type="text" id="warranty" value="<%= product.warranty %>" readonly disabled />
+                        </div>
+                    </form>
+                    <div style="margin-top: 50px">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="sales">Sales History</div>
+                            <div class="tab" data-tab="reviews">Customer Reviews</div>
+                        </div>
+                        <div id="salesTab" class="tab-content active">
+                            <h3>Sales History</h3>
+                            <p>Monthly sales data for this product.</p>
+                            <div class="chart-placeholder">Sales Chart Placeholder</div>
+                        </div>
+                        <div id="reviewsTab" class="tab-content">
+                            <h3>Customer Reviews</h3>
+                            <p>Recent reviews from customers.</p>
+                            <p>Review content would go here...</p>
+                        </div>
+                    </div>
+<!-- 
+                    <div style="margin-top: 50px">
+                        <h2>Danger Zone</h2>
+                        <p>Careful, these actions cannot be undone.</p>
+                        <button class="button button-outline" style="margin-right: 10px">Unpublish Product</button>
+                        <button class="button button-danger">Delete Product</button>
+                    </div> -->
+                </div>
+
+                <div>
+                    <div class="card" >
+                        <h2>Specifications</h2>
+                        <h3>Processor</h3>
+                        <p>Brand: <%= product.specifications.processor.brand %></p>
+                        <p>Model: <%= product.specifications.processor.model %></p>
+                        <p>Cores: <%= product.specifications.processor.cores %></p>
+                        <p>Speed: <%= product.specifications.processor.speed %></p>
+
+                        <h3>RAM</h3>
+                        <p>Size: <%= product.specifications.ram.size %></p>
+                        <p>Type: <%= product.specifications.ram.type %></p>
+
+                        <h3>Storage</h3>
+                        <p>Type: <%= product.specifications.storage.type %></p>
+                        <p>Capacity: <%= product.specifications.storage.capacity %></p>
+
+                        <h3>Display</h3>
+                        <p>Size: <%= product.specifications.display.size %></p>
+                        <p>Resolution: <%= product.specifications.display.resolution %></p>
+
+                        <h3>Graphics</h3>
+                        <p>Brand: <%= product.specifications.graphics.brand %></p>
+                        <p>Model: <%= product.specifications.graphics.model %></p>
+                        <p>Memory: <%= product.specifications.graphics.memory %></p>
+
+                        <h3>Battery</h3>
+                        <p>Type: <%= product.specifications.battery.type %></p>
+                        <p>Capacity: <%= product.specifications.battery.capacity %></p>
+
+                        <h3>OS</h3>
+                        <p><%= product.specifications.os %></p>
+
+                        <h3>Weight</h3>
+                        <p><%= product.specifications.weight %></p>
+
+                        <h3>Dimensions</h3>
+                        <p>Width: <%= product.specifications.dimensions.width %> mm</p>
+                        <p>Height: <%= product.specifications.dimensions.height %> mm</p>
+                        <p>Depth: <%= product.specifications.dimensions.depth %> mm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            
+            const tabs = document.querySelectorAll(".tab");
+            const tabContents = document.querySelectorAll(".tab-content");
+
+            tabs.forEach((tab) => {
+                tab.addEventListener("click", () => {
+                    const tabId = tab.getAttribute("data-tab");
+
+                    tabs.forEach((t) => t.classList.remove("active"));
+                    tabContents.forEach((content) => content.classList.remove("active"));
+
+                    tab.classList.add("active");
+                    document.getElementById(`${tabId}Tab`).classList.add("active");
+                });
+            });
+        </script>
+    </body>
+</html>

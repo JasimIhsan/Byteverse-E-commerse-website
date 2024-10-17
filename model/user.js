@@ -37,9 +37,15 @@ const userSchema = mongoose.Schema({
     },
     defaultAddress: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Address", 
+        ref: "Address",
         default: null,
     },
+    usedCoupons: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Coupon",
+        },
+    ],
 });
 
 module.exports = mongoose.model("User", userSchema);

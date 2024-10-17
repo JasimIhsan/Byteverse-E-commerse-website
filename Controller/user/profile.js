@@ -8,13 +8,10 @@ const getProfile = async (req, res) => {
         const title = "Dashboard | Byteverse E-commerce";
         const userId = req.session.userId;
 
-        
         const userLoggedIn = req.session.user ? true : false;
 
-        
         const user = await User.findById(userId).populate("defaultAddress").exec();
         const orders = await Orders.find({ userId }).populate("products.productId").exec();
-        
 
         // Render the user dashboard with retrieved data
         res.render("user/dashboard", {
@@ -25,7 +22,6 @@ const getProfile = async (req, res) => {
         });
     } catch (error) {
         console.error("Error from get dashboard of user: \n", error);
-        
     }
 };
 
@@ -77,42 +73,38 @@ const getOrders = async (req, res) => {
 };
 
 const cancelOrder = async (req, res) => {
-    const { orderId, reason, needsApproval } = req.body;
-    console.log(req.body);
-    console.log(1234);
+    const { orderId, reason } = req.body;
 
     try {
-        const order = await Orders.findById(orderId);
+        // Update the delivery status and reason directly in the database
+        const order = await Orders.findByIdAndUpdate(
+            orderId,
+            {
+                deliveryStatus: "Cancelled",
+                cancellationReason: reason,
+            },
+            { new: true }
+        ); // { new: true } returns the updated order document
+
         if (!order) {
             return res.json({ success: false, message: "Order not found." });
         }
 
-        if (needsApproval) {
-            // Mark the order for admin approval
-            order.deliveryStatus = "Cancellation Requested";
-            order.cancellationReason = reason;
-            order.isPendingAdminApproval = true;
-        } else {
-            // Cancel the order immediately
-            order.deliveryStatus = "Cancelled";
-            order.cancellationReason = reason;
-            order.isCancelled = true;
+        console.log("Updated status: ", order.deliveryStatus);
 
-            //restore stock
-            for (const item of order.products) {
-                const productId = item.productId; // Get the product ID
-                const product = await Products.findById(productId); // Fetch the complete product document
+        // Restore stock for each product in the order
+        for (const item of order.products) {
+            const productId = item.productId; // Get the product ID
+            const product = await Products.findById(productId); // Fetch the product document
 
-                if (product) {
-                    product.stock += item.quantity; // Restore the stock by adding the quantity
-                    await product.save(); // Save the updated product
-                } else {
-                    console.error(`Product not found: ${productId}`);
-                }
+            if (product) {
+                console.log(`Restoring stock for product: ${productId}`);
+                product.stock += item.quantity; // Restore stock by adding the quantity
+                await product.save(); // Save the updated product
+            } else {
+                console.error(`Product not found: ${productId}`);
             }
         }
-
-        await order.save();
 
         return res.json({ success: true, message: "Order cancelled successfully." });
     } catch (err) {

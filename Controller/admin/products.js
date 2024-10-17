@@ -233,6 +233,20 @@ const postEditProduct = async (req, res) => {
     }
 };
 
+const getProductDetail = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const product = await Products.findById(productId).populate("category");
+        if (!product) {
+            return res.status(404).send("Product not found");
+        }
+        res.render("admin/productdetail", { product });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server Error");
+    }
+};
+
 module.exports = {
     getProduts,
     updateProductStatus,
@@ -240,4 +254,5 @@ module.exports = {
     postAddProduct,
     getEditProduct,
     postEditProduct,
+    getProductDetail,
 };

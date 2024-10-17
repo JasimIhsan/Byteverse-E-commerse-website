@@ -188,7 +188,7 @@
                     <div class="card-content space-y-2">
                         <div class="flex justify-between">
                             <span class="text-muted">Subtotal</span>
-                            <span>$<%= subtotal %></span>
+                            <span>$<%= subtotal.toFixed(2) %></span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-muted">Shipping</span>
@@ -220,34 +220,41 @@
                                 <th>Quantity</th>
                                 <th>Price</th>
                                 <th>Total</th>
-                                <th style="display: flex; justify-content: center">Action</th>
+                                <% if (order.deliveryStatus == 'Pending' || order.deliveryStatus == 'Processing') { %>
+                                    <th style="display: flex; justify-content: center">Action</th>
+                                <% } %>
                             </tr>
                         </thead>
                         <tbody>
-                            <% if (order.products && order.products.length > 0) { %> <% order.products.forEach(product => { %>
-                            <tr>
-                                <td>
-                                    <% if (product.productId.images && product.productId.images.length > 0) { %>
-                                    <img src="/<%= product.productId.images[0] %>" alt="Product Image" style="width: 50px; height: 50px" />
-                                    <% } else { %>
-                                    <img src="/path/to/default-image.jpg" alt="No Image" style="width: 50px; height: 50px" />
-                                    <% } %>
-                                </td>
-                                <td><%= product.productId.name ? product.productId.name : 'N/A' %></td>
-                                <td><%= product.quantity !== undefined ? product.quantity : 0 %></td>
-                                <td>$<%= product.price !== undefined ? product.price.toFixed(2) : '0.00' %></td>
-                                <td>$<%= (product.price && product.quantity) ? order.total.toFixed(2) : '0.00' %></td>
-                                <td style="display: flex; justify-content: center; padding: 24px 0px">
-                                    <button class="btn btn-secondary" onclick="cancelOrderItem('<%= order._id %>', '<%= product.productId._id %>')">Remove</button>
-                                </td>
-                            </tr>
-                            <% }) %> <% } else { %>
-                            <tr>
-                                <td colspan="6" style="text-align: center">No items found in this order.</td>
-                            </tr>
+                            <% if (order.products && order.products.length > 0) { %>
+                                <% order.products.forEach(product => { %>
+                                    <tr>
+                                        <td>
+                                            <% if (product.productId.images && product.productId.images.length > 0) { %>
+                                                <img src="/<%= product.productId.images[0] %>" alt="Product Image" style="width: 50px; height: 50px" />
+                                            <% } else { %>
+                                                <img src="/path/to/default-image.jpg" alt="No Image" style="width: 50px; height: 50px" />
+                                            <% } %>
+                                        </td>
+                                        <td><%= product.productId.name ? product.productId.name : 'N/A' %></td>
+                                        <td><%= product.quantity !== undefined ? product.quantity : 0 %></td>
+                                        <td>$<%= product.price !== undefined ? product.price.toFixed(2) : '0.00' %></td>
+                                        <td>$<%= (product.quantity * product.price).toFixed(2) %></td>
+                                        <% if (order.deliveryStatus == 'Pending' || order.deliveryStatus == 'Processing') { %>
+                                            <td style="display: flex; justify-content: center; padding: 24px 0px">
+                                                <button class="btn btn-secondary" onclick="cancelOrderItem('<%= order._id %>', '<%= product.productId._id %>')">Remove</button>
+                                            </td>
+                                        <% } %>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" style="text-align: center">No items found in this order.</td>
+                                </tr>
                             <% } %>
                         </tbody>
                     </table>
+                    
                 </div>
             </div>
 
@@ -318,20 +325,21 @@
                     confirmButtonText: "Yes, delete it!",
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Only make the API call if confirmed
                         axios
-                            .post("admin/remove-order-item", {
-                                orderId: orderId,
-                                productId: productId,
-                            })
+                            .post("/admin/order-management/order-detail/remove-order-item", { orderId, productId })
                             .then((response) => {
-                                console.log("Item removed:", response.data.message);
+                                const message = response.data.message;
                                 Swal.fire({
                                     title: "Deleted!",
-                                    text: "Your item has been removed.",
+                                    text: message,
                                     icon: "success",
                                 }).then(() => {
-                                    location.reload(); // Reload the page after confirmation
+                                    // Redirect to order management if the order was deleted
+                                    if (message.includes("Order deleted successfully")) {
+                                        window.location.href = "/admin/order-management"; // Redirect here
+                                    } else {
+                                        location.reload(); // Reload the page after confirming
+                                    }
                                 });
                             })
                             .catch((error) => {

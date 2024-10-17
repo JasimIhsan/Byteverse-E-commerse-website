@@ -1,5 +1,6 @@
 const { findOneAndDelete } = require("../../model/OTP");
 const User = require("../../model/user");
+const Order = require("../../model/user");
 
 const getUserManagement = async (req, res) => {
     try {
@@ -42,7 +43,17 @@ const updateUserStatus = async (req, res) => {
 
 const getUserDetails = async (req, res) => {
     try {
-        res.render("admin/userdetails");
+        const userId = req.params.userId;
+
+        const user = await User.findById(userId).populate("defaultAddress");
+
+        const orders = await Order.find({ userId }).populate("Address").populate("products.productId");
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        res.render("admin/userdetail", { user, orders });
     } catch (error) {
         console.error("Error from get user details : \n", error);
     }

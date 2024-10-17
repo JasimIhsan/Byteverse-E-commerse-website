@@ -1,347 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Order Detail #1234</title>
-        <style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-                line-height: 1.5;
-                color: #333;
-                background-color: #f9fafb;
-                margin: 0;
-                padding: 0;
-            }
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 1.5rem;
-            }
-            .header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1.5rem;
-            }
-            h1 {
-                font-size: 1.875rem;
-                font-weight: bold;
-                margin: 0;
-            }
-            .badge {
-                background-color: #e5e7eb;
-                color: #374151;
-                padding: 0.25rem 0.75rem;
-                border-radius: 9999px;
-                font-size: 0.875rem;
-                font-weight: 500;
-            }
-            .grid {
-                display: grid;
-                gap: 1.5rem;
-            }
-            @media (min-width: 768px) {
-                .grid-cols-2 {
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
-                }
-            }
-            .card {
-                background-color: #fff;
-                border-radius: 0.5rem;
-                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-                overflow: hidden;
-            }
-            .card-header {
-                padding: 1.25rem 1.5rem;
-                border-bottom: 1px solid #e5e7eb;
-            }
-            .card-title {
-                font-size: 1.25rem;
-                font-weight: 600;
-                margin: 0;
-            }
-            .card-content {
-                padding: 1.5rem;
-            }
-            .flex {
-                display: flex;
-            }
-            .items-center {
-                align-items: center;
-            }
-            .justify-between {
-                justify-content: space-between;
-            }
-            .space-x-4 > * + * {
-                margin-left: 1rem;
-            }
-            .mb-4 {
-                margin-bottom: 1rem;
-            }
-            .font-medium {
-                font-weight: 500;
-            }
-            .text-sm {
-                font-size: 0.875rem;
-            }
-            .text-muted {
-                color: #6b7280;
-            }
-            .mt-6 {
-                margin-top: 1.5rem;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            th,
-            td {
-                padding: 0.75rem;
-                text-align: left;
-                border-bottom: 1px solid #e5e7eb;
-            }
-            th {
-                font-weight: 600;
-                color: #374151;
-            }
-            .space-y-2 > * + * {
-                margin-top: 0.5rem;
-            }
-            .separator {
-                height: 1px;
-                background-color: #e5e7eb;
-                margin: 1rem 0;
-            }
-            .btn {
-                display: inline-block;
-                padding: 0.5rem 1rem;
-                font-size: 0.875rem;
-                font-weight: 500;
-                text-align: center;
-                text-decoration: none;
-                border-radius: 0.375rem;
-                transition: background-color 0.2s;
-            }
-            .btn-primary {
-                background-color: #3b82f6;
-                color: #fff;
-            }
-            .btn-primary:hover {
-                background-color: #2563eb;
-            }
-            .btn-secondary {
-                background-color: #fff;
-                color: #374151;
-                border: 1px solid #d1d5db;
-            }
-            .btn-secondary:hover {
-                background-color: #f3f4f6;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <header class="header">
-                <h1>Order #1234</h1>
-                <span class="badge">Processing</span>
-            </header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop multiple images with cropper js</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+    .g-height-50 {
+        height: 50px;
+    }
 
-            <div class="grid grid-cols-2">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Customer Information</h2>
-                    </div>
-                    <div class="card-content">
-                        <div class="flex items-center space-x-4 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                            <div>
-                                <p class="font-medium">John Doe</p>
-                                <p class="text-sm text-muted">john.doe@example.com</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            <address>
-                                <p>123 Main St</p>
-                                <p>Anytown, ST 12345</p>
-                                <p>United States</p>
-                            </address>
-                        </div>
-                    </div>
-                </div>
+    .g-width-50 {
+        width: 50px !important;
+    }
 
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Order Summary</h2>
-                    </div>
-                    <div class="card-content space-y-2">
-                        <div class="flex justify-between">
-                            <span class="text-muted">Subtotal</span>
-                            <span>$100.00</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-muted">Shipping</span>
-                            <span>$10.00</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-muted">Tax</span>
-                            <span>$8.00</span>
-                        </div>
-                        <div class="separator"></div>
-                        <div class="flex justify-between font-medium">
-                            <span>Total</span>
-                            <span>$118.00</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    @media (min-width: 0){
+        .g-pa-30 {
+            padding: 2.14286rem !important;
+        }
+    }
 
-            <div class="card mt-6">
-                <div class="card-header">
-                    <h2 class="card-title">Order Items</h2>
-                </div>
-                <div class="card-content">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                                <th style="display: flex; justify-content: center;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Product A</td>
-                                <td>2</td>
-                                <td>$25.00</td>
-                                <td>$50.00</td>
-                                <td style="display: flex; justify-content: center;">
-                                    <button class="btn btn-secondary" onclick="cancelOrderItem('Product A')">Remove</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Product B</td>
-                                <td>1</td>
-                                <td>$50.00</td>
-                                <td>$50.00</td>
-                                <td style="display: flex; justify-content: center;">
-                                    <button class="btn btn-secondary" onclick="cancelOrderItem('Product B')">Remove</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    .g-bg-secondary {
+        background-color: #fafafa !important;
+    }
 
-            <div class="grid grid-cols-2 mt-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Payment Information</h2>
-                    </div>
-                    <div class="card-content space-y-2">
-                        <div class="flex items-center space-x-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                                <line x1="1" y1="10" x2="23" y2="10"></line>
-                            </svg>
-                            <span>Visa ending in 4242</span>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-                                <circle cx="12" cy="12" r="2"></circle>
-                                <path d="M6 12h.01M18 12h.01"></path>
-                            </svg>
-                            <span>$118.00 - Paid</span>
-                        </div>
-                    </div>
-                </div>
+    .u-shadow-v18 {
+        box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 0.15);
+    }
 
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Shipping Information</h2>
-                    </div>
-                    <div class="card-content space-y-2">
-                        <div class="flex items-center space-x-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="1" y="3" width="15" height="13"></rect>
-                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                            </svg>
-                            <span>Standard Shipping</span>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
-                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                            </svg>
-                            <span>Not yet shipped</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    .g-color-gray-dark-v4 {
+        color: #777 !important;
+    }
 
-            <div class="card mt-6">
-                <div class="card-header">
-                    <h2 class="card-title">Order Timeline</h2>
-                </div>
-                <div class="card-content space-y-4">
-                    <div class="flex items-center space-x-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                        <span class="font-medium">Order Placed</span>
-                        <span class="text-muted">- June 10, 2023 at 2:30 PM</span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                        <span class="font-medium">Payment Received</span>
-                        <span class="text-muted">- June 10, 2023 at 2:35 PM</span>
-                    </div>
-                </div>
-            </div>
+    .g-font-size-12 {
+        font-size: 0.85714rem !important;
+    }
 
-            <div class="card mt-6">
-                <div class="card-header">
-                    <h2 class="card-title">Order Actions</h2>
-                    <p class="text-sm text-muted">Update the status of this order</p>
-                </div>
-                <div class="card-content">
-                    <div class="flex items-center space-x-4">
-                        <label for="status">Status</label>
-                        <select id="status" name="status">
-                            <option value="processing" selected>Processing</option>
-                            <option value="shipped">Shipped</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="card-content flex justify-between">
-                    <button class="btn btn-secondary">Cancel Order</button>
-                    <button class="btn btn-primary">Update Order</button>
-                </div>
-            </div>
+    .media-comment {
+        margin-top:20px
+    }
+    .singleImageCanvasContainer{
+        overflow: hidden;
+        height: 200px;
+        width: 30%;
+        display: inline-block;
+        position: relative;
+        padding-right: 0px;
+        margin-right: 15px;
+        border: 2px solid #dfdfdf;
+        margin-bottom: 10px;
+        padding: 4px;
+        border-radius: .25rem;
+    }
+
+    .singleImageCanvasContainer .singleImageCanvasCloseBtn{
+        position: absolute;
+        right: 0;
+    }
+    .singleImageCanvasContainer .singleImageCanvas{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+</head>
+<body>
+
+<!-- code by w3codegenerator.com -->
+<div class="container m-5">
+    <div class="row">
+        <div class="col-md-12">
+            <input type="file" name="file" id="file" accept="image/*" multiple />
         </div>
-    </body>
+
+
+    </div>
+</div>
+
+<div class="modal" id="cropperModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Upload Images</h4>
+               <button type="button" class="close" data-dismiss="modal">&amp;times;</button>
+            </div>
+            <form action="/upload-images" method="POST" enctype="multipart/form-data">
+
+            <input type="hidden" id="post_img_data" name="image_data_url">
+            <div class="modal-body p-4">
+                <div class="img-preview"></div>
+                <div id="galleryImages"></div>
+                <div id="cropper">
+                    <canvas id="cropperImg" width="0" height="0"></canvas>
+                    <button type="button" class="cropImageBtn btn btn-danger" style="display:none;" id="cropImageBtn">Crop</button>
+                </div>
+                <div id="imageValidate" class="text-danger"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.js" integrity="sha512-E4KfIuQAc9ZX6zW1IUJROqxrBqJXPuEcDKP6XesMdu2OV4LW7pj8+gkkyx2y646xEV7yxocPbaTtk2LQIJewXw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.5/cropper.min.css" integrity="sha512-Aix44jXZerxlqPbbSLJ03lEsUch9H/CmnNfWxShD6vJBbboR+rPdDXmKN+/QjISWT80D4wMjtM4Kx7+xkLVywQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script>
+    $(document).ready(function(){
+        $("body").on("change", "#file", function(e){
+            $('.singleImageCanvasContainer').remove();
+            $('#post_img_data').val('');
+        });
+    })
+</script>
+<script>
+
+    //Multiple image cropper and preview on creating post
+    var c;
+    var galleryImagesContainer = document.getElementById('galleryImages');
+    var imageCropFileInput = document.getElementById('file');
+    var cropperImageInitCanvas = document.getElementById('cropperImg');
+    var cropImageButton = document.getElementById('cropImageBtn');
+    // Crop Function On change
+    function imagesPreview(input) {
+        var cropper;
+        //cropImageButton.className = 'show';
+        var img = [];
+        if (input.files.length) {
+            var i = 0;
+            var index = 0;
+            for (let singleFile of input.files) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var blobUrl = event.target.result;
+                    img.push(new Image());
+                    img[i].onload = function(e) {
+                        // Canvas Container
+                        var singleCanvasImageContainer = document.createElement('div');
+                        singleCanvasImageContainer.id = 'singleImageCanvasContainer'+index;
+                        singleCanvasImageContainer.className = 'singleImageCanvasContainer';
+                        // Canvas Close Btn
+                        var singleCanvasImageCloseBtn = document.createElement('button');
+                        var singleCanvasImageCloseBtnText = document.createTextNode('X');
+                        // var singleCanvasImageCloseBtnText = document.createElement('i');
+                        // singleCanvasImageCloseBtnText.className = 'fa fa-times';
+                        singleCanvasImageCloseBtn.id = 'singleImageCanvasCloseBtn'+index;
+                        singleCanvasImageCloseBtn.className = 'singleImageCanvasCloseBtn';
+                        singleCanvasImageCloseBtn.classList.add("btn", "btn-sm");
+                        singleCanvasImageCloseBtn.onclick = function() {
+                            removeSingleCanvas(this)
+                        };
+                        singleCanvasImageCloseBtn.appendChild(singleCanvasImageCloseBtnText);
+                        singleCanvasImageContainer.appendChild(singleCanvasImageCloseBtn);
+                        // Image Canvas
+                        var canvas = document.createElement('canvas');
+                        canvas.id = 'imageCanvas'+index;
+                        canvas.className = 'imageCanvas singleImageCanvas';
+                        canvas.width = e.currentTarget.width;
+                        canvas.height = e.currentTarget.height;
+                        canvas.onclick = function() { cropInit(canvas.id); };
+                        singleCanvasImageContainer.appendChild(canvas)
+                        // Canvas Context
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(e.currentTarget,0,0);
+                        // galleryImagesContainer.append(canvas);
+                        galleryImagesContainer.appendChild(singleCanvasImageContainer);
+                        // while (document.querySelectorAll('.singleImageCanvas').length == input.files.length) {
+                        //     var allCanvasImages = document.querySelectorAll('.singleImageCanvas')[0].getAttribute('id');
+                        //     console.log(allCanvasImages);
+                        //     //commented by sam
+                        //     //cropInit(allCanvasImages);
+                        //     break;
+                        // };
+                        urlConversion();
+                        index++;
+                };
+                    img[i].src = blobUrl;
+                    i++;
+                }
+                reader.readAsDataURL(singleFile);
+            }
+        }
+    }
+
+    imageCropFileInput.addEventListener("change", function(event){
+
+        $('#cropperModal').modal('show');
+        var mediaValidation = validatePostMedia(event.target.files);
+        if(!mediaValidation){
+            var $el = $('#file');
+            $el.wrap('<form>').closest('form').get(0).reset();
+            $el.unwrap();
+            return false;
+        }
+
+        $('#mediaPreview').empty();
+        $('.singleImageCanvasContainer').remove();
+        if(cropperImageInitCanvas.cropper){
+            cropperImageInitCanvas.cropper.destroy();
+            cropperImageInitCanvas.width = 0;
+            cropperImageInitCanvas.height = 0;
+            cropImageButton.style.display = 'none';
+        }
+        imagesPreview(event.target);
+    });
+    // Initialize Cropper
+    function cropInit(selector) {
+        c = document.getElementById(selector);
+
+        if(cropperImageInitCanvas.cropper){
+            cropperImageInitCanvas.cropper.destroy();
+        }
+        var allCloseButtons = document.querySelectorAll('.singleImageCanvasCloseBtn');
+        for (let element of allCloseButtons) {
+            element.style.display = 'block';
+        }
+        c.previousSibling.style.display = 'none';
+        // c.id = croppedImg;
+        var ctx=c.getContext('2d');
+        var imgData=ctx.getImageData(0, 0, c.width, c.height);
+        var image = cropperImageInitCanvas;
+        image.width = c.width;
+        image.height = c.height;
+        var ctx = image.getContext('2d');
+        ctx.putImageData(imgData,0,0);
+
+        cropper = new Cropper(image, {
+            aspectRatio: 16/9,
+			viewMode: 4,
+            preview: '.img-preview',
+            crop: function(event) {
+                cropImageButton.style.display = 'block';
+            }
+        });
+
+    }
+
+    function image_crop() {
+        if(cropperImageInitCanvas.cropper){
+            var cropcanvas = cropperImageInitCanvas.cropper.getCroppedCanvas({
+                    width: 250, height: 250
+                });
+            // document.getElementById('cropImages').appendChild(cropcanvas);
+            var ctx=cropcanvas.getContext('2d');
+            var imgData=ctx.getImageData(0, 0, cropcanvas.width, cropcanvas.height);
+            // var image = document.getElementById(c);
+            c.width = cropcanvas.width;
+            c.height = cropcanvas.height;
+            var ctx = c.getContext('2d');
+            ctx.putImageData(imgData,0,0);
+            cropperImageInitCanvas.cropper.destroy();
+            cropperImageInitCanvas.width = 0;
+            cropperImageInitCanvas.height = 0;
+            cropImageButton.style.display = 'none';
+            var allCloseButtons = document.querySelectorAll('.singleImageCanvasCloseBtn');
+            for (let element of allCloseButtons) {
+                element.style.display = 'block';
+            }
+            urlConversion();
+        } else {
+            alert('Please select any Image you want to crop');
+        }
+    }
+    cropImageButton.addEventListener("click", function(){
+        image_crop();
+    });
+    // Image Close/Remove
+    function removeSingleCanvas(selector) {
+        selector.parentNode.remove();
+        urlConversion();
+    }
+
+    function urlConversion() {
+        var allImageCanvas = document.querySelectorAll('.singleImageCanvas');
+        var convertedUrl = '';
+        canvasLength = allImageCanvas.length;
+        for (let element of allImageCanvas) {
+            convertedUrl += element.toDataURL('image/jpeg');
+            convertedUrl += 'img_url';
+        }
+        document.getElementById('post_img_data').value = convertedUrl;
+    }
+</script>
+<script>
+    function validatePostMedia(files){
+
+        $('#imageValidate').empty();
+        let err = 0;
+        let ResponseTxt = '';
+        if(files.length > 10){
+            err += 1;
+            ResponseTxt += '<p> You can select maximum 10 files. </p>';
+        }
+        $(files).each(function(index, file) {
+            if(file.size > 1048576){
+                err +=  1;
+                ResponseTxt += 'File : '+file.name + ' is greater than 1MB';
+            }
+        });
+
+        if(err > 0){
+            $('#imageValidate').html(ResponseTxt);
+            return false;
+        }
+        return true;
+
+    }
+</script>
+</body>
 </html>

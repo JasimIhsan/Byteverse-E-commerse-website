@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
+
 const dash = require("../../Controller/admin/dashboard");
 const user_man = require("../../Controller/admin/user");
 const cat_man = require("../../Controller/admin/catogory");
 const prd_man = require("../../Controller/admin/products");
 const order = require("../../Controller/admin/orders");
+const coupon = require("../../Controller/admin/coupon");
+
 const productImageUpload = require("../../config/multer");
 const auth = require("../../middleware/adminAuth");
 const { log } = require("debug/src/browser");
@@ -25,7 +28,7 @@ router.get("/user-management", auth.checkSession, user_man.getUserManagement);
 
 router.patch("/user-management/update-status/:id", auth.checkSession, user_man.updateUserStatus);
 
-router.get("/user-management/user-details", auth.checkSession, user_man.getUserDetails);
+router.get("/user-management/user-details/:userId", auth.checkSession, user_man.getUserDetails);
 
 //----------- Catogery management -----------------//
 
@@ -40,6 +43,8 @@ router.patch("/category-management/update-status/:id", auth.checkSession, cat_ma
 //----------- Product management -----------------//
 
 router.get("/product-management", auth.checkSession, prd_man.getProduts);
+
+router.get("/product-management/product-detail/:productId", prd_man.getProductDetail);
 
 router.patch("/product-management/update-status/:id", auth.checkSession, prd_man.updateProductStatus);
 
@@ -57,8 +62,22 @@ router.get("/order-management", order.getOrderManagement);
 
 router.post("/order-management/update-status/:orderId", order.updateOrderStatus);
 
-router.get('/order-management/order-detail/:orderId', order.getOrderDetail)
+router.get("/order-management/order-detail/:orderId", order.getOrderDetail);
 
-router.post("/remove-order-item", order.cancelOrderItem)
+router.post("/order-management/order-detail/remove-order-item", order.cancelOrderItem);
+
+//----------- Coupon management -----------------//
+
+router.get("/coupon-management", coupon.getCoupon);
+
+router.post("/coupon-management/add-coupon", coupon.addCoupon);
+
+router.delete("/coupon-management/delete/:couponId", coupon.deleteCopon);
+
+router.get("/coupon-management/:couponId", coupon.getCouponById);
+
+router.put("/coupon-management/:couponId", coupon.updateCoupon);
+
+router.post("/coupons/toggle-status", coupon.toggleCouponStatus);
 
 module.exports = router;

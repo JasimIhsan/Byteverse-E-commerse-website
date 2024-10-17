@@ -24,7 +24,7 @@
                 <li><a href="/admin/product-management">Products</a></li>
                 <li class="active"><a href="#">Orders</a></li>
                 <li><a href="/admin/category-management">Categories</a></li>
-                <li><a href="#">Coupon</a></li>
+                <li><a href="/admin/coupon-management">Coupon</a></li>
                 <li><a href="#">Offers</a></li>
                 <li><a href="#">Support</a></li>
                 <li><a href="#">Settings</a></li>
@@ -93,6 +93,7 @@
             <!-- Pagination -->
             <div class="pagination">
                 <% if (currentPage > 1) { %>
+                    <% console.log('CURRENT PAGE : ',currentPage) %>
                     <a href="/admin/order-management?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
                 <% } %>
                 <% for (let i = 1; i <= totalPages; i++) { %>

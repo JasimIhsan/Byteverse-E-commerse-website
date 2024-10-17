@@ -334,7 +334,7 @@
                                                         </ul>
                                                     </div>
                                                     <div class="card-footer">
-                                                        <% if (order.deliveryStatus === 'Pending') { %>
+                                                        <% if (order.deliveryStatus === 'Pending' || order.deliveryStatus === 'Processing' ) { %>
                                                         <button class="btn btn-outline" style="font-size: 12px" onclick="cancelOrder('<%= order._id %>', '<%= order.deliveryStatus %>')">Cancel Order</button>
                                                         <% } else if (order.deliveryStatus === 'Cancelled') { %>
                                                         <!-- Do nothing or show a message if needed -->
@@ -400,32 +400,24 @@
                             cancelButtonText: "No, keep it",
                         }).then((confirmation) => {
                             if (confirmation.isConfirmed) {
-                                console.log(status);
                                 // Check if the status allows cancellation
-                                if (status === "Pending") {
+                                if (status === "Pending" || status === "Processing") {
                                     // Directly cancel the order
-                                    console.log(orderId, reason);
-
-                                    sendCancellation(orderId, reason, false);
-                                } else if (status === "Shipped") {
-                                    // Send cancellation request for admin approval
-                                    sendCancellation(orderId, reason, true);
+                                    sendCancellation(orderId, reason);
+                                } else {
+                                    Swal.fire("Cannot Cancel!", "Order status does not allow cancellation.", "error");
                                 }
                             }
                         });
                     }
                 });
             }
-
-            function sendCancellation(orderId, reason, needsApproval) {
-                // console.log(orderId, reason, needsApproval, userId);
-                console.log("erexytcuvygibuhnij");
-
+        
+            function sendCancellation(orderId, reason) {
                 axios
                     .post(`/profile/orders/cancel-order`, {
                         orderId: orderId,
                         reason: reason,
-                        needsApproval: needsApproval,
                     })
                     .then((response) => {
                         if (response.data.success) {
@@ -440,5 +432,6 @@
                     });
             }
         </script>
+        
     </body>
 </html>

@@ -137,6 +137,8 @@ router.post("/:userId/cart/:productId/delete-item", auth.checkSession, checkout.
 
 router.get("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.getCheckout);
 
+router.post('/apply-coupon', checkout.applyCoupon);
+
 router.post("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.creatingOrder);
 
 router.get("/:userId/cart/checkout/order-placed/:orderId", auth.checkSession, checkout.getPlaceOrder);

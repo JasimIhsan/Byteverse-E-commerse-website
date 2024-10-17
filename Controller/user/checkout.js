@@ -4,6 +4,7 @@ const Category = require("../../model/catogory");
 const Cart = require("../../model/cart");
 const Address = require("../../model/Address");
 const Order = require("../../model/orders");
+const Coupon = require("../../model/coupon");
 
 const getCart = async (req, res) => {
     try {
@@ -29,7 +30,7 @@ const getCart = async (req, res) => {
         }));
 
         const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-        const shippingCost = 20;
+        const shippingCost = subtotal > 1500 ? 0 : 20;
         const total = subtotal + shippingCost;
 
         const error = req.query.error || null;
@@ -47,8 +48,8 @@ const postAddtoCart = async (req, res) => {
     const quantity = 1;
 
     try {
-        console.log("Product Id:", productId);
-        console.log("Quantity:", quantity);
+        // console.log("Product Id:", productId);
+        // console.log("Quantity:", quantity);
 
         if (!userId) {
             return res.status(401).json({ success: false, message: "User not logged in. Please log in to add items to your cart." });
@@ -66,24 +67,16 @@ const postAddtoCart = async (req, res) => {
             cart = new Cart({ UserId: userId, Products: [] });
         }
 
-        console.log("Cart found/created");
+        // console.log("Cart found/created");
 
         const productIndex = cart.Products.findIndex((item) => item.ProductId.toString() === productId);
 
         if (productIndex > -1) {
-            console.log("Product already in cart, updating quantity");
-
-            const newQuantity = cart.Products[productIndex].Quantity + quantity;
-
-            if (newQuantity > 10) {
-                return res.status(400).json({ success: false, message: "Maximum quantity limit of 10 reached for this product." });
-            }
-
-            if (newQuantity > product.stock) {
-                return res.status(400).json({ success: false, message: `Cannot add more than ${product.stock} of this product to the cart. Maximum stock reached !` });
-            }
-
-            cart.Products[productIndex].Quantity = newQuantity;
+            return res.status(200).json({
+                success: false,
+                message: "Product already exists in the cart",
+                exists: true,
+            });
         } else {
             if (quantity > product.stock) {
                 return res.status(400).json({ success: false, message: `Cannot add more than ${product.stock} of this product to the cart. Maximum stock reached !` });
@@ -91,7 +84,7 @@ const postAddtoCart = async (req, res) => {
 
             cart.Products.push({
                 ProductId: product._id,
-                Quantity: quantity, // Defaulted to 1
+                Quantity: quantity,
                 Price: product.price,
             });
         }
@@ -169,10 +162,16 @@ const getCheckout = async (req, res) => {
         const userLoggedIn = req.session.userLoggedIn ? true : false;
 
         const user = await User.findById(userId);
-
         const addresses = await Address.find({ userId: userId });
         const defaultAddress = addresses.find((address) => address.isDefault);
         const cart = await Cart.findOne({ UserId: userId }).populate("Products.ProductId");
+
+        const today = new Date();
+        const coupons = await Coupon.find({
+            isActive: true,
+            expiryDate: { $gte: today },
+            usedBy: { $ne: userId },
+        });
 
         if (!cart || cart.Products.length === 0) {
             const deliveryCharge = 0;
@@ -185,6 +184,7 @@ const getCheckout = async (req, res) => {
                 totalPrice: 0,
                 orderItems: [],
                 deliveryCharge,
+                coupons,
             });
         }
 
@@ -194,7 +194,6 @@ const getCheckout = async (req, res) => {
         }));
 
         const subtotal = orderItems.reduce((sum, item) => sum + item.productTotal, 0);
-
         const deliveryCharge = subtotal > 1500 ? 0 : 20;
         const totalPrice = subtotal + deliveryCharge;
 
@@ -206,24 +205,88 @@ const getCheckout = async (req, res) => {
             defaultAddress,
             totalPrice,
             orderItems,
-            deliveryCharge, // Pass deliveryCharge here
+            deliveryCharge,
+            coupons,
         });
     } catch (error) {
         console.error("Error from get checkout page : \n ", error);
     }
 };
 
+const applyCoupon = async (req, res) => {
+    const { couponCode } = req.body;
+
+    try {
+        const coupon = await Coupon.findOne({ code: couponCode });
+
+        if (!coupon) {
+            return res.json({ success: false, message: "Invalid coupon code." });
+        }
+
+        if (!coupon.isActive) {
+            return res.json({ success: false, message: "This coupon is no longer active." });
+        }
+
+        if (coupon.expiryDate < new Date()) {
+            return res.json({ success: false, message: "This coupon has expired." });
+        }
+
+        if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
+            return res.json({ success: false, message: "This coupon has reached its usage limit." });
+        }
+
+        const user = await User.findById(req.user._id);
+
+        if (user.usedCoupons.includes(coupon._id)) {
+            return res.json({ success: false, message: "You already used this coupon" });
+        }
+
+        const userCart = await Cart.findOne({ UserId: req.user._id });
+        // console.log("user art : ", userCart);
+
+        if (!userCart) {
+            return res.json({ success: false, message: "Your cart is empty." });
+        }
+
+        let total = 0;
+        userCart.Products.forEach((product) => {
+            total += product.Quantity * product.Price;
+        });
+        // console.log("Total : ", total);
+
+        if (total < coupon.minimumSpend) {
+            return res.json({ success: false, message: `Minimum spend of $${coupon.minimumSpend} is required to use this coupon.` });
+        }
+
+        const discountAmount = coupon.discount;
+
+        const newTotal = total - discountAmount;
+
+        // console.log("NEW TOTAL : ", newTotal);
+        // console.log("DISCOUNT : ", discountAmount);
+
+        return res.json({ success: true, discountAmount, newTotal, total });
+    } catch (error) {
+        console.error("Error applying coupon:", error);
+        return res.status(500).json({ success: false, message: "An error occurred while applying the coupon." });
+    }
+};
+
 const creatingOrder = async (req, res) => {
     try {
         const userId = req.session.userId;
-        const { addressId, paymentMethod } = req.body;
+        const { addressId, paymentMethod, couponCode } = req.body;
 
-        const user = await User.findById(userId);
-        const cart = await Cart.findOne({ UserId: userId }).populate("Products.ProductId");
-        const address = await Address.findById(addressId);
-
-        console.log("addressId : ", addressId);
-        console.log("PaymentMethod : ", paymentMethod);
+        const [user, cart, address, coupon] = await Promise.all([
+            User.findById(userId),
+            Cart.findOne({ UserId: userId }).populate("Products.ProductId"),
+            Address.findById(addressId),
+            Coupon.findOne({
+                code: couponCode,
+                isActive: true,
+                expiryDate: { $gte: new Date() },
+            }),
+        ]);
 
         if (!cart || cart.Products.length === 0) {
             return res.status(400).json({ message: "Cart is empty." });
@@ -232,16 +295,14 @@ const creatingOrder = async (req, res) => {
             return res.status(400).json({ message: "Invalid address." });
         }
 
-        // Check stock availability for each product
         const orderItems = [];
         for (const item of cart.Products) {
             const product = item.ProductId;
             const requestedQuantity = item.Quantity;
 
-            // Check if the requested quantity exceeds available stock
             if (requestedQuantity > product.stock) {
                 return res.status(400).json({
-                    message: `Cannot order ${requestedQuantity} of ${product.name}. Only ${product.stock} available in stock.`,
+                    message: `Cannot order ${requestedQuantity} of ${product.name}. Only ${product.stock} available.`,
                 });
             }
 
@@ -252,43 +313,54 @@ const creatingOrder = async (req, res) => {
             });
         }
 
-        const subtotal = orderItems.reduce((sum, item) => sum + (item.price || 0), 0);
-        console.log("subtotal : ", subtotal);
-
+        const subtotal = orderItems.reduce((sum, item) => sum + item.price, 0);
         const deliveryCharge = subtotal > 1500 ? 0 : 20;
-        const total = subtotal + deliveryCharge;
+        let total = subtotal + deliveryCharge;
+        let couponDiscount = 0;
+
+        if (coupon) {
+            couponDiscount = coupon.discount;
+            total -= couponDiscount;
+        }
 
         if (isNaN(total)) {
             return res.status(500).json({ message: "Failed to calculate total." });
         }
 
         const order = new Order({
-            userId: userId,
+            userId,
             products: orderItems,
-            paymentMethod: paymentMethod,
-            total: total,
+            paymentMethod,
+            total,
+            couponUsed: coupon ? coupon._id : null,
             shippingCost: deliveryCharge,
             Address: address._id,
+            couponCode: couponCode ? couponCode : null,
+            couponDiscount,
         });
 
         await order.save();
 
-        await User.findByIdAndUpdate(userId, { $inc: { orders: 1 } });
+        if (coupon) {
+            // user.usedCoupons.push(coupon._id);
+            // await user.save();
 
-        // Decrease stock
-        for (const item of orderItems) {
-            await Product.findByIdAndUpdate(item.productId, {
-                $inc: { stock: -item.quantity },
-            });
+            coupon.usedCount += 1;
+            await coupon.save();
         }
 
-        req.session.orderPlaced = true;
+        await User.findByIdAndUpdate(userId, { $inc: { orders: 1 } });
+
+        for (const item of orderItems) {
+            await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
+        }
+
         cart.Products = [];
         await cart.save();
 
         res.redirect(`/${userId}/cart/checkout/order-placed/${order._id}`);
     } catch (error) {
-        console.error("Error from post place order : \n", error);
+        console.error("Error from post place order: \n", error);
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -296,12 +368,10 @@ const creatingOrder = async (req, res) => {
 const getPlaceOrder = async (req, res) => {
     try {
         const userId = req.session.userId;
-        const userLoggedIn = req.session.userId ? true : false;
+        const userLoggedIn = Boolean(req.session.userLoggedIn);
         const orderId = req.params.orderId;
 
-        const user = await User.findById(userId);
-
-        const order = await Order.findById(orderId).populate("products.productId");
+        const [user, order] = await Promise.all([User.findById(userId), Order.findById(orderId).populate("products.productId")]);
 
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
@@ -315,21 +385,24 @@ const getPlaceOrder = async (req, res) => {
 
         const orderTotal = orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
         const deliveryCharge = orderTotal > 1500 ? 0 : 20;
-        const totalPrice = orderTotal + deliveryCharge;
+        const couponDiscount = order.couponDiscount || 0;
+        const totalPrice = orderTotal + deliveryCharge - couponDiscount;
 
         res.render("user/orderplaced", {
             userId,
             user,
             orderItems,
-            orderTotal,
+            subtotal: orderTotal,
             totalPrice,
             deliveryCharge,
             orderNumber: order._id,
             userLoggedIn,
             order,
+            couponCode: order.couponCode || null,
+            couponDiscount,
         });
     } catch (error) {
-        console.error("Error from get place order : \n", error);
+        console.error("Error from get place order: \n", error);
     }
 };
 
@@ -341,4 +414,5 @@ module.exports = {
     getCheckout,
     getPlaceOrder,
     creatingOrder,
+    applyCoupon,
 };

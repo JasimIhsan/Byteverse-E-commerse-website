@@ -26,6 +26,20 @@
         <!-- Main CSS File -->
         <link rel="stylesheet" href="/assets/css/style.css" />
         <link rel="stylesheet" href="/css/user/main.css" />
+        <style>
+            .coupon-button button {
+                padding: 5px 86px;
+                color: #5c59e8;
+                border-color: #5c59e8;
+                border-width: 1px;
+                /* margin-bottom: -5px; */
+            }
+            .coupon-button :hover {
+                background-color: #5c59e8;
+                color: #ffffff;
+                border-color: #5c59e8;
+            }
+        </style>
     </head>
 
     <body>
@@ -114,6 +128,7 @@
                                         <label>Additional Information (Optional)</label>
                                         <input type="text" class="form-control" name="additionalInfo" placeholder="Apartment, suite, etc." value="<%= defaultAddress ? defaultAddress.additionalInfo : '' %>" />
                                     </div>
+
                                     <!-- End .col-lg-9 -->
                                     <aside class="col-lg-3">
                                         <!-- Add your action URL -->
@@ -135,11 +150,18 @@
                                                     <% }); %>
                                                     <tr>
                                                         <td>Delivery Charge:</td>
-                                                        <td>$<%= deliveryCharge.toFixed(2) %></td>
+                                                        <td>$<%= deliveryCharge ? deliveryCharge.toFixed(2) : "Free Delivery" %></td>
+                                                    </tr>
+                                                    <tr id="coupon-code-row" style="display: none">
+                                                        <td style="width: 175px;">Coupon (<span id="coupon-code"></span>):</td>
+                                                        <td id="discount-amount"></td>
                                                     </tr>
                                                     <tr class="summary-total">
-                                                        <td>Total:</td>
-                                                        <td>$<%= totalPrice.toFixed(2) %></td>
+                                                        <td style="font-weight: bold">Total:</td>
+                                                        <td>
+                                                            <span id="original-price" style="text-decoration: line-through; display: none; color: gray">$<%= totalPrice.toFixed(2) %></span>
+                                                            <span id="total-amount" style="font-weight: bold">$<%= totalPrice.toFixed(2) %></span>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -147,9 +169,9 @@
                                             <h3 class="summary-title">Payment Methods</h3>
                                             <div class="payment-methods">
                                                 <div class="payment-option" style="margin-bottom: 2rem">
-                                                    <input type="radio" name="paymentMethod" id="payment-bank-transfer" value="Bank Transfer" checked />
+                                                    <input type="radio" name="paymentMethod" id="payment-bank-transfer" value="UPI Payment" checked />
                                                     <label for="payment-bank-transfer">
-                                                        <span class="payment-label">Direct Bank Transfer</span>
+                                                        <span class="payment-label">UPI Payment</span>
                                                     </label>
                                                 </div>
 
@@ -166,23 +188,23 @@
                                                         <span class="payment-label">Cash on Delivery</span>
                                                     </label>
                                                 </div>
-
-                                                <div class="payment-option" style="margin-bottom: 2rem">
-                                                    <input type="radio" name="paymentMethod" id="payment-paypal" value="PayPal" />
-                                                    <label for="payment-paypal">
-                                                        <span class="payment-label">PayPal</span>
-                                                        <small class="paypal-link">What is PayPal?</small>
-                                                    </label>
-                                                </div>
-
-                                                <div class="payment-option" style="margin-bottom: 2rem">
-                                                    <input type="radio" name="paymentMethod" id="payment-credit-card" value="Credit Card" />
-                                                    <label for="payment-credit-card">
-                                                        <span class="payment-label">Credit Card (Stripe)</span>
-                                                        <img src="/assets/images/payments-summary.png" alt="payments cards" class="payment-icons" />
-                                                    </label>
-                                                </div>
                                             </div>
+
+                                            <h3 class="summary-title">Redeem Coupon</h3>
+                                            <div class="cart-discount" style="margin: 20px 0px">
+                                                <form id="couponForm">
+                                                    <div class="">
+                                                        <!-- Input for coupon code -->
+                                                        <input type="text" class="form-control" name="couponCode" id="couponCode" placeholder="Enter your coupon code" />
+
+                                                        <div class="coupon-button">
+                                                            <button id="apply-coupon-btn">Apply Coupon</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+
+                                            <h3 class="summary-title">Place Order</h3>
 
                                             <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
                                                 <span class="btn-text">Place Order</span>
@@ -216,6 +238,9 @@
     <script src="/assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
     <script src="/assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         function populateAddress() {
             const selectedAddress = document.getElementById("savedAddress").selectedOptions[0]; // Get the selected option
@@ -240,5 +265,70 @@
             document.querySelector('input[name="country"]').value = country || "";
             document.querySelector('input[name="additionalInfo"]').value = additionalInfo || "";
         }
+
+        document.getElementById("apply-coupon-btn").addEventListener("click", function (event) {
+            event.preventDefault();
+            const selectedCoupon = document.getElementById("couponCode").value;
+
+            if (!selectedCoupon) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Oops...",
+                    text: "Please select a coupon!",
+                });
+                return;
+            }
+
+            // Send coupon code to server for validation
+            axios
+                .post("/apply-coupon", { couponCode: selectedCoupon })
+                .then(function (response) {
+                    console.log("response : ", response);
+
+                    if (response.data.success) {
+                        const discountAmount = response.data.discountAmount;
+                        const newTotal = response.data.newTotal;
+                        const originalTotal = response.data.total;
+
+                        const appliedCoupon = selectedCoupon;
+
+                        console.log("DISCOUNT : ", discountAmount);
+                        console.log("NEWTOTAL : ", newTotal);
+
+                        //show coupon row
+                        if (discountAmount != null && newTotal != null) {
+                            document.getElementById("coupon-code-row").style.display = "table-row";
+                            document.getElementById("coupon-code").innerText = appliedCoupon;
+                            document.getElementById("discount-amount").innerText = `-$${discountAmount.toFixed(2)}`;
+
+                            document.getElementById("original-price").style.display = "inline";
+                            document.getElementById("original-price").innerText = `$${originalTotal.toFixed(2)}`;
+                            document.getElementById("total-amount").innerText = `$${newTotal.toFixed(2)}`;
+                        } else {
+                            console.error("Error: Discount amount or new total is null or undefined.");
+                        }
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Coupon Applied",
+                            text: `Discount: $${discountAmount}`,
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: response.data.message,
+                        });
+                    }
+                })
+                .catch(function (error) {
+                    console.error("Error applying coupon:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Server Error",
+                        text: "An error occurred while applying the coupon.",
+                    });
+                });
+        });
     </script>
 </html>
