@@ -2,137 +2,332 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Byteverse | Coupon Management</title>
-        <link rel="stylesheet" href="/css/admin/user-management.css" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>Cart | Byteverse E-commerce</title>
+        <meta name="keywords" content="HTML5 Template" />
+        <meta name="description" content="Molla - Bootstrap eCommerce Template" />
+        <meta name="author" content="p-themes" />
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/favicon-16x16.png" />
+        <link rel="manifest" href="/assets/images/icons/site.html" />
+        <link rel="mask-icon" href="/assets/images/icons/safari-pinned-tab.svg" color="#666666" />
+        <link rel="shortcut icon" href="/assets/images/icons/favicon.ico" />
+        <meta name="apple-mobile-web-app-title" content="Molla" />
+        <meta name="application-name" content="Molla" />
+        <meta name="msapplication-TileColor" content="#cc9966" />
+        <meta name="msapplication-config" href="/assets/images/icons/browserconfig.xml" />
+        <meta name="theme-color" content="#ffffff" />
+        <!-- Plugins CSS File -->
+        <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+        <!-- Main CSS File -->
+        <link rel="stylesheet" href="/assets/css/style.css" />
+        <link rel="stylesheet" href="/css/user/main.css" />
         <!-- Include SweetAlert2 CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+
         <!-- Include SweetAlert2 JS -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     </head>
 
     <body>
-        <div class="dashboard-container">
-            <!-- Sidebar -->
-            <aside class="unique-sidebar">
-                <div class="unique-sidebar-header">
-                    <h2>Byteverse</h2>
+        <div class="page-wrapper">
+            <%- include('partials/header.ejs') %>
+
+            <main class="main">
+                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); margin-top: 65px">
+                    <div class="container">
+                        <h1 class="page-title">Shopping Cart<span>Shop</span></h1>
+                    </div>
+                    <!-- End .container -->
                 </div>
-                <ul class="unique-sidebar-menu">
-                    <li><a href="/admin/dashboard">Dashboard</a></li>
-                    <li><a href="/admin/user-management">Users</a></li>
-                    <li><a href="/admin/product-management">Products</a></li>
-                    <li><a href="/admin/order-management">Orders</a></li>
-                    <li><a href="/admin/category-management">Categories</a></li>
-                    <li class="active"><a href="">Coupons</a></li>
-                    <li><a href="#">Offers</a></li>
-                    <li><a href="#">Support</a></li>
-                    <li><a href="#">Settings</a></li>
-                </ul>
-            </aside>
-
-            <!-- Main Content -->
-            <div class="coupon-list-container">
-                <h1>Coupon Management</h1>
-
-                <!-- Breadcrumbs -->
-                <nav class="breadcrumbs">
-                    <a href="/admin/dashboard">Dashboard</a>
-                    <span>&gt;</span>
-                    <a href="#">Coupon Management</a>
+                <!-- End .page-header -->
+                <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                    <div class="container">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+                        </ol>
+                    </div>
+                    <!-- End .container -->
                 </nav>
+                <!-- End .breadcrumb-nav -->
 
-                <!-- Coupons Table -->
-                <table class="product-table">
-                    <thead>
-                        <tr>
-                            <th>SI No</th>
-                            <th>Coupon Code</th>
-                            <th>Discount</th>
-                            <th>Minimum Spend</th>
-                            <th>Expiry Date</th>
-                            <th>Used Count</th>
-                            <th>Usage Limit</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if (coupons.length > 0) { %> <% coupons.forEach(function(coupon, index) { %>
-                        <tr>
-                            <td><%= index + 1 %></td>
-                            <td><%= coupon.code %></td>
-                            <td><%= coupon.discount %> %</td>
-                            <td>$<%= coupon.minimumSpend.toFixed(2) %></td>
-                            <td><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
-                            <td><%= coupon.usedCount %></td>
-                            <td><%= coupon.usageLimit %></td>
-                            <td style="display: flex">
-                                <form action="/admin/coupon-management/edit/<%= coupon._id %>" method="GET">
-                                    <button class="action-btn view-btn" type="submit">Edit</button>
-                                </form>
-                                <button class="action-btn delete-btn" onclick="deleteCoupon('<%= coupon._id %>')">Delete</button>
-                            </td>
-                        </tr>
-                        <% }); %> <% } else { %>
-                        <tr>
-                            <td colspan="8">No coupons available.</td>
-                        </tr>
-                        <% } %>
-                    </tbody>
-                </table>
+                <div class="page-content">
+                    <div class="cart">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-9">
+                                    
+                                    <% if (error_msg) { %>
+                                    <div class="error-message" id="error"><%= error_msg %></div>
+                                    <% } %> <% if (success_msg) { %>
+                                    <div class="success-message" id="error"><%= success_msg %></div>
+                                    <% } %>
 
-                <!-- Pagination -->
-                <div class="pagination">
-                    <% if (currentPage > 1) { %>
-                    <a href="/admin/coupon-management?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
-                    <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-                    <a href="/admin/coupon-management?page=<%= i %>&search=<%= search %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-                    <% } %> <% if (currentPage < totalPages) { %>
-                    <a href="/admin/coupon-management?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
-                    <% } %>
+                                    <form action="/cart/update" method="POST">
+                                        <table class="table table-cart table-mobile">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <% if (cartItems.length > 0) { %> <% let isStockAvailable = true; %> <% cartItems.forEach(item => { %>
+                                                <tr>
+                                                    <td class="product-col">
+                                                        <div class="product">
+                                                            <figure class="product-media">
+                                                                <a href="#">
+                                                                    <img src="/<%= item.image[0] %>" alt="Product image" />
+                                                                </a>
+                                                            </figure>
+                                                            <h3 class="product-title">
+                                                                <a href="#"><%= item.name %></a>
+                                                            </h3>
+                                                        </div>
+                                                    </td>
+                                                    <td class="price-col">$<%= item.price.toFixed(2) %></td>
+                                                    <td class="quantity-col">
+                                                        <div class="cart-product-quantity">
+                                                            <% if (item.stock === 0) { %>
+                                                            <input type="number" name="quantity[<%= item.id %>]" class="form-control quantity-input" value="<%= item.quantity %>" min="0" max="0" step="1" disabled />
+                                                            <% } else { %>
+                                                            <input type="number" name="quantity[<%= item.id %>]" class="form-control quantity-input" value="<%= item.quantity %>" min="1" max="10" step="1" required data-stock="<%= item.stock %>" />
+                                                            <% } %>
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="total-col">
+                                                        <% if (item.stock === 0) { %>
+                                                        <span>Out of Stock</span>
+                                                        <% } else { %> $<%= (item.price * item.quantity).toFixed(2) %> <% } %>
+                                                    </td>
+                                                    <td class="remove-col">
+                                                        <button type="button" class="btn-remove" data-product-id="<%= item.id %>">
+                                                            <i class="icon-close"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <% if (item.stock === 0) { isStockAvailable = false; } %> <% }) %> <% if (!isStockAvailable) { %>
+                                                <tr>
+                                                    <td colspan="5" class="text-center">Some items in your cart are out of stock. Please update your cart.</td>
+                                                </tr>
+                                                <% } %> <% } else { %>
+                                                <tr>
+                                                    <td colspan="5" class="text-center">Your cart is empty.</td>
+                                                </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+
+                                        <div class="cart-bottom">
+                                            <!-- <div class="cart-discount">
+                                                <form action="#">
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" required placeholder="coupon code" />
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div> -->
+
+                                            <button type="submit" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <aside class="col-lg-3">
+                                    <div class="summary summary-cart">
+                                        <h3 class="summary-title">Cart Total</h3>
+
+                                        <table class="table table-summary">
+                                            <tbody>
+                                                <tr class="summary-subtotal">
+                                                    <td>Total:</td>
+                                                    <td>$<%= subtotal.toFixed(2) %></td>
+                                                </tr>
+                                                <tr class="summary-shipping">
+                                                    <td>Shipping:</td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                                <!-- <tr class="summary-shipping-row">
+                                                    <td>
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" id="free-shipping" name="shipping" class="custom-control-input" />
+                                                            <label class="custom-control-label" for="free-shipping">Free Shipping</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>$0.00</td>
+                                                </tr> -->
+                                                <tr class="summary-shipping-row">
+                                                    <td>
+                                                        <div class="custom-control custom-radio">
+                                                            <!-- <input type="radio" id="standard-shipping" name="shipping" class="custom-control-input" /> -->
+                                                            <label class="custom-control-label" for="standard-shipping">Standard:</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>$20.00</td>
+                                                </tr>
+                                                <!-- <tr class="summary-shipping-row">
+                                                    <td>
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" id="express-shipping" name="shipping" class="custom-control-input" />
+                                                            <label class="custom-control-label" for="express-shipping">Express:</label>
+                                                        </div>
+                                                    </td>
+                                                    <td>$20.00</td>
+                                                </tr> -->
+                                                <tr class="summary-total">
+                                                    <td>All Total:</td>
+                                                    <td>$<%= total.toFixed(2) %></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <% if (cartItems.length > 0) { %> <% let isStockAvailable = true; %> <% cartItems.forEach(item => { if (item.stock === 0) isStockAvailable = false; }) %> <% if (isStockAvailable) { %>
+                                        <a href="/<%= user._id %>/cart/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                                        <% } else { %>
+                                        <p class="text-center text-muted">Some items are out of stock. Please update your cart.</p>
+                                        <% } %> <% } else { %>
+                                        <p class="text-center text-muted">Your cart is empty. Please <a href="/shop">choose items</a> from the shop.</p>
+                                        <% } %>
+                                    </div>
+
+                                    <a href="/shop" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
+                                </aside>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="footer">
+                <div class="footer-middle">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget widget-about">
+                                    <img src="/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25" />
+                                    <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.</p>
+
+                                    <div class="social-icons">
+                                        <a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Pinterest"><i class="icon-pinterest"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End .container -->
+                </div>
+            </footer>
+
+            <div class="mobile-menu-overlay"></div>
+            <div class="mobile-menu-container">
+                <div class="mobile-menu-wrapper">
+                    <span class="mobile-menu-close">Close</span>
+                    <nav class="mobile-nav"></nav>
                 </div>
             </div>
         </div>
+        <!-- End .page-wrapper -->
 
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/main.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
         <script>
-            function deleteCoupon(couponId) {
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "You won't be able to revert this!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, delete it!",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        axios
-                            .delete(`/admin/coupon-management/delete/${couponId}`)
-                            .then((response) => {
+            document.querySelectorAll(".btn-remove").forEach((button) => {
+                button.addEventListener("click", async (event) => {
+                    const productId = event.target.closest("button").getAttribute("data-product-id");
+                    const userId = "<%= user._id %>"; // Ensure this is defined in your template
+
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "Do you really want to remove this item from the cart?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, remove it!",
+                        cancelButtonText: "No, keep it",
+                        customClass: {
+                            confirmButton: "your-custom-confirm-button-class", // Style as needed
+                            cancelButton: "your-custom-cancel-button-class", // Style as needed
+                        },
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const response = await axios.post(`/${userId}/cart/${productId}/delete-item`);
+
+                                // Success SweetAlert2 popup
                                 Swal.fire({
+                                    title: "Item Removed",
+                                    text: response.data.message,
                                     icon: "success",
-                                    title: "Coupon deleted successfully",
+                                    confirmButtonText: "OK",
                                     customClass: {
-                                        confirmButton: "your-custom-class",
+                                        confirmButton: "your-custom-success-button-class",
                                     },
-                                }).then(() => {
-                                    window.location.reload();
                                 });
-                            })
-                            .catch((error) => {
-                                console.error("Error in Axios request:", error);
+
+                                // Remove the product row from the UI
+                                event.target.closest("tr").remove();
+                            } catch (error) {
+                                // Error SweetAlert2 popup
                                 Swal.fire({
+                                    title: "Error",
+                                    text: error.response ? error.response.data.message : "An error occurred while removing the item.",
                                     icon: "error",
-                                    title: "Failed to delete coupon",
+                                    confirmButtonText: "Try Again",
                                     customClass: {
-                                        confirmButton: "your-custom-class",
+                                        confirmButton: "your-custom-error-button-class",
                                     },
                                 });
-                            });
+                            }
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll(".quantity-input").forEach((input) => {
+                input.addEventListener("input", (event) => {
+                    const maxLimit = 10;
+                    const stock = parseInt(input.getAttribute("data-stock"), 10);
+                    const quantity = parseInt(input.value, 10);
+
+                    // Check if quantity exceeds the max purchase limit
+                    if (quantity > maxLimit) {
+                        Swal.fire({
+                            title: "Max Purchase Limit Reached",
+                            text: `You can only purchase a maximum of ${maxLimit} items.`,
+                            icon: "warning",
+                            confirmButtonText: "Ok",
+                        });
+                        input.value = maxLimit; // Reset to the max limit
+                    }
+
+                    // Check if quantity exceeds the available stock
+                    if (quantity > stock) {
+                        Swal.fire({
+                            title: "Out of Stock",
+                            text: `There are only ${stock} items available in stock.`,
+                            icon: "error",
+                            confirmButtonText: "Ok",
+                        });
+                        input.value = stock > 0 ? stock : 1; // Reset to the available stock or 1
                     }
                 });
-            }
+            });
         </script>
     </body>
 </html>

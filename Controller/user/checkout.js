@@ -100,35 +100,29 @@ const postAddtoCart = async (req, res) => {
 
 const updateCart = async (req, res) => {
     try {
-        const userId = req.session.userId;
-        const quantity = req.body.quantity;
+        const { productId, quantity } = req.body;
+        const userId = req.user._id; // Ensure this is set correctly
 
-        const cart = await Cart.findOne({ UserId: userId }).populate({
-            path: "Products.ProductId",
-            select: "name stock price", // Select relevant fields
-        });
+        // Find the user's cart
+        const cart = await Cart.findOne({ UserId: userId });
 
         if (!cart) {
-            return res.redirect("/login");
+            return res.status(404).json({ success: false, message: "Cart not found." });
         }
 
-        // Update quantities based on the input
-        for (const product of cart.Products) {
-            const newQuantity = parseInt(quantity[product.ProductId._id], 10); // Use _id for lookup
-
-            if (newQuantity > product.ProductId.stock) {
-                // If requested quantity exceeds available stock, return an error message
-                return res.redirect(`/cart?error=Cannot update ${product.ProductId.name}: Requested quantity (${newQuantity}) exceeds available stock (${product.ProductId.stock})`);
-            } else if (newQuantity >= 1) {
-                product.Quantity = newQuantity; // Update quantity if valid
-            }
+        const item = cart.Products.find((i) => i.ProductId.toString() === productId);
+        if (!item) {
+            return res.status(404).json({ success: false, message: "Product not found in cart." });
         }
 
-        await cart.save(); // Save updated cart
-        res.redirect(`/cart`);
+        // Update the quantity
+        item.Quantity = quantity;
+        await cart.save();
+
+        return res.status(200).json({ success: true, message: "Cart updated successfully." });
     } catch (error) {
-        console.error("Error from updating cart: \n", error);
-        res.redirect(`/cart?error=Something went wrong while updating the cart.`);
+        console.error("Error updating cart:", error);
+        return res.status(500).json({ success: false, message: "Internal Server Error." });
     }
 };
 

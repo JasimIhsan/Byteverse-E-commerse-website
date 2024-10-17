@@ -9,10 +9,7 @@ const getOrderManagement = async (req, res) => {
         const search = req.query.search || ""; // Get the search query from the request
 
         // Fetch all orders with user and product details
-        const orders = await Order.find()
-            .populate("userId", "username")
-            .populate("products.productId")
-            .exec();
+        const orders = await Order.find().populate("userId", "username").populate("products.productId").exec();
 
         // Filter orders based on search criteria
         const filteredOrders = orders.filter((order) => {
@@ -20,7 +17,7 @@ const getOrderManagement = async (req, res) => {
             return (
                 userExists &&
                 (order.userId.username.toLowerCase().includes(search.toLowerCase()) || // Search by username
-                order._id.toString().includes(search)) // Or search by order ID
+                    order._id.toString().includes(search)) // Or search by order ID
             );
         });
 
@@ -41,7 +38,6 @@ const getOrderManagement = async (req, res) => {
         res.status(500).send("Internal Server Error"); // Send a 500 error response
     }
 };
-
 
 const updateOrderStatus = async (req, res) => {
     try {
