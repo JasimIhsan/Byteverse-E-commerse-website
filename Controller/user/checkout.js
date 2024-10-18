@@ -6,6 +6,8 @@ const Address = require("../../model/Address");
 const Order = require("../../model/orders");
 const Coupon = require("../../model/coupon");
 
+//--------------- cart --------------------//
+
 const getCart = async (req, res) => {
     try {
         const userId = req.session.userId;
@@ -73,7 +75,7 @@ const postAddtoCart = async (req, res) => {
 
         if (productIndex > -1) {
             return res.status(200).json({
-                success: false,
+                exists: true,
                 message: "Product already exists in the cart",
                 exists: true,
             });
@@ -149,6 +151,8 @@ const delete_item = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
+
+//--------------- Checkout --------------------//
 
 const getCheckout = async (req, res) => {
     try {
@@ -358,6 +362,8 @@ const creatingOrder = async (req, res) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
+
+//--------------- order confirmaiton --------------------//
 
 const getPlaceOrder = async (req, res) => {
     try {

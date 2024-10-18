@@ -2,6 +2,7 @@ const User = require("../../model/user");
 const Orders = require("../../model/orders");
 const Address = require("../../model/Address");
 const Products = require("../../model/product");
+const Wishlist = require("../../model/wishlist");
 
 const getProfile = async (req, res) => {
     try {
@@ -264,6 +265,108 @@ const updateAddress = async (req, res) => {
     }
 };
 
+//------------------ wishlist -------------------//
+
+const getWishlist = async (req, res) => {
+    try {
+        const { search = "", page = 1 } = req.query;
+        const limit = 6;
+        const skip = (page - 1) * limit;
+        const regex = new RegExp("^" + search, "i");
+        const userId = req.session.userId;
+        const userLoggedIn = Boolean(req.session.userId);
+
+        const user = await User.findById(userId);
+
+        const wishlist = await Wishlist.findOne({ userId: userId })
+            .populate({ path: "products", match: { name: regex } })
+            .skip(skip)
+            .limit(limit);
+
+        if (wishlist) {
+            wishlist.products.reverse();
+        }
+
+        const products = wishlist ? wishlist.products : [];
+
+        res.render("user/wishlist", { userLoggedIn, search, user, products });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const addToWishlist = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const { productId } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({ success: false });
+        }
+
+        let wishlist = await Wishlist.findOne({ userId: userId });
+
+        if (!wishlist) {
+            wishlist = new Wishlist({ userId: userId, products: [productId] });
+            await wishlist.save();
+
+            return res.status(200).json({
+                success: true,
+                message: "Wishlist created and product added.",
+                wishlist: wishlist,
+            });
+        } else {
+            if (!wishlist.products.includes(productId)) {
+                wishlist.products.push(productId);
+                await wishlist.save();
+
+                return res.status(200).json({
+                    success: true,
+                    message: "Product added to wishlist.",
+                });
+            } else {
+                return res.status(200).json({
+                    success: true,
+                    alreadyInWishlist: "Product is already in the wishlist.",
+                });
+            }
+        }
+    } catch (error) {
+        console.error("Error adding to wishlist:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error.",
+            error: error.message,
+        });
+    }
+};
+
+const removeFromWishlist = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const { productId } = req.body;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "User not authenticated" });
+        }
+
+        let wishlist = await Wishlist.findOne({ userId: userId });
+
+        if (!wishlist) {
+            return res.status(404).json({ success: false, message: "Wishlist not found" });
+        }
+
+        wishlist.products = wishlist.products.filter((p) => !p.equals(productId));
+
+        await wishlist.save();
+
+        return res.status(200).json({ success: true, message: "Product removed from wishlist" });
+    } catch (error) {
+        console.error("Error removing product from wishlist:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
 module.exports = {
     getProfile,
     getAddress,
@@ -274,4 +377,7 @@ module.exports = {
     updateAddress,
     getOrders,
     cancelOrder,
+    getWishlist,
+    addToWishlist,
+    removeFromWishlist,
 };

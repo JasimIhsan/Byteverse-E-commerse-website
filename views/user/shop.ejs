@@ -87,7 +87,7 @@
                                 </a>
                             </div>
                             <div class="dropdown cart-dropdown">
-                                <% if (user) { %>
+                                <% if (userLoggedIn) { %>
                                     <a href="/<%= user._id %>/profile">
                                         <img style="width: 30px;" src="/images/icons/user.png" alt="Account">
                                     </a>

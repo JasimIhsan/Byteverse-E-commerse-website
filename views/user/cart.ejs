@@ -68,7 +68,7 @@
                                                         <input type="number" class="form-control quantity-input" value="<%= item.quantity %>" min="1" max="<%= item.stock %>" step="1" data-stock="<%= item.stock %>" />
                                                     </div>
                                                 </td>
-                                                <td class="total-col">$<%= (item.price * item.quantity).toFixed(2) %></td>
+                                                <td class="total-col" id="product-subtotal">$<%= subtotal.toFixed(2) %></td>
                                                 <td class="remove-col">
                                                     <button type="button" class="btn-remove" data-product-id="<%= item.id %>">
                                                         <i class="icon-close"></i>
@@ -132,6 +132,7 @@
             const subtotalElement = document.getElementById("subtotal");
             const totalElement = document.getElementById("total");
             const shippingMessage = document.getElementById("shipping-message");
+            const product_subtotal = document.getElementById("product-subtotal");
 
             const updateCartTotals = () => {
                 let subtotal = 0;
@@ -147,6 +148,7 @@
                 const total = subtotal + shippingCost;
 
                 subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+                product_subtotal.textContent = `$${subtotal.toFixed(2)}`;
                 totalElement.textContent = `$${total.toFixed(2)}`;
                 shippingMessage.textContent = shippingCost === 0 ? "Free Shipping" : `$${shippingCost.toFixed(2)}`;
             };

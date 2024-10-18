@@ -125,6 +125,14 @@ router.get("/:userId/profile/address/:addressId/edit-address", auth.checkSession
 
 router.post("/:userId/profile/address/:addressId/edit-address", auth.checkSession, profile.updateAddress);
 
+//----- wishlist -----//
+
+router.get("/profile/wishlist", profile.getWishlist);
+
+router.post("/profile/wishlist/add", profile.addToWishlist);
+
+router.post("/wishlist/remove", profile.removeFromWishlist);
+
 //------------------------------ Checkout -----------------------------------//
 
 router.get("/cart", auth.checkSession, checkout.getCart);
@@ -137,10 +145,12 @@ router.post("/:userId/cart/:productId/delete-item", auth.checkSession, checkout.
 
 router.get("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.getCheckout);
 
-router.post('/apply-coupon', checkout.applyCoupon);
+router.post("/apply-coupon", checkout.applyCoupon);
 
 router.post("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.creatingOrder);
 
 router.get("/:userId/cart/checkout/order-placed/:orderId", auth.checkSession, checkout.getPlaceOrder);
+
+//------------------------------ Wishlist -----------------------------------//
 
 module.exports = router;
