@@ -135,13 +135,13 @@ router.post("/wishlist/remove", profile.removeFromWishlist);
 
 //------------------------------ Checkout -----------------------------------//
 
-router.get("/cart", auth.checkSession, checkout.getCart);
+router.get("/cart", checkout.getCart);
 
-router.post("/:userId/add-to-cart", auth.checkSession, checkout.postAddtoCart);
+router.post("/:userId/add-to-cart", checkout.postAddtoCart);
 
-router.post("/cart/update", auth.checkSession, checkout.updateCart);
+router.post("/cart/update", checkout.updateCart);
 
-router.post("/:userId/cart/:productId/delete-item", auth.checkSession, checkout.delete_item);
+router.post("/cart/:productId/delete-item", checkout.delete_item);
 
 router.get("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.getCheckout);
 

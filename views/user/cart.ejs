@@ -19,7 +19,6 @@
             <%- include('partials/header.ejs') %>
 
             <main class="main">
-                <!-- Cart page header -->
                 <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); margin-top: 65px">
                     <div class="container">
                         <h1 class="page-title">Shopping Cart<span>Shop</span></h1>
@@ -59,7 +58,9 @@
                                                                 <img src="/<%= item.image[0] %>" alt="Product image" />
                                                             </a>
                                                         </figure>
-                                                        <h3 class="product-title"><a href="#"><%= item.name %></a></h3>
+                                                        <h3 class="product-title">
+                                                            <a href="#"><%= item.name %></a>
+                                                        </h3>
                                                     </div>
                                                 </td>
                                                 <td class="price-col">$<%= item.price.toFixed(2) %></td>
@@ -68,9 +69,9 @@
                                                         <input type="number" class="form-control quantity-input" value="<%= item.quantity %>" min="1" max="<%= item.stock %>" step="1" data-stock="<%= item.stock %>" />
                                                     </div>
                                                 </td>
-                                                <td class="total-col" id="product-subtotal">$<%= subtotal.toFixed(2) %></td>
+                                                <td class="total-col product-subtotal">$<%= (item.price * item.quantity).toFixed(2) %></td>
                                                 <td class="remove-col">
-                                                    <button type="button" class="btn-remove" data-product-id="<%= item.id %>">
+                                                    <button type="button" class="btn-remove" data-userId="<%= item.UserId %>" data-product-id="<%= item.id %>">
                                                         <i class="icon-close"></i>
                                                     </button>
                                                 </td>
@@ -129,135 +130,148 @@
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
         <script>
-            const subtotalElement = document.getElementById("subtotal");
-            const totalElement = document.getElementById("total");
-            const shippingMessage = document.getElementById("shipping-message");
-            const product_subtotal = document.getElementById("product-subtotal");
+            document.addEventListener("DOMContentLoaded", () => {
+                const subtotalElement = document.getElementById("subtotal");
+                const totalElement = document.getElementById("total");
+                const shippingMessage = document.getElementById("shipping-message");
 
-            const updateCartTotals = () => {
-                let subtotal = 0;
-                const quantityInputs = document.querySelectorAll(".quantity-input");
+                const updateCartTotals = () => {
+                    let subtotal = 0;
+                    const quantityInputs = document.querySelectorAll(".quantity-input");
 
-                quantityInputs.forEach((input) => {
-                    const price = parseFloat(input.closest("tr").querySelector(".price-col").textContent.replace("$", ""));
-                    const quantity = parseInt(input.value, 10);
-                    subtotal += price * quantity;
-                });
+                    quantityInputs.forEach((input) => {
+                        const price = parseFloat(input.closest("tr").querySelector(".price-col").textContent.replace("$", ""));
+                        const quantity = parseInt(input.value, 10);
 
-                const shippingCost = subtotal >= 1500 ? 0 : 50;
-                const total = subtotal + shippingCost;
+                        // Calculate individual product subtotal
+                        const productSubtotal = price * quantity;
 
-                subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-                product_subtotal.textContent = `$${subtotal.toFixed(2)}`;
-                totalElement.textContent = `$${total.toFixed(2)}`;
-                shippingMessage.textContent = shippingCost === 0 ? "Free Shipping" : `$${shippingCost.toFixed(2)}`;
-            };
+                        // Update the product subtotal in the UI for this row
+                        const productSubtotalElement = input.closest("tr").querySelector(".product-subtotal");
+                        productSubtotalElement.textContent = `$${productSubtotal.toFixed(2)}`;
 
-            document.querySelectorAll(".quantity-input").forEach((input) => {
-                input.addEventListener("input", async (event) => {
-                    const stock = parseInt(input.getAttribute("data-stock"), 10);
-                    const quantity = parseInt(input.value, 10);
-                    const productId = input.closest("tr").getAttribute("data-product-id");
+                        // Add to the overall subtotal
+                        subtotal += productSubtotal;
+                    });
 
-                    // Check stock limits
-                    if (quantity > stock) {
-                        Swal.fire({
-                            title: "Max Stock Reached",
-                            text: `There are only ${stock} items available in stock.`,
-                            icon: "error",
-                            confirmButtonText: "OK",
-                        });
-                        input.value = stock;
-                    }
+                    // Calculate and update shipping and total cost
+                    const shippingCost = subtotal >= 1500 ? 0 : 50;
+                    const total = subtotal + shippingCost;
 
-                    // Prevent decreasing below 1
-                    if (quantity < 1) {
-                        input.value = 1;
-                    }
+                    // Update the overall totals in the UI
+                    subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+                    totalElement.textContent = `$${total.toFixed(2)}`;
+                    shippingMessage.textContent = shippingCost === 0 ? "Free Shipping" : `$${shippingCost.toFixed(2)}`;
+                };
 
-                    // Update cart in the database via AJAX
-                    try {
-                        console.log("INPUT.VALUE : ", input.value);
+                // Add event listeners to all quantity inputs
+                document.querySelectorAll(".quantity-input").forEach((input) => {
+                    input.addEventListener("input", async (event) => {
+                        const stock = parseInt(input.getAttribute("data-stock"), 10);
+                        const quantity = parseInt(input.value, 10);
+                        const productId = input.closest("tr").getAttribute("data-product-id");
 
-                        const response = await axios.post(`/cart/update`, {
-                            productId: productId,
-                            quantity: input.value,
-                        });
-
-                        if (response.data.success) {
-                            updateCartTotals();
-                        } else {
+                        // Check stock limits
+                        if (quantity > stock) {
                             Swal.fire({
-                                title: "Error",
-                                text: response.data.message,
+                                title: "Max Stock Reached",
+                                text: `There are only ${stock} items available in stock.`,
                                 icon: "error",
-                                confirmButtonText: "Try Again",
+                                confirmButtonText: "OK",
                             });
+                            input.value = stock;
                         }
-                    } catch (error) {
-                        console.error("Error updating cart:", error);
-                        Swal.fire({
-                            title: "Error",
-                            text: error.response.data.message,
-                            icon: "error",
-                            confirmButtonText: "OK",
-                        });
-                    }
-                });
-            });
 
-            document.querySelectorAll(".btn-remove").forEach((button) => {
-                button.addEventListener("click", async (event) => {
-                    const productId = button.getAttribute("data-product-id");
+                        // Prevent decreasing below 1
+                        if (quantity < 1) {
+                            input.value = 1;
+                        }
 
-                    Swal.fire({
-                        title: "Are you sure?",
-                        text: "Do you want to remove this item from the cart?",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Yes, remove it!",
-                        cancelButtonText: "No, keep it",
-                    }).then(async (result) => {
-                        if (result.isConfirmed) {
-                            try {
-                                const response = await axios.post(`/cart/remove-item`, {
-                                    productId: productId,
-                                });
+                        // Update cart in the database via AJAX
+                        try {
+                            const response = await axios.post(`/cart/update`, {
+                                productId: productId,
+                                quantity: input.value,
+                            });
 
-                                if (response.data.success) {
-                                    button.closest("tr").remove();
-                                    updateCartTotals();
-
-                                    Swal.fire({
-                                        title: "Removed",
-                                        text: "Item removed from the cart.",
-                                        icon: "success",
-                                        confirmButtonText: "OK",
-                                    });
-                                } else {
-                                    Swal.fire({
-                                        title: "Error",
-                                        text: response.data.message,
-                                        icon: "error",
-                                        confirmButtonText: "Try Again",
-                                    });
-                                }
-                            } catch (error) {
-                                console.error("Error removing item:", error);
+                            if (response.data.success) {
+                                updateCartTotals(); // Recalculate and update totals
+                            } else {
                                 Swal.fire({
                                     title: "Error",
-                                    text: "Failed to remove the item.",
+                                    text: response.data.message,
                                     icon: "error",
-                                    confirmButtonText: "OK",
+                                    confirmButtonText: "Try Again",
                                 });
                             }
+                        } catch (error) {
+                            console.error("Error updating cart:", error);
+                            Swal.fire({
+                                title: "Error",
+                                text: error.response?.data?.message || "Something went wrong!",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                            });
                         }
                     });
                 });
-            });
 
-            // Initial update of the totals
-            updateCartTotals();
+                // Event listener for item removal
+                document.querySelectorAll(".btn-remove").forEach((button) => {
+                    button.addEventListener("click", async (event) => {
+                        const productId = button.getAttribute("data-product-id");
+                        const userId = button.getAttribute("data-userId");
+
+                        Swal.fire({
+                            title: "Are you sure?",
+                            text: "Do you want to remove this item from the cart?",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes, remove it!",
+                            cancelButtonText: "No, keep it",
+                        }).then(async (result) => {
+                            if (result.isConfirmed) {
+                                try {
+                                    const response = await axios.post(`/cart/${productId}/delete-item`, { productId });
+                                    console.log(response);
+
+                                    if (response.data.success) {
+                                        button.closest("tr").remove();
+                                        updateCartTotals();
+
+                                        Swal.fire({
+                                            title: "Removed",
+                                            text: "Item removed from the cart.",
+                                            icon: "success",
+                                            confirmButtonText: "OK",
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: "Error",
+                                            text: response.data.message,
+                                            icon: "error",
+                                            confirmButtonText: "Try Again",
+                                        });
+                                    }
+                                } catch (error) {
+                                    console.error("Error removing item:", error);
+                                    Swal.fire({
+                                        title: "Error",
+                                        text: "Failed to remove the item.",
+                                        icon: "error",
+                                        confirmButtonText: "OK",
+                                    });
+                                }
+                            }
+                        });
+                    });
+                });
+
+                // Initial update of the totals
+                updateCartTotals();
+            });
         </script>
     </body>
 </html>

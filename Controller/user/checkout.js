@@ -20,7 +20,7 @@ const getCart = async (req, res) => {
         if (!cart || cart.Products.length === 0) {
             const error = req.query.error || null;
             const success = req.query.success || null;
-            return res.render("user/cart", { cartItems: [], subtotal: 0, total: 0, userLoggedIn, user, error_msg: error, success_msg: success });
+            return res.render("user/cart", { cartItems: [], subtotal: 0, total: 0, userLoggedIn: true, user, error_msg: error, success_msg: success });
         }
 
         const cartItems = cart.Products.map((item) => ({
@@ -103,25 +103,46 @@ const postAddtoCart = async (req, res) => {
 const updateCart = async (req, res) => {
     try {
         const { productId, quantity } = req.body;
-        const userId = req.user._id; // Ensure this is set correctly
+        const userId = req.session.userId;
+
+        if (quantity < 1) {
+            return res.status(400).json({ success: false, message: "Quantity must be at least 1." });
+        }
 
         // Find the user's cart
-        const cart = await Cart.findOne({ UserId: userId });
+        const cart = await Cart.findOne({ UserId: userId }).populate({ path: "Products.ProductId", select: "name price stock images" });
 
         if (!cart) {
             return res.status(404).json({ success: false, message: "Cart not found." });
         }
 
-        const item = cart.Products.find((i) => i.ProductId.toString() === productId);
+        const item = cart.Products.find((i) => i.ProductId._id.toString() === productId);
         if (!item) {
             return res.status(404).json({ success: false, message: "Product not found in cart." });
+        }
+
+        if (quantity > item.ProductId.stock) {
+            return res.status(400).json({
+                success: false,
+                message: `Only ${item.ProductId.stock} units available in stock.`,
+            });
         }
 
         // Update the quantity
         item.Quantity = quantity;
         await cart.save();
 
-        return res.status(200).json({ success: true, message: "Cart updated successfully." });
+        return res.status(200).json({
+            success: true,
+            message: "Cart updated successfully.",
+            updatedProduct: {
+                productId: item.ProductId._id,
+                name: item.ProductId.name,
+                quantity: item.Quantity,
+                price: item.ProductId.price,
+                subtotal: (item.Quantity * item.ProductId.price).toFixed(2),
+            },
+        });
     } catch (error) {
         console.error("Error updating cart:", error);
         return res.status(500).json({ success: false, message: "Internal Server Error." });
@@ -138,14 +159,14 @@ const delete_item = async (req, res) => {
         const cart = await Cart.findOne({ UserId: userId });
 
         if (!cart) {
-            return res.status(404).json({ message: "Cart not found." });
+            return res.status(404).json({ success: false, message: "Cart not found." });
         }
 
         cart.Products = cart.Products.filter((item) => item.ProductId.toString() !== productId);
 
         await cart.save();
 
-        res.status(200).json({ message: "Item removed from cart successfully." });
+        res.status(200).json({ success: true, message: "Item removed from cart successfully." });
     } catch (error) {
         console.error("Error deleting item from cart:", error);
         res.status(500).json({ message: "Internal server error." });
