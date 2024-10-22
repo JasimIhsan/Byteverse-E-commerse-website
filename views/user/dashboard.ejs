@@ -26,143 +26,157 @@
         <link rel="stylesheet" href="/assets/css/style.css" />
         <link rel="stylesheet" href="/css/user/main.css" />
         <style>
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-            h1 {
-                font-size: 2rem;
-                margin-bottom: 1rem;
-            }
-            .grid {
-                display: grid;
-                gap: 1.5rem;
-            }
-            @media (min-width: 768px) {
-                .grid {
-                    grid-template-columns: repeat(2, 1fr);
-                }
-            }
-            .card {
-                background-color: #fff;
-                border-radius: 0.5rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                overflow: hidden;
-            }
-            .card-header {
+            .profile-header {
+                display: flex;
+                align-items: center;
                 padding: 1.5rem;
-                border-bottom: 1px solid #e2e8f0;
-            }
-            .card-title {
-                font-size: 1.25rem;
-                font-weight: 600;
-                margin: 0;
-            }
-            .card-description {
-                color: #718096;
-                font-size: 0.875rem;
-                margin-top: 0.5rem;
-            }
-            .card-content {
-                padding: 1.5rem;
-            }
-            .card-footer {
-                padding: 1.5rem;
-                border-top: 1px solid #e2e8f0;
+                background-color: #f9f9f9;
+                border-bottom: 1px solid #eaeaea;
             }
             .avatar {
-                width: 5rem;
-                height: 5rem;
+                width: 80px;
+                height: 80px;
                 border-radius: 50%;
-                object-fit: cover;
+                margin-right: 1rem;
             }
-            .user-info {
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-                margin-bottom: 1rem;
-            }
-            .user-name {
-                font-size: 1.5rem;
-                font-weight: 600;
+            .profile-info h1 {
                 margin: 0;
+                font-size: 1.5rem;
             }
-            .user-email {
-                color: #718096;
-                font-size: 0.875rem;
+            .profile-info p {
+                margin: 0.5rem 0 0;
+                color: #666;
             }
-            .separator {
-                height: 1px;
-                background-color: #e2e8f0;
-                margin: 1rem 0;
-            }
-            .button {
-                display: inline-block;
-                background-color: #4299e1;
-                color: #fff;
-                padding: 0.5rem 1rem;
-                border-radius: 0.25rem;
-                text-decoration: none;
-                font-weight: 600;
-                transition: background-color 0.3s;
-            }
-            .button:hover {
-                background-color: #3182ce;
-            }
-            .button-outline {
-                background-color: transparent;
-                border: 1px solid #4299e1;
-                color: #4299e1;
-            }
-            .button-outline:hover {
-                background-color: #ebf8ff;
-            }
-            .order-item {
+            .tabs {
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
+                border-bottom: 1px solid #eaeaea;
+            }
+            .tab {
+                flex: 1;
+                text-align: center;
+                padding: 1rem;
+                background-color: #f9f9f9;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                font-size: 1.5rem;
+                font-weight: 500;
+                color: #5c59e8;
+            }
+            .tab.active {
+                background-color: #fff;
+                border-bottom: 2px solid #5c59e8;
+            }
+            .tab-content {
+                padding: 1.5rem;
+            }
+            .form-group {
                 margin-bottom: 1rem;
             }
-            .order-details {
-                font-size: 0.875rem;
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: bold;
+                font-size: 1rem;
             }
-            .order-id {
-                font-weight: 600;
+            input[type="text"],
+            input[type="email"],
+            input[type="password"] {
+                width: 100%;
+                padding: 1rem;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 1rem;
             }
-            .order-date {
-                color: #718096;
-            }
-            .order-status {
-                display: inline-block;
-                padding: 0.25rem 0.5rem;
-                border-radius: 9999px;
-                font-size: 0.75rem;
-                font-weight: 600;
-            }
-            .status-delivered {
-                background-color: #48bb78;
+            button {
+                background-color: #5c59e8;
                 color: #fff;
+                border: none;
+                padding: 0.75rem 2rem;
+                font-size: 1.5rem;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+                margin-top: 20px;
             }
-            .status-processing,
-            .status-shipped {
-                background-color: #edf2f7;
-                color: #4a5568;
+            button:hover {
+                background-color: #413fbf;
+            }
+            .view-mode,
+            .edit-mode {
+                margin-bottom: 1rem;
+            }
+            .edit-mode {
+                display: none;
+            }
+            .view-mode p {
+                margin: 0.5rem 0;
             }
         </style>
     </head>
 
     <body>
         <div class="page-wrapper">
-            <%- include('partials/header.ejs') %>
+            <header class="header">
+                <div class="header-middle sticky-header">
+                    <div class="container">
+                        <div class="header-left">
+                            <button class="mobile-menu-toggler">
+                                <span class="sr-only">Toggle mobile menu</span>
+                                <i class="icon-bars"></i>
+                            </button>
+
+                            <a href="#" class="logo">
+                                <span style="font-size: 2.5rem; font-weight: 600; color: black">Byteverse</span>
+                            </a>
+
+                            <nav class="main-nav">
+                                <ul class="menu sf-arrows">
+                                    <li>
+                                        <a href="/">Home</a>
+                                    </li>
+                                    <li>
+                                        <a href="/shop">Shop</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">About</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Contact</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Help</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <div class="header-right">
+                            <div class="dropdown cart-dropdown">
+                                <a href="/cart">
+                                    <img style="width: 30px" src="/images/icons/cart.png" alt="Account" />
+                                </a>
+                            </div>
+                            <div class="dropdown cart-dropdown">
+                                <% if (userLoggedIn) { %>
+                                <a href="/<%= user._id %>/profile">
+                                    <img style="width: 30px" src="/images/icons/user.png" alt="Account" />
+                                </a>
+                                <% } else { %>
+                                <a href="/login">
+                                    <img style="width: 30px" src="/images/icons/user.png" alt="Account" />
+                                </a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
             <main class="main">
-                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); margin-top: 63px">
+                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
                     <div class="container">
                         <h1 class="page-title">My Account</h1>
                     </div>
-                    <!-- End .container -->
                 </div>
-                <!-- End .page-header -->
                 <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
                     <div class="container">
                         <ol class="breadcrumb">
@@ -171,9 +185,7 @@
                             <li class="breadcrumb-item active" aria-current="page">My Account</li>
                         </ol>
                     </div>
-                    <!-- End .container -->
                 </nav>
-                <!-- End .breadcrumb-nav -->
 
                 <div class="page-content">
                     <div class="dashboard">
@@ -182,77 +194,110 @@
                                 <aside class="col-md-4 col-lg-3">
                                     <ul class="nav nav-dashboard flex-column mb-3 mb-md-0">
                                         <li class="nav-item">
-                                            <a class="nav-link active" href="#">Dashboard</a>
+                                            <a class="nav-link active" href="/<%= user._id %>/profile">Dashboard</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="/<%= user._id %>/profile/orders">Orders</a>
                                         </li>
+
                                         <li class="nav-item">
-                                            <a class="nav-link" href="#">Downloads</a>
+                                            <a class="nav-link " href="/<%= user._id %>/profile/address">Addresses</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/<%= user._id %>/profile/address">Addresses</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#">Account Details</a>
-                                        </li>
-                                        <li class="nav-item" style="margin-top: 10px">
                                             <form action="/logout" method="POST" style="display: inline">
                                                 <button type="submit" class="nav-link" style="border: none; background: none; padding: 0">Sign Out</button>
                                             </form>
                                         </li>
                                     </ul>
                                 </aside>
-                                <!-- End .col-lg-3 -->
 
                                 <div class="col-md-8 col-lg-9">
                                     <div class="tab-content">
                                         <div>
-                                            <h4 class="card-title mb-2" style="font-size: 2.25rem">Dashboard</h4>
+                                            <h4 class="card-title mb-2" style="font-size: 2.5rem">Dashboard</h4>
 
                                             <div class="card card-dashboard mb-3">
                                                 <div class="grid" style="display: flex; flex-direction: column">
-                                                    <!-- User Details Card -->
-                                                    <div class="card" style="border: 0; padding: 10px">
-                                                        <div class="card-header">
-                                                            <h2 class="card-title" style="font-size: 2rem; color: gray">User Details</h2>
+                                                    <header class="profile-header p-5">
+                                                        <div class="profile-info">
+                                                            <h1 style="font-size: 2rem"><%= user.username %></h1>
+                                                            <p style="font-size: 1.5rem"><%= user.email %></p>
                                                         </div>
-                                                        <div class="card-content">
-                                                            <div class="user-info">
-                                                                <div>
-                                                                    <h3 class="user-name" style="font-size: 1.8rem"><%= user.username %></h3>
-                                                                    <p class="user-email" style="font-size: 1.8rem"><%= user.email %></p>
+                                                    </header>
+                                                    <div class="tabs">
+                                                        <div class="tab active" id="profileTab">Profile</div>
+                                                        <div class="tab" id="passwordTab">Password</div>
+                                                    </div>
+                                                    <div class="tab-content p-5" id="profileContent">
+                                                        <div class="view-mode" id="profileViewMode">
+                                                            <h2 style="font-size: 20px">Profile Information</h2>
+                                                            <p style="font-size: 1.5rem"><strong>Name:</strong> <span id="nameDisplay"><%= user.username %></span></p>
+                                                            <p style="font-size: 1.5rem"><strong>Email:</strong> <span id="emailDisplay"><%= user.email %></span></p>
+                                                            <p style="font-size: 1.5rem"><strong>Mobile Number:</strong> <span id="mobileDisplay"><%= user.mobileNumber || 'Not provided' %></span></p>
+                                                            <button id="editProfileBtn">Edit Profile</button>
+                                                        </div>
+                                                        <div class="edit-mode" id="profileEditMode" style="display: none">
+                                                            <h2 style="font-size: 20px">Edit Profile</h2>
+                                                            <form id="profileForm">
+                                                                <div class="form-group">
+                                                                    <label style="font-size: 1.5rem" for="name">Name</label>
+                                                                    <input style="font-size: 1.5rem" type="text" id="name" value="<%= user.username %>" required />
                                                                 </div>
-                                                            </div>
-                                                            <div class="separator"></div>
-
-                                                            <!-- <a href="#" class="button" style="margin-top: 20px">Edit Profile</a> -->
+                                                                <div class="form-group">
+                                                                    <label style="font-size: 1.5rem" for="email">Email <span style="font-weight: normal; color: red; font-size: 1.3rem">* email cannot be changed</span></label>
+                                                                    <input style="font-size: 1.5rem" type="email" id="email" value="<%= user.email %>" required readonly disabled />
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label style="font-size: 1.5rem" for="mobileNumber">Mobile Number</label>
+                                                                    <input style="font-size: 1.5rem" type="text" id="mobileNumber" value="<%= user.mobileNumber || '' %>" required />
+                                                                </div>
+                                                                <button type="submit">Update Profile</button>
+                                                                <button style="margin-left: 10px" type="button" id="cancelProfileEdit">Cancel</button>
+                                                            </form>
                                                         </div>
                                                     </div>
+                                                    <div class="tab-content p-5" id="passwordContent" style="display: none">
+                                                        <div class="view-mode" id="passwordViewMode">
+                                                            <h2 style="font-size: 20px">Password</h2>
+                                                            <p>Your password is securely stored. Click the button below to change it.</p>
+                                                            <button id="editPasswordBtn">Change Password</button>
+                                                        </div>
+                                                        <div class="edit-mode" id="passwordEditMode" style="display: none">
+                                                            <h2 style="font-size: 20px">Change Password</h2>
+                                                            <!-- Include Font Awesome in your HTML (head section) -->
+                                                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-                                                    <!-- Order History Card -->
-                                                    <div class="card">
-                                                        <div class="card-header">
-                                                            <h2 class="card-title" style="font-size: 2rem; color: gray">Order History</h2>
-                                                        </div>
-                                                        <div class="card-content">
-                                                            <% if (orders.length > 0) { %> <% orders.forEach(order => { %>
-                                                            <div class="order-item">
-                                                                <div class="order-details">
-                                                                    <p class="order-id"><%= order._id %></p>
-                                                                    <p class="order-date"><%= new Date(order.orderDate).toLocaleDateString() %></p>
+                                                            <form id="passwordForm">
+                                                                <div class="form-group">
+                                                                    <label style="font-size: 1.5rem" for="currentPassword">Current Password</label>
+                                                                    <div style="position: relative">
+                                                                        <input style="font-size: 1.5rem" type="password" id="currentPassword" required />
+                                                                        <button type="button" class="toggle-password" data-target="#currentPassword" style="position: absolute; right: 3px; top: -14px; color: #000; border: none; background: none; cursor: pointer">
+                                                                            <i class="fas fa-eye" id="currentPasswordToggle"></i>
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="order-details" style="display: flex; flex-direction: column; align-items: center">
-                                                                    <p>$<%= order.total ? order.total.toFixed(2) : 'N/A' %></p>
-                                                                    <span style="padding: 10px 20px; font-size: 1rem" class="order-status <%= order.deliveryStatus.toLowerCase() %>"><%= order.deliveryStatus %></span>
+                                                                <div class="form-group">
+                                                                    <label style="font-size: 1.5rem" for="newPassword">New Password</label>
+                                                                    <div style="position: relative">
+                                                                        <input style="font-size: 1.5rem" type="password" id="newPassword" required />
+                                                                        <button type="button" class="toggle-password" data-target="#newPassword" style="position: absolute; right: 3px; top: -14px; color: #000; border: none; background: none; cursor: pointer">
+                                                                            <i class="fas fa-eye" id="newPasswordToggle"></i>
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            <% }) %> <% } else { %>
-                                                            <p>No orders found.</p>
-                                                            <% } %>
-                                                        </div>
-                                                        <div class="card-footer">
-                                                            <a href="/<%= user._id %>/profile/orders" class="button button-outline">View All Orders</a>
+                                                                <div class="form-group">
+                                                                    <label style="font-size: 1.5rem" for="confirmPassword">Confirm New Password</label>
+                                                                    <div style="position: relative">
+                                                                        <input style="font-size: 1.5rem" type="password" id="confirmPassword" required />
+                                                                        <button type="button" class="toggle-password" data-target="#confirmPassword" style="position: absolute; right: 3px; top: -14px; color: #000; border: none; background: none; cursor: pointer">
+                                                                            <i class="fas fa-eye" id="confirmPasswordToggle"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="submit">Change Password</button>
+                                                                <button type="button" id="cancelPasswordEdit">Cancel</button>
+                                                            </form>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -260,24 +305,183 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- End .col-lg-9 -->
                             </div>
-                            <!-- End .row -->
                         </div>
-                        <!-- End .container -->
                     </div>
-                    <!-- End .dashboard -->
                 </div>
-                <!-- End .page-content -->
             </main>
 
-            <!-- End .main -->
             <%- include('partials/footer.ejs') %>
         </div>
         <!-- End .page-wrapper -->
 
         <script src="/assets/js/jquery.min.js"></script>
         <script src="/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/jquery.hoverIntent.min.js"></script>
+        <script src="/assets/js/jquery.waypoints.min.js"></script>
+        <script src="/assets/js/superfish.min.js"></script>
+        <script src="/assets/js/owl.carousel.min.js"></script>
+        <script src="/assets/js/wNumb.js"></script>
+        <script src="/assets/js/bootstrap-input-spinner.js"></script>
+        <script src="/assets/js/jquery.magnific-popup.min.js"></script>
+        <script src="/assets/js/nouislider.min.js"></script>
         <script src="/assets/js/main.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.getElementById("profileTab").addEventListener("click", function () {
+                this.classList.add("active");
+                document.getElementById("passwordTab").classList.remove("active");
+                document.getElementById("profileContent").style.display = "block";
+                document.getElementById("passwordContent").style.display = "none";
+            });
+
+            document.getElementById("passwordTab").addEventListener("click", function () {
+                this.classList.add("active");
+                document.getElementById("profileTab").classList.remove("active");
+                document.getElementById("passwordContent").style.display = "block";
+                document.getElementById("profileContent").style.display = "none";
+            });
+
+            // Profile edit mode
+            document.getElementById("editProfileBtn").addEventListener("click", function () {
+                document.getElementById("profileViewMode").style.display = "none";
+                document.getElementById("profileEditMode").style.display = "block";
+            });
+
+            document.getElementById("cancelProfileEdit").addEventListener("click", function () {
+                document.getElementById("profileViewMode").style.display = "block";
+                document.getElementById("profileEditMode").style.display = "none";
+            });
+
+            // Password edit mode
+            document.getElementById("editPasswordBtn").addEventListener("click", function () {
+                document.getElementById("passwordViewMode").style.display = "none";
+                document.getElementById("passwordEditMode").style.display = "block";
+            });
+
+            document.getElementById("cancelPasswordEdit").addEventListener("click", function () {
+                document.getElementById("passwordViewMode").style.display = "block";
+                document.getElementById("passwordEditMode").style.display = "none";
+            });
+
+            //show password eye
+            document.querySelectorAll(".toggle-password").forEach((button) => {
+                button.addEventListener("click", function () {
+                    const targetInput = document.querySelector(this.getAttribute("data-target"));
+                    const icon = this.querySelector("i");
+
+                    if (targetInput.type === "password") {
+                        targetInput.type = "text";
+                        icon.classList.remove("fa-eye");
+                        icon.classList.add("fa-eye-slash");
+                    } else {
+                        targetInput.type = "password";
+                        icon.classList.remove("fa-eye-slash");
+                        icon.classList.add("fa-eye");
+                    }
+                });
+            });
+
+            //update profile
+            document.getElementById("profileForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById("name").value;
+                const mobileNumber = document.getElementById("mobileNumber").value;
+
+                axios
+                    .post("/profile/update-profile", {
+                        name,
+                        mobileNumber,
+                    })
+                    .then((response) => {
+                        // Handle success
+                        if (response.data.success) {
+                            document.getElementById("nameDisplay").textContent = name;
+                            document.getElementById("mobileDisplay").textContent = mobileNumber;
+                            document.querySelector(".profile-info h1").textContent = name;
+
+                            Swal.fire({
+                                icon: "success",
+                                title: "Profile Updated",
+                                text: "Your profile has been successfully updated!",
+                                confirmButtonText: "OK",
+                            }).then(() => {
+                                document.getElementById("profileViewMode").style.display = "block";
+                                document.getElementById("profileEditMode").style.display = "none";
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "Error updating profile: " + response.data.message,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "There was an error updating your profile.",
+                        });
+                    });
+            });
+
+            //change password
+            document.getElementById("passwordForm").addEventListener("submit", function (e) {
+                e.preventDefault(); // Prevent the form's default submission
+
+                const currentPassword = document.getElementById("currentPassword").value;
+                const newPassword = document.getElementById("newPassword").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+
+                // Basic validation: check if the new password matches confirm password
+                if (newPassword !== confirmPassword) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Password Mismatch",
+                        text: "New password and confirmation do not match!",
+                    });
+                    return;
+                }
+
+                // Send the data to the server using Axios
+                axios
+                    .post("/profile/update-password", {
+                        currentPassword,
+                        newPassword,
+                    })
+                    .then((response) => {
+                        if (response.data.success) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Password Changed",
+                                text: "Your password has been successfully changed!",
+                                confirmButtonText: "OK",
+                            }).then(() => {
+                                location.reload(); // Reload the page after the success
+                                document.getElementById("passwordViewMode").style.display = "block";
+                                document.getElementById("passwordEditMode").style.display = "none";
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "Error changing password: " + response.data.message,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("There was an error:", error);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "There was an error changing your password. Please try again.",
+                        });
+                    });
+            });
+        </script>
     </body>
 </html>

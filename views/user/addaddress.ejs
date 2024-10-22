@@ -36,11 +36,65 @@
 
     <body>
         <div class="page-wrapper">
-            <%- include('partials/header.ejs') %>
-            <main class="main">
-                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); margin-top: 63px">
+            <header class="header">
+                <div class="header-middle sticky-header">
                     <div class="container">
-                        <h1 class="page-title">My Account<span>Shop</span></h1>
+                        <div class="header-left">
+                            <button class="mobile-menu-toggler">
+                                <span class="sr-only">Toggle mobile menu</span>
+                                <i class="icon-bars"></i>
+                            </button>
+
+                            <a href="#" class="logo">
+                                <span style="font-size: 2.5rem; font-weight: 600; color: black">Byteverse</span>
+                            </a>
+
+                            <nav class="main-nav">
+                                <ul class="menu sf-arrows">
+                                    <li>
+                                        <a href="/">Home</a>
+                                    </li>
+                                    <li>
+                                        <a href="/shop">Shop</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">About</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Contact</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Help</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <div class="header-right">
+                            <div class="dropdown cart-dropdown d-flex align-items-center">
+                                <a href="/cart">
+                                    <img style="width: 30px" src="/images/icons/cart.png" alt="Account" />
+                                </a>
+                            </div>
+                            <div class="dropdown cart-dropdown d-flex align-items-center">
+                                <% if (userLoggedIn) { %>
+                                <a href="/<%= user._id %>/profile">
+                                    <img style="width: 30px" src="/images/icons/user.png" alt="Account" />
+                                </a>
+                                <% } else { %>
+                                <a href="/login">
+                                    <img style="width: 30px" src="/images/icons/user.png" alt="Account" />
+                                </a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <main class="main">
+                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
+                    <div class="container">
+                        <h1 class="page-title">Add Address</h1>
                     </div>
                     <!-- End .container -->
                 </div>
@@ -69,15 +123,11 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="/<%= user._id %>/profile/orders">Orders</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#">Downloads</a>
-                                        </li>
+
                                         <li class="nav-item">
                                             <a class="nav-link active" href="/<%= user._id %>/profile/address">Addresses</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#">Account Details</a>
-                                        </li>
+                                        
                                         <li class="nav-item" style="margin-top: 10px">
                                             <form action="/logout" method="POST" style="display: inline">
                                                 <button type="submit" class="nav-link" style="border: none; background: none; padding: 0">Sign Out</button>
@@ -316,6 +366,14 @@
         </script>
         <script src="/assets/js/jquery.min.js"></script>
         <script src="/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/jquery.hoverIntent.min.js"></script>
+        <script src="/assets/js/jquery.waypoints.min.js"></script>
+        <script src="/assets/js/superfish.min.js"></script>
+        <script src="/assets/js/owl.carousel.min.js"></script>
+        <script src="/assets/js/wNumb.js"></script>
+        <script src="/assets/js/bootstrap-input-spinner.js"></script>
+        <script src="/assets/js/jquery.magnific-popup.min.js"></script>
+        <script src="/assets/js/nouislider.min.js"></script>
         <script src="/assets/js/main.js"></script>
     </body>
 </html>

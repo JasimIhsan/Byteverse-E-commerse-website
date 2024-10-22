@@ -1,188 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-    <style>
-        .image-upload-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .image-preview-container {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-            cursor: pointer;
-        }
-        .image-preview {
-            max-width: 200px;
-            max-height: 200px;
-            margin-top: 10px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        #crop-container {
-            max-width: 100%;
-            max-height: 400px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Will You Marry Me?</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: url('https://i.imgur.com/WkKIXb9.jpg') no-repeat center center/cover;
+    }
+
+    .container {
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 50px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 48px;
+      color: #e74c3c;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    button {
+      font-size: 24px;
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #c0392b;
+    }
+
+    #proposal {
+      display: none;
+      font-size: 36px;
+      color: #2ecc71;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <form id="product-form" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="images">Upload Product Images (Minimum 3):</label>
-            <input type="file" id="image-input" accept="image/*" multiple />
-            <div id="image-upload-container" class="image-upload-container"></div>
-            <span class="error" id="image-error"></span>
-        </div>
-        <input type="hidden" id="images-data" name="images" value="" />
-        <button type="submit">Add Product</button>
-    </form>
-    <div id="cropperModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="crop-container"></div>
-            <button id="crop-button">Crop Image</button>
-            <button id="modal-close-button" class="close">Close</button>
-        </div>
-    </div>
-    <script>
-        let imagesToCrop = [];
-        let croppedImages = [];
-        let currentCropIndex = -1; // Track the index of the image being cropped
-        let cropper = null;
 
-        document.getElementById("image-input").addEventListener("change", function (event) {
-            const files = event.target.files;
-            imagesToCrop = Array.from(files);
-            croppedImages = new Array(imagesToCrop.length).fill(null); // Initialize croppedImages with nulls
-            currentCropIndex = 0; // Start with the first image
-            cropNextImage();
-        });
+  <div class="container">
+    <h1>Hello my Beautiful and gorgeous moooo❤️ </h1>
+    <p>Every moment with you feels like a fairytale, and I want to spend my life making every day magical for you. There’s one important question I need to ask...</p>
+    <button onclick="showProposal()">Click Me</button>
 
-        function cropNextImage() {
-            if (currentCropIndex < imagesToCrop.length) {
-                const file = imagesToCrop[currentCropIndex];
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    initializeCropper(e.target.result);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                updateImagePreviews(); // Update previews after cropping all images
-            }
-        }
+    <p id="proposal">Will You Marry Me?</p>
+  </div>
 
-        function initializeCropper(imageData) {
-            const modal = document.getElementById("cropperModal");
-            const cropContainer = document.getElementById("crop-container");
-            cropContainer.innerHTML = `<img src="${imageData}" id="image-to-crop">`;
-            modal.style.display = "block";
-            const image = document.getElementById("image-to-crop");
-            cropper = new Cropper(image, {
-                aspectRatio: 1,
-                viewMode: 1,
-            });
-        }
+  <script>
+    function showProposal() {
+      document.getElementById("proposal").style.display = "block";
+    }
+  </script>
 
-        document.getElementById("crop-button").addEventListener("click", function () {
-            if (cropper) {
-                const croppedCanvas = cropper.getCroppedCanvas();
-                if (currentCropIndex >= 0) {
-                    croppedImages[currentCropIndex] = croppedCanvas.toDataURL("image/jpeg"); // Save cropped image
-                    updateImagePreviews(); // Update the previews with the new cropped image
-                }
-                cropper.destroy();
-                document.getElementById("cropperModal").style.display = "none";
-                currentCropIndex++; // Move to the next image after cropping
-                cropNextImage(); // Start cropping the next image
-            }
-        });
-
-        function updateImagePreviews() {
-            const container = document.getElementById("image-upload-container");
-            container.innerHTML = "";
-            croppedImages.forEach((image, index) => {
-                const previewContainer = document.createElement("div");
-                previewContainer.className = "image-preview-container";
-                previewContainer.innerHTML = `
-                    <img class="image-preview" src="${image || ''}" onclick="reCropImage(${index})" style="display: ${image ? 'block' : 'none'};">
-                    <input type="radio" name="primaryImageIndex" value="${index}" onchange="updatePrimaryImage(${index})"> Set as Primary
-                `;
-                container.appendChild(previewContainer);
-            });
-        }
-
-        function reCropImage(index) {
-            currentCropIndex = index; // Set the current crop index to the clicked image index
-            const imageData = croppedImages[index];
-            initializeCropper(imageData);
-        }
-
-        function updatePrimaryImage(index) {
-            const primaryImage = croppedImages[index];
-            croppedImages = croppedImages.filter((_, i) => i !== index);
-            croppedImages.unshift(primaryImage);
-            updateImagePreviews();
-            document.getElementById("images-data").value = JSON.stringify(croppedImages);
-        }
-
-        document.querySelector(".close").addEventListener("click", function () {
-            document.getElementById("cropperModal").style.display = "none";
-            if (cropper) {
-                cropper.destroy();
-            }
-            currentCropIndex = -1; // Reset index when closing modal
-        });
-
-        document.getElementById("modal-close-button").addEventListener("click", function () {
-            document.getElementById("cropperModal").style.display = "none";
-            if (cropper) {
-                cropper.destroy();
-            }
-            currentCropIndex = -1; // Reset index when closing modal
-        });
-
-        document.getElementById("product-form").addEventListener("submit", function (event) {
-            event.preventDefault();
-            if (croppedImages.filter(img => img !== null).length < 3) {
-                document.getElementById("image-error").textContent = "Please upload at least 3 images.";
-                return;
-            }
-            document.getElementById("images-data").value = JSON.stringify(croppedImages);
-            this.submit();
-        });
-    </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <title><%= title %></title>
+        <title>Order detail | Byteverse E-commerse</title>
         <meta name="keywords" content="HTML5 Template" />
         <meta name="description" content="Molla - Bootstrap eCommerce Template" />
         <meta name="author" content="p-themes" />
@@ -231,7 +231,7 @@
         <div class="page-wrapper">
             <header class="header">
                 <div class="header-middle sticky-header">
-                    <div class="container ">
+                    <div class="container">
                         <div class="header-left">
                             <button class="mobile-menu-toggler">
                                 <span class="sr-only">Toggle mobile menu</span>
@@ -285,7 +285,7 @@
                 </div>
             </header>
             <main class="main">
-                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); ">
+                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
                     <div class="container">
                         <h1 class="page-title">Order Details</h1>
                     </div>
@@ -332,58 +332,47 @@
                                 <div class="col-md-8 col-lg-9">
                                     <div class="tab-content">
                                         <div class="tab-pane fade active show" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-                                            <h1>Order History</h1>
-                                            <form id="filterForm" method="GET" action="/<%= user._id %>/profile/orders" style="margin-bottom: 15px">
-                                                <select name="status" class="filter-select" style="font-size: 12px; margin-right: 10px">
-                                                    <option value="all">All</option>
-                                                    <option value="Pending">Pending</option>
-                                                    <option value="Shipped">Shipped</option>
-                                                    <option value="Delivered">Delivered</option>
-                                                    <option value="Cancelled">Cancelled</option>
-                                                </select>
-
-                                                <select name="dateRange" class="filter-select" style="font-size: 12px; margin-right: 10px">
-                                                    <option value="all">All Dates</option>
-                                                    <option value="week">Last Week</option>
-                                                    <option value="twoWeeks">Last 2 Weeks</option>
-                                                    <option value="month">Last Month</option>
-                                                    <option value="threeMonths">Last 3 Months</option>
-                                                </select>
-
-                                                <button type="submit" class="btn btn-outline" style="font-size: 12px">Apply Filters</button>
-                                            </form>
-
-                                            <div class="order-list">
-                                                <% if (orders && orders.length > 0) { %> <% orders.forEach(order => { %>
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <div class="card-title">
-                                                            <span>Order ORD-<%= order._id %></span>
-                                                            <span class="card-date"><%= order.orderDate.toDateString() %></span>
+                                            <h1>Order Details</h1>
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <div class="card-title">
+                                                        <span>Order <%= order._id %></span>
+                                                        <span class="card-date"><%= order.orderDate.toDateString() %></span>
+                                                    </div>
+                                                </div>
+                                                <div class="card-content">
+                                                    <div class="order-summary">
+                                                        <div>
+                                                            <p class="order-total">Total: $<%= order.total.toFixed(2) %></p>
+                                                            <p class="order-items"><%= order.products.length %> item(s)</p>
+                                                        </div>
+                                                        <div>
+                                                            <span class="order-status status-<%= order.deliveryStatus.toLowerCase() %>"><%= order.deliveryStatus %></span>
                                                         </div>
                                                     </div>
-                                                    <div class="card-content">
-                                                        <div class="order-summary">
-                                                            <div>
-                                                                <p class="order-total">Total: $<%= order.total.toFixed(2) %></p>
-                                                                <p class="order-items"><%= order.products.length %> item(s)</p>
-                                                            </div>
-                                                            <div>
-                                                                <span class="order-status status-<%= order.deliveryStatus.toLowerCase() %>"><%= order.deliveryStatus %></span>
-                                                            </div>
-                                                        </div>
-                                                        <ul class="item-list">
-                                                            <% order.products.forEach(product => { %>
-                                                            <li class="item d-flex align-items-center">
-                                                                <img src="/<%= product.productId.images[0] %>" alt="<%= product.productId.name %>" style="width: 75px; height: 75px" />
-                                                                <span><%= product.productId.name %> (x<%= product.quantity %>)</span>
-                                                                <span>$<%= product.price.toFixed(2) %></span>
-                                                            </li>
-                                                            <% }); %>
-                                                        </ul>
+
+                                                    <!-- Coupon Section -->
+                                                    <% if (order.couponCode) { %>
+                                                    <div class="coupon-details">
+                                                        <p>Coupon Applied: <strong><%= order.couponCode %></strong></p>
+                                                        <p>Discount: -$<%= order.couponDiscount.toFixed(2) %></p>
                                                     </div>
-                                                    <div class="card-footer">
-                                                        <% if (order.deliveryStatus === 'Pending' || order.deliveryStatus === 'Processing' ) { %>
+                                                    <% } %>
+
+                                                    <ul class="item-list">
+                                                        <% order.products.forEach(function(product) { %>
+                                                        <li class="item d-flex align-items-center">
+                                                            <img style="width: 60px" src="/<%= product.productId.images[0] %>" alt="Product Image" />
+                                                            <span><%= product.productId.name %> (x<%= product.quantity %>)</span>
+                                                            <span>$<%= product.price.toFixed(2) %></span>
+                                                            <button style=" font-size: 12px;" class="btn btn-danger" onclick="cancelOrderItem('<%= order._id %>', '<%= product.productId._id %>')">Remove</button>
+                                                        </li>
+                                                        <% }) %>
+                                                    </ul>
+                                                </div>
+                                                <div class="card-footer" style="padding: 15px">
+                                                    <button style="font-size: 12px;" class="btn btn-outline" onclick="history.back()">Back to Orders</button>
+                                                    <% if (order.deliveryStatus === 'Pending' || order.deliveryStatus === 'Processing' ) { %>
                                                         <button class="btn btn-outline" style="font-size: 12px" onclick="cancelOrder('<%= order._id %>', '<%= order.deliveryStatus %>')">Cancel Order</button>
                                                         <% } else if (order.deliveryStatus === 'Cancelled') { %>
                                                         <!-- Do nothing or show a message if needed -->
@@ -391,15 +380,7 @@
                                                         <% } else { %>
                                                         <button class="btn btn-outline" style="font-size: 12px" ">Return</button>
                                                         <% } %>
-                                                        <form action="/profile/orders/orderdetail/<%= order._id %>" method="get">
-                                                            <button type="submit" class="btn btn-outline" style="font-size: 12px" >Order Details</button>
-                                                        </form>
-
-                                                    </div>
                                                 </div>
-                                                <% }); %> <% } else { %>
-                                                <p>No orders found.</p>
-                                                <% } %>
                                             </div>
                                         </div>
                                     </div>
@@ -417,7 +398,6 @@
                 <!-- End .page-content -->
             </main>
             <!-- End .main -->
-
         </div>
         <!-- End .page-wrapper -->
 
@@ -474,7 +454,7 @@
                     }
                 });
             }
-        
+
             function sendCancellation(orderId, reason) {
                 axios
                     .post(`/profile/orders/cancel-order`, {
@@ -493,7 +473,41 @@
                         Swal.fire("Error!", "Something went wrong.", "error");
                     });
             }
+
+            function cancelOrderItem(orderId, productId) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        axios
+                            .post("/admin/order-management/order-detail/remove-order-item", { orderId, productId })
+                            .then((response) => {
+                                const message = response.data.message;
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: message,
+                                    icon: "success",
+                                }).then(() => {
+                                    if (message.includes("Order deleted successfully")) {
+                                        window.location.href = "/:userId/profile/orders";
+                                    } else {
+                                        location.reload();
+                                    }
+                                });
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                                alert("Failed to remove item. Please try again.");
+                            });
+                    }
+                });
+            }
         </script>
-        
     </body>
 </html>

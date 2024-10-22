@@ -105,11 +105,17 @@ router.get("/shop/product-detail/:productId", shop.getProductDetail);
 
 router.get("/:userId/profile", auth.checkSession, profile.getProfile);
 
+router.post("/profile/update-profile", profile.updateProfile);
+
+router.post("/profile/update-password", profile.changePassword);
+
 //---- order -----//
 
 router.get("/:userId/profile/orders", auth.checkSession, profile.getOrders);
 
 router.post("/profile/orders/cancel-order", auth.checkSession, profile.cancelOrder);
+
+router.get('/profile/orders/orderdetail/:orderId', profile.getOrderDetails)
 
 //---- address -----//
 

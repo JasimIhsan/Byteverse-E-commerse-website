@@ -5,14 +5,13 @@ const User = require("../../model/user");
 const getShop = async (req, res) => {
     try {
         const title = "Shop | Byteverse E-commerce";
-        const { search = "", page = 1, sortby = "popularity", categories = [], brands = [] } = req.query;
+        const { search = "", page = 1, sortby = "popularity", categories = [], brands = [], } = req.query;
         const limit = 8;
         const skip = (page - 1) * limit;
         const regex = new RegExp("^" + search, "i");
         const userId = req.session.userId;
 
         const user = await User.findById(userId);
-      
 
         let sortOptions = {};
         switch (sortby) {
@@ -32,10 +31,10 @@ const getShop = async (req, res) => {
                 sortOptions = { name: -1 };
                 break;
             default:
-                sortOptions = { updatedAt: -1 };
+                sortOptions = { updatedAt: -1 }; 
         }
 
-        // Ensure categories and brands are always treated as arrays
+        //This code ensures that even if only one category or brand is selected, it is treated as an array, which prevents errors when filtering.
         const selectedCategories = Array.isArray(categories) ? categories : [categories].filter(Boolean);
         const selectedBrands = Array.isArray(brands) ? brands : [brands].filter(Boolean);
 
@@ -51,14 +50,13 @@ const getShop = async (req, res) => {
 
         const products = await Products.find(query)
             .sort(sortOptions)
-            .populate({ path: "category", match: { status: "listed" } })
+            .populate({ path: "category", match: { status: "listed" } }) 
             .skip(skip)
             .limit(limit);
 
         const filteredProducts = products.filter((product) => product.category);
 
         const totalProducts = await Products.countDocuments(query);
-
         const totalPages = Math.ceil(totalProducts / limit);
         const userLoggedIn = req.session.user ? true : false;
 
@@ -87,8 +85,10 @@ const getShop = async (req, res) => {
         });
     } catch (error) {
         console.error("Error from get shop: \n", error);
+        res.status(500).send("An error occurred while fetching the shop data.");
     }
 };
+
 
 const getProductDetail = async (req, res) => {
     try {

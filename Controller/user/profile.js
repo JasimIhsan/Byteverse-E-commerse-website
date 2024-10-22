@@ -3,6 +3,7 @@ const Orders = require("../../model/orders");
 const Address = require("../../model/Address");
 const Products = require("../../model/product");
 const Wishlist = require("../../model/wishlist");
+const bcrypt = require("bcrypt");
 
 const getProfile = async (req, res) => {
     try {
@@ -14,7 +15,6 @@ const getProfile = async (req, res) => {
         const user = await User.findById(userId).populate("defaultAddress").exec();
         const orders = await Orders.find({ userId }).populate("products.productId").exec();
 
-        // Render the user dashboard with retrieved data
         res.render("user/dashboard", {
             user,
             userLoggedIn,
@@ -23,6 +23,50 @@ const getProfile = async (req, res) => {
         });
     } catch (error) {
         console.error("Error from get dashboard of user: \n", error);
+    }
+};
+
+const updateProfile = async (req, res) => {
+    try {
+        console.log("updaing profile");
+
+        const { name, mobileNumber } = req.body;
+        const userId = req.session.userId;
+
+        User.findByIdAndUpdate(userId, { username: name, mobileNumber: mobileNumber }, { new: true })
+            .then((updatedUser) => {
+                res.json({ success: true, user: updatedUser });
+            })
+            .catch((error) => {
+                console.error("Error updating user:", error);
+                res.json({ success: false, message: "Failed to update profile." });
+            });
+    } catch (error) {
+        console.error("Error from post update profile  :  \n", error);
+    }
+};
+
+const changePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.session.userId;
+
+    try {
+        const user = await User.findById(userId);
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.json({ success: false, message: "Current password is incorrect." });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        user.password = hashedPassword;
+        await user.save();
+
+        return res.json({ success: true });
+    } catch (error) {
+        console.error("Error updating password:", error);
+        res.json({ success: false, message: "Error updating password." });
     }
 };
 
@@ -114,6 +158,22 @@ const cancelOrder = async (req, res) => {
     }
 };
 
+const getOrderDetails = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const userLoggedIn = Boolean(req.session.userId);
+        const orderId = req.params.orderId;
+
+        const user = await User.findById(userId);
+        const order = await Orders.findById(orderId).populate("products.productId").populate("Address").exec();
+
+        console.log(order);
+
+        res.render("user/orderdetail", { userLoggedIn, user, order });
+    } catch (error) {
+        console.error("Error from get order detail page : \n", error);
+    }
+};
 //------------------ address -------------------//
 
 const getAddress = async (req, res) => {
@@ -369,6 +429,8 @@ const removeFromWishlist = async (req, res) => {
 
 module.exports = {
     getProfile,
+    updateProfile,
+    changePassword,
     getAddress,
     getAddAddress,
     postAddAddress,
@@ -377,6 +439,7 @@ module.exports = {
     updateAddress,
     getOrders,
     cancelOrder,
+    getOrderDetails,
     getWishlist,
     addToWishlist,
     removeFromWishlist,

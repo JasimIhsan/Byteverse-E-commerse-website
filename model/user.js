@@ -10,6 +10,9 @@ const userSchema = mongoose.Schema({
         required: true,
         unique: true,
     },
+    mobileNumber: {
+        type: String,
+    },
     password: {
         type: String,
         required: true,
@@ -46,6 +49,10 @@ const userSchema = mongoose.Schema({
             ref: "Coupon",
         },
     ],
+    isFirstLogin: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 module.exports = mongoose.model("User", userSchema);
