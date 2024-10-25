@@ -3,14 +3,19 @@ const { Schema } = mongoose;
 
 const cartSchema = new Schema(
     {
-        Products: [
+        products: [
             {
-                ProductId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-                Quantity: { type: Number, required: true },
-                Price: { type: Number, required: true },
+                productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+                price: { type: Number, require: true },
+                quantity: { type: Number, required: true },
+                productTotal: { type: Number, required: true },
             },
         ],
-        UserId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        cartTotal: {
+            type: Number,
+            required: true,
+        },
     },
     {
         timestamps: true,

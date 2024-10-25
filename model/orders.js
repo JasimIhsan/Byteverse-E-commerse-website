@@ -53,10 +53,16 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    Address: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Address",
-        required: true,
+    address: {
+        firstName: { type: String, required: true },
+        lastName: { type: String, required: true },
+        phoneNumber: { type: String, required: true },
+        street: { type: String, required: true },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        postalCode: { type: String, required: true },
+        country: { type: String, required: true },
+        additionalInfo: { type: String },
     },
     cancellationReason: {
         type: String,

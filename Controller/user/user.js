@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const OTP = require("../../model/OTP");
 const session = require("express-session");
 const Products = require("../../model/product");
+const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 
 //======================================== functions ==========================================//
@@ -196,6 +197,10 @@ const varifyOTP = async (req, res) => {
             return res.redirect("/login/enter-otp?error=OTP not found");
         }
 
+        if (otpRecord.verified) {
+            return res.redirect("/login/enter-otp?error=Invalid OTP");
+        }
+
         const currentTime = Date.now();
         const otpCreatedAt = otpRecord.createdAt.getTime();
         const otpAge = currentTime - otpCreatedAt;
@@ -208,10 +213,6 @@ const varifyOTP = async (req, res) => {
         const isMatched = await bcrypt.compare(otp, otpRecord.otp);
 
         if (isMatched) {
-            //mark as varified to not to use again
-            req.session.user = true;
-            await otpRecord.save();
-
             // Check if the user already exists
             const existingUser = await User.findOne({ email: email });
             if (existingUser) {
@@ -229,6 +230,10 @@ const varifyOTP = async (req, res) => {
             });
 
             await newUser.save();
+
+            otpRecord.verified = true;
+            await otpRecord.save();
+
             // console.log(req.session.user);
             req.session.user = true;
             req.session.userId = newUser._id;
@@ -245,7 +250,6 @@ const varifyOTP = async (req, res) => {
 const resendOTP = async (req, res) => {
     try {
         const { email } = req.session.userTemp;
-        
 
         const otp = generateOTP();
         const hashedOTP = await securePassword(otp);
@@ -271,96 +275,121 @@ const handleGoogleAuth = async (req, res) => {
     res.redirect("/");
 };
 
-// const forgotPasswordEmailEnter = async (req, res) => {
-//     try {
-//         const error_message = req.query.error;
-//         res.render("user/forgot_password/emailenter", { message: error_message });
-//     } catch (error) {
-//         console.error("Error from forgot password email enter : \n", error);
-//     }
-// };
+const forgotPasswordEmailEnter = async (req, res) => {
+    try {
+        const errorMessage = req.query.error;
+        res.render("user/forgot_password/emailenter", { message: errorMessage });
+    } catch (error) {
+        console.error("Error from forgot password email enter:", error);
+        res.redirect("/login?error=Internal server error");
+    }
+};
 
-// const postForgotPasswordEmailEnter = async (req, res) => {
-//     try {
-//         const { email } = req.body;
-//         const user = await User.findOne({ email });
-//         if (!user) {
-//             return res.redirect("/login/enter-email?error=User not found");
-//         }
+const postForgotPasswordEmailEnter = async (req, res) => {
+    try {
+        const { email } = req.body;
+        req.session.email = email;
 
-//         const otp = generateOTP();
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.redirect("/login/enter-email?error=User not found");
+        }
 
-//         await sendOTPEmail(email, otp);
+        const otp = generateOTP();
+        console.log("OTP:", otp);
+        const hashedOTP = await securePassword(otp);
 
-//         const otpEntry = new OTP({
-//             email,
-//             otp,
-//             createdAt: Date.now(),
-//         });
+        await sendOTPEmail(email, otp);
 
-//         await otpEntry.save();
+        const resetToken = uuidv4();
+        const tokenExpiration = Date.now() + Number(3600000);
 
-//         res.redirect("/login/enter-email/otp-enter");
-//     } catch (error) {
-//         console.error("Error in forgot password:", error);
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// };
+        await OTP.findOneAndUpdate({ email }, { otp: hashedOTP, resetToken, tokenExpiration, createdAt: Date.now() }, { upsert: true });
 
-// const forgotOtp = async (req, res) => {
-//     try {
-//         const error_msg = req.query.error;
-//         res.render("user/forgot_password/otp", { message: error_msg });
-//     } catch (error) {
-//         console.error("Error from forgot otp password : \n", error);
-//     }
-// };
+        res.redirect("/login/enter-email/otp-enter");
+    } catch (error) {
+        console.error("Error in forgot password:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
-// const verifyForgotPasswordOTP = async (req, res) => {
-//     try {
-//         const { email, otp1, otp2, otp3, otp4, otp5, otp6 } = req.body;
-//         const otp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
+const forgotOtp = async (req, res) => {
+    try {
+        const errorMessage = req.query.error;
+        res.render("user/forgot_password/otp", { message: errorMessage });
+    } catch (error) {
+        console.error("Error from forgot OTP password:", error);
+        res.redirect("/login?error=Internal server error");
+    }
+};
 
-//         console.log("otp : ", otp);
-//         console.log("email : ", email);
+const verifyForgotPasswordOTP = async (req, res) => {
+    try {
+        const { otp1, otp2, otp3, otp4, otp5, otp6 } = req.body;
+        const email = req.session.email;
+        const otp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
+        console.log("ENTERED OTP   : ", otp);
+        console.log("ENTERED EMAIL : ", email);
 
-//         const otpRecord = await OTP.findOne({ email: email });
+        const otpRecord = await OTP.findOne({ email });
+        if (!otpRecord) {
+            return res.redirect("/login/enter-email/otp-enter?error=OTP not found");
+        }
 
-//         if (!otpRecord) {
-//             return res.redirect("/login/enter-email/otp-enter?error=OTP not found");
-//         }
+        if (Date.now() > otpRecord.tokenExpiration) {
+            return res.redirect("/login/enter-email/otp-enter?error=OTP has expired");
+        }
 
-//         const currentTime = Date.now();
-//         const otpCreatedAt = otpRecord.createdAt.getTime();
-//         const otpAge = currentTime - otpCreatedAt;
-//         const otpDuration = Number(process.env.OTP_VALIDITY_DURATION) || 180000;
+        const isMatched = await bcrypt.compare(otp, otpRecord.otp);
+        if (isMatched) {
+            req.session.emailForPasswordReset = email;
+            return res.redirect("/login/enter-email/otp-enter/new-password");
+        } else {
+            return res.redirect("/login/enter-email/otp-enter?error=Invalid OTP");
+        }
+    } catch (error) {
+        console.error("Error in verifying OTP for forgot password:", error);
+        return res.redirect("/forgot-password?error=Something went wrong");
+    }
+};
 
-//         if (otpAge > otpDuration) {
-//             return res.redirect("/login/enter-email/otp-enter?error=OTP has expired");
-//         }
+const getNewPassword = async (req, res) => {
+    try {
+        const errorMessage = req.query.error;
+        res.render("user/forgot_password/resetpassword", { message: errorMessage });
+    } catch (error) {
+        console.error("Error from get new Password in forgot password:", error);
+        res.redirect("/login?error=Internal server error");
+    }
+};
 
-//         const isMatched = await bcrypt.compare(otp, otpRecord.otp);
+const postNewPassword = async (req, res) => {
+    try {
+        const { password } = req.body;
+        const email = req.session.emailForPasswordReset;
+        console.log("req.body.password:", password);
 
-//         if (isMatched) {
-//             req.session.emailForPasswordReset = email;
-//             return res.redirect("/login/enter-email/otp-enter/new-password");
-//         } else {
-//             return res.redirect("/login/enter-email/otp-enter?error=Invalid OTP");
-//         }
-//     } catch (error) {
-//         console.error("Error in verifying OTP for forgot password: \n", error);
-//         return res.redirect("/forgot-password?error=Something went wrong");
-//     }
-// };
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ success: false, error: "User not found" });
+        }
 
-// const getNewPassword = async (req, res) => {
-//     try {
-//         const error_msg = req.query.error;
-//         res.render("user/forgot_password/resetpassword", { message: error_msg });
-//     } catch (error) {
-//         console.error("Error from get new Password in forget passowrd : \n", error);
-//     }
-// };
+        // console.log("USER.PASSWORD:", user.password);
+
+        const hashedPassword = await securePassword(password);
+        // console.log("HASHED:", hashedPassword);
+
+        user.password = hashedPassword;
+        await user.save();
+
+        delete req.session.emailForPasswordReset;
+
+        res.status(200).json({ success: true, message: "Password has been reset successfully" });
+    } catch (error) {
+        console.error("Error in resetting password:", error);
+        res.status(500).json({ success: false, error: "Internal server error" });
+    }
+};
 
 //----------------------------- product detail page ------------------------------//
 
@@ -448,4 +477,10 @@ module.exports = {
     handleGoogleAuth,
     getProductDetail,
     Logout,
+    forgotPasswordEmailEnter,
+    postForgotPasswordEmailEnter,
+    forgotOtp,
+    verifyForgotPasswordOTP,
+    getNewPassword,
+    postNewPassword,
 };

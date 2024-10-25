@@ -8,20 +8,90 @@
         <!-- Favicon and styles -->
         <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
         <link rel="stylesheet" href="/assets/css/style.css" />
-        <link rel="stylesheet" href="/css/user/main.css" />
-        <!-- Include SweetAlert2 CSS & JS -->
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     </head>
 
     <body>
         <div class="page-wrapper">
-            <%- include('partials/header.ejs') %>
+            <header class="header">
+                <div class="header-middle sticky-header">
+                    <div class="container">
+                        <div class="header-left">
+                            <button class="mobile-menu-toggler">
+                                <span class="sr-only">Toggle mobile menu</span>
+                                <i class="icon-bars"></i>
+                            </button>
+
+                            <a href="#" class="logo">
+                                <span style="font-size: 2.5rem; font-weight: 600; color: black">Byteverse</span>
+                            </a>
+
+                            <nav class="main-nav">
+                                <ul class="menu sf-arrows">
+                                    <li>
+                                        <a href="/">Home</a>
+                                    </li>
+                                    <li>
+                                        <a href="/shop">Shop</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">About</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Contact</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Help</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <div class="header-right">
+                            <div class="dropdown cart-dropdown">
+                                <% if (userLoggedIn) { %>
+                                <a href="/profile/wishlist" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11">
+                                    <img style="width: 30px" src="/images/icons/wishlist.png" alt="wishlist" />
+                                </a>
+                                <% } else { %>
+                                <a href="/login" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11">
+                                    <img style="width: 30px" src="/images/icons/wishlist.png" alt="wishlist" />
+                                </a>
+                                <% } %>
+                            </div>
+                            <div class="dropdown cart-dropdown">
+                                <% if (userLoggedIn) { %>
+                                <a href="/cart">
+                                    <img style="width: 30px" src="/images/icons/cart.png" alt="Account" />
+                                </a>
+                                <% } else { %>
+                                <a href="/login">
+                                    <img style="width: 30px" src="/images/icons/cart.png" alt="Account" />
+                                </a>
+                                <% } %>
+                            </div>
+                            <div class="dropdown cart-dropdown">
+                                <% if (userLoggedIn) { %>
+                                <a href="/<%= user._id %>/profile">
+                                    <img style="width: 30px" src="/images/icons/user.png" alt="Account" />
+                                </a>
+                                <% } else { %>
+                                <a href="/login">
+                                    <img style="width: 30px" src="/images/icons/user.png" alt="Account" />
+                                </a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
             <main class="main">
-                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); margin-top: 65px">
+                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
                     <div class="container">
-                        <h1 class="page-title">Shopping Cart<span>Shop</span></h1>
+                        <h1 class="page-title">Shopping Cart</h1>
                     </div>
                 </div>
                 <div class="page-content">
@@ -29,13 +99,6 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-lg-9">
-                                    <!-- Display success or error messages -->
-                                    <% if (error_msg) { %>
-                                    <div class="error-message" id="error"><%= error_msg %></div>
-                                    <% } %> <% if (success_msg) { %>
-                                    <div class="success-message" id="error"><%= success_msg %></div>
-                                    <% } %>
-
                                     <!-- Cart table -->
                                     <table class="table table-cart table-mobile">
                                         <thead>
@@ -63,13 +126,22 @@
                                                         </h3>
                                                     </div>
                                                 </td>
-                                                <td class="price-col">$<%= item.price.toFixed(2) %></td>
+                                                <td class="price-col">
+                                                    <% if (item.bestOffer) { %>
+                                                    <div class="d-flex">
+                                                        <span class="original-price" style="text-decoration: line-through; color: gray">$<%= item.price.toFixed(2) %></span>
+                                                        <span class="discounted-price ml-2" style="color: green">$<%= item.finalPrice.toFixed(2) %></span>
+                                                    </div>
+                                                    <% } else { %> 
+                                                    <span class="original-price">$<%= item.price.toFixed(2) %></span>
+                                                    <% } %>
+                                                </td>
                                                 <td class="quantity-col">
                                                     <div class="cart-product-quantity">
-                                                        <input type="number" class="form-control quantity-input" value="<%= item.quantity %>" min="1" max="<%= item.stock %>" step="1" data-stock="<%= item.stock %>" />
+                                                        <input type="number" class="form-control quantity-input" value="<%= item.quantity %>" min="1" max="10" step="1" data-stock="<%= item.stock %>" />
                                                     </div>
                                                 </td>
-                                                <td class="total-col product-subtotal">$<%= (item.price * item.quantity).toFixed(2) %></td>
+                                                <td class="total-col product-subtotal" id="productTotal">$<%= (item.finalPrice * item.quantity).toFixed(2) %></td>
                                                 <td class="remove-col">
                                                     <button type="button" class="btn-remove" data-userId="<%= item.UserId %>" data-product-id="<%= item.id %>">
                                                         <i class="icon-close"></i>
@@ -86,7 +158,7 @@
                                 </div>
 
                                 <!-- Cart total summary -->
-                                <aside class="col-lg-3">
+                                <aside class="col-lg-3" style="margin-top: 30px">
                                     <div class="summary summary-cart">
                                         <h3 class="summary-title">Cart Total</h3>
                                         <table class="table table-summary">
@@ -97,11 +169,11 @@
                                                 </tr>
                                                 <tr class="summary-shipping">
                                                     <td>Shipping:</td>
-                                                    <td id="shipping-message">&nbsp;</td>
+                                                    <td id="shipping_message"><%= cartTotal > 1500 ? 'Free Shipping' : '$20.00' %></td>
                                                 </tr>
                                                 <tr class="summary-total">
-                                                    <td>Total:</td>
-                                                    <td id="total">$<%= total.toFixed(2) %></td>
+                                                    <td>Cart Total:</td>
+                                                    <td id="total">$<%= cartTotal.toFixed(2) %></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -120,157 +192,215 @@
             </main>
 
             <footer class="footer">
-                <!-- Footer content here -->
+                <div class="footer-middle">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget widget-about">
+                                    <!-- <img src="/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25" /> -->
+                                    <h3><strong>Byteverse</strong></h3>
+                                    <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.</p>
+
+                                    <div class="social-icons">
+                                        <a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Pinterest"><i class="icon-pinterest"></i></a>
+                                    </div>
+                                    <!-- End .soial-icons -->
+                                </div>
+                                <!-- End .widget about-widget -->
+                            </div>
+                            <!-- End .col-sm-6 col-lg-3 -->
+
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                    <h4 class="widget-title">Useful Links</h4>
+                                    <!-- End .widget-title -->
+
+                                    <ul class="widget-list">
+                                        <li><a href="#">About </a></li>
+                                        <li><a href="#">How to shop on </a></li>
+                                        <li><a href="#">FAQ</a></li>
+                                        <li><a href="#">Contact us</a></li>
+                                        <li><a href="#">Log in</a></li>
+                                    </ul>
+                                    <!-- End .widget-list -->
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-sm-6 col-lg-3 -->
+
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                    <h4 class="widget-title">Customer Service</h4>
+                                    <!-- End .widget-title -->
+
+                                    <ul class="widget-list">
+                                        <li><a href="#">Payment Methods</a></li>
+                                        <li><a href="#">Money-back guarantee!</a></li>
+                                        <li><a href="#">Returns</a></li>
+                                        <li><a href="#">Shipping</a></li>
+                                        <li><a href="#">Terms and conditions</a></li>
+                                        <li><a href="#">Privacy Policy</a></li>
+                                    </ul>
+                                    <!-- End .widget-list -->
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-sm-6 col-lg-3 -->
+
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                    <h4 class="widget-title">My Account</h4>
+                                    <!-- End .widget-title -->
+
+                                    <ul class="widget-list">
+                                        <li><a href="#">Sign In</a></li>
+                                        <li><a href="#">View Cart</a></li>
+                                        <li><a href="#">My Wishlist</a></li>
+                                        <li><a href="#">Track My Order</a></li>
+                                        <li><a href="#">Help</a></li>
+                                    </ul>
+                                    <!-- End .widget-list -->
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-sm-6 col-lg-3 -->
+                        </div>
+                        <!-- End .row -->
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .footer-middle -->
+
+                <div class="footer-bottom">
+                    <div class="container">
+                        <p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p>
+                        <!-- End .footer-copyright -->
+                        <figure class="footer-payments">
+                            <img src="/assets/images/payments.png" alt="Payment methods" width="272" height="20" />
+                        </figure>
+                        <!-- End .footer-payments -->
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .footer-bottom -->
             </footer>
         </div>
 
-        <!-- JavaScript and jQuery for handling real-time updates -->
         <script src="/assets/js/jquery.min.js"></script>
         <script src="/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="/assets/js/jquery.hoverIntent.min.js"></script>
+        <script src="/assets/js/jquery.waypoints.min.js"></script>
+        <script src="/assets/js/superfish.min.js"></script>
+        <script src="/assets/js/owl.carousel.min.js"></script>
+        <script src="/assets/js/wNumb.js"></script>
+        <script src="/assets/js/bootstrap-input-spinner.js"></script>
+        <script src="/assets/js/jquery.magnific-popup.min.js"></script>
+        <script src="/assets/js/nouislider.min.js"></script>
+        <script src="/assets/js/main.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
         <script>
             document.addEventListener("DOMContentLoaded", () => {
                 const subtotalElement = document.getElementById("subtotal");
                 const totalElement = document.getElementById("total");
-                const shippingMessage = document.getElementById("shipping-message");
+                const shippingMessage = document.getElementById("shipping_message");
+                const productTotal = document.getElementById("productTotal");
 
-                const updateCartTotals = () => {
-                    let subtotal = 0;
-                    const quantityInputs = document.querySelectorAll(".quantity-input");
+                const updateCart = async (productId, quantity, inputElement) => {
+                    try {
+                        const response = await axios.post("/cart/update", { productId, quantity });
 
-                    quantityInputs.forEach((input) => {
-                        const price = parseFloat(input.closest("tr").querySelector(".price-col").textContent.replace("$", ""));
-                        const quantity = parseInt(input.value, 10);
+                        if (!response.data.success) throw new Error(response.data.message);
 
-                        // Calculate individual product subtotal
-                        const productSubtotal = price * quantity;
+                        let shippingCost = 20;
+                        subtotalElement.textContent = "$" + response.data.subtotal;
+                        totalElement.textContent = "$" + response.data.cartTotal;
+                        shippingMessage.textContent = response.data.cartTotal > 1500 ? "Free Shipping" : "$" + shippingCost.toFixed(2);
 
-                        // Update the product subtotal in the UI for this row
-                        const productSubtotalElement = input.closest("tr").querySelector(".product-subtotal");
-                        productSubtotalElement.textContent = `$${productSubtotal.toFixed(2)}`;
-
-                        // Add to the overall subtotal
-                        subtotal += productSubtotal;
-                    });
-
-                    // Calculate and update shipping and total cost
-                    const shippingCost = subtotal >= 1500 ? 0 : 50;
-                    const total = subtotal + shippingCost;
-
-                    // Update the overall totals in the UI
-                    subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-                    totalElement.textContent = `$${total.toFixed(2)}`;
-                    shippingMessage.textContent = shippingCost === 0 ? "Free Shipping" : `$${shippingCost.toFixed(2)}`;
+                        const productSubtotalElement = inputElement.closest("tr").querySelector(".product-subtotal");
+                        productSubtotalElement.textContent = "$" + (response.data.updatedProduct.price * response.data.updatedProduct.quantity).toFixed(2);
+                    } catch (error) {
+                        console.error("Error updating cart:", error);
+                        Swal.fire({ title: "Error", text: error.message, icon: "error", confirmButtonText: "Try Again" });
+                    }
                 };
 
-                // Add event listeners to all quantity inputs
                 document.querySelectorAll(".quantity-input").forEach((input) => {
-                    input.addEventListener("input", async (event) => {
-                        const stock = parseInt(input.getAttribute("data-stock"), 10);
-                        const quantity = parseInt(input.value, 10);
+                    input.addEventListener("change", async (event) => {
+                        const stock = Number(input.getAttribute("data-stock"));
+                        let quantity = parseInt(input.value, 10);
                         const productId = input.closest("tr").getAttribute("data-product-id");
+                        console.log("STOCK : ", stock);
 
-                        // Check stock limits
                         if (quantity > stock) {
                             Swal.fire({
-                                title: "Max Stock Reached",
-                                text: `There are only ${stock} items available in stock.`,
-                                icon: "error",
-                                confirmButtonText: "OK",
+                                icon: "info",
+                                title: "Stock Information",
+                                text: `Only ${stock} product available.`,
                             });
                             input.value = stock;
+                            quantity = stock;
+
+                            console.log(input.value);
                         }
 
-                        // Prevent decreasing below 1
+                        if (quantity == 10) {
+                            Swal.fire({
+                                icon: "info",
+                                title: "Purchase Limit",
+                                text: "Maximum purchace limit is 10 for each product",
+                            });
+                        }
+
                         if (quantity < 1) {
+                            quantity = 1;
                             input.value = 1;
                         }
 
-                        // Update cart in the database via AJAX
-                        try {
-                            const response = await axios.post(`/cart/update`, {
-                                productId: productId,
-                                quantity: input.value,
-                            });
-
-                            if (response.data.success) {
-                                updateCartTotals(); // Recalculate and update totals
-                            } else {
-                                Swal.fire({
-                                    title: "Error",
-                                    text: response.data.message,
-                                    icon: "error",
-                                    confirmButtonText: "Try Again",
-                                });
-                            }
-                        } catch (error) {
-                            console.error("Error updating cart:", error);
-                            Swal.fire({
-                                title: "Error",
-                                text: error.response?.data?.message || "Something went wrong!",
-                                icon: "error",
-                                confirmButtonText: "OK",
-                            });
-                        }
+                        await updateCart(productId, quantity, input);
                     });
                 });
 
-                // Event listener for item removal
                 document.querySelectorAll(".btn-remove").forEach((button) => {
-                    button.addEventListener("click", async (event) => {
+                    button.addEventListener("click", async () => {
                         const productId = button.getAttribute("data-product-id");
-                        const userId = button.getAttribute("data-userId");
-
                         Swal.fire({
                             title: "Are you sure?",
-                            text: "Do you want to remove this item from the cart?",
+                            text: "Remove this item from the cart?",
                             icon: "warning",
                             showCancelButton: true,
                             confirmButtonText: "Yes, remove it!",
-                            cancelButtonText: "No, keep it",
                         }).then(async (result) => {
                             if (result.isConfirmed) {
                                 try {
                                     const response = await axios.post(`/cart/${productId}/delete-item`, { productId });
-                                    console.log(response);
-
                                     if (response.data.success) {
                                         button.closest("tr").remove();
-                                        updateCartTotals();
 
-                                        Swal.fire({
-                                            title: "Removed",
-                                            text: "Item removed from the cart.",
-                                            icon: "success",
-                                            confirmButtonText: "OK",
-                                        }).then(() => {
-                                            location.reload();
-                                        });
+                                        // Update the UI with new subtotal and total received from server after item removal
+                                        subtotalElement.textContent = response.data.subtotal; // assuming the server returns subtotal
+                                        totalElement.textContent = response.data.cartTotal; // assuming the server returns cartTotal
+                                        shippingMessage.textContent = response.data.cartTotal > 1500 ? "$20" : "Free Shipping"; // assuming the server returns shipping message
+
+                                        Swal.fire({ title: "Removed", text: "Item removed from the cart.", icon: "success" });
                                     } else {
-                                        Swal.fire({
-                                            title: "Error",
-                                            text: response.data.message,
-                                            icon: "error",
-                                            confirmButtonText: "Try Again",
-                                        });
+                                        throw new Error(response.data.message);
                                     }
                                 } catch (error) {
                                     console.error("Error removing item:", error);
-                                    Swal.fire({
-                                        title: "Error",
-                                        text: "Failed to remove the item.",
-                                        icon: "error",
-                                        confirmButtonText: "OK",
-                                    });
+                                    Swal.fire({ title: "Error", text: error.message, icon: "error" });
                                 }
                             }
                         });
                     });
                 });
 
-                // Initial update of the totals
-                updateCartTotals();
+                // // Initial update of the totals
+                // updateCartTotals();
             });
         </script>
     </body>

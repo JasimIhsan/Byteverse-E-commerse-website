@@ -469,7 +469,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // areImagesValid;
 
         if (isFormValid) {
-            // If form is valid, submit it
+           
             form.submit();
         } else {
             // If form is invalid, show error messages

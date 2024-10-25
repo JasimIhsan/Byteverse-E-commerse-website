@@ -50,7 +50,7 @@
 
                         <div class="flex justify-between">
                             <span class="font-semibold">Shipping Charge:</span>
-                            <span><%= deliveryCharge ? deliveryCharge.toFixed(2) : 'Free Shipping' %></span>
+                            <span><%= totalPrice < 1500 ? "$" + 20 : 'Free Shipping' %></span>
                         </div>
 
                         <div class="flex justify-between">

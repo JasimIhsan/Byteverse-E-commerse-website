@@ -78,9 +78,26 @@
                                 </form>
                             </div>
                             <div class="dropdown cart-dropdown">
+                                <% if (userLoggedIn) { %>
+                                <a href="/profile/wishlist" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11">
+                                    <img style="width: 30px" src="/images/icons/wishlist.png" alt="wishlist" />
+                                </a>
+                                <% } else { %>
+                                <a href="/login" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11">
+                                    <img style="width: 30px" src="/images/icons/wishlist.png" alt="wishlist" />
+                                </a>
+                                <% } %>
+                            </div>
+                            <div class="dropdown cart-dropdown">
+                                <% if (userLoggedIn) { %>
                                 <a href="/cart">
                                     <img style="width: 30px" src="/images/icons/cart.png" alt="Account" />
                                 </a>
+                                <% } else { %>
+                                <a href="/login">
+                                    <img style="width: 30px" src="/images/icons/cart.png" alt="Account" />
+                                </a>
+                                <% } %>
                             </div>
                             <div class="dropdown cart-dropdown">
                                 <% if (userLoggedIn) { %>
@@ -208,7 +225,8 @@
                         <div class="row">
                             <div class="col-sm-6 col-lg-3">
                                 <div class="widget widget-about">
-                                    <img src="/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25" />
+                                    <!-- <img src="/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25" /> -->
+                                    <h3><strong>Byteverse</strong></h3>
                                     <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.</p>
 
                                     <div class="social-icons">
@@ -230,11 +248,11 @@
                                     <!-- End .widget-title -->
 
                                     <ul class="widget-list">
-                                        <li><a href="about.html">About Molla</a></li>
-                                        <li><a href="#">How to shop on Molla</a></li>
+                                        <li><a href="#">About </a></li>
+                                        <li><a href="#">How to shop on </a></li>
                                         <li><a href="#">FAQ</a></li>
-                                        <li><a href="contact.html">Contact us</a></li>
-                                        <li><a href="login.html">Log in</a></li>
+                                        <li><a href="#">Contact us</a></li>
+                                        <li><a href="#">Log in</a></li>
                                     </ul>
                                     <!-- End .widget-list -->
                                 </div>
@@ -268,7 +286,7 @@
 
                                     <ul class="widget-list">
                                         <li><a href="#">Sign In</a></li>
-                                        <li><a href="cart.html">View Cart</a></li>
+                                        <li><a href="#">View Cart</a></li>
                                         <li><a href="#">My Wishlist</a></li>
                                         <li><a href="#">Track My Order</a></li>
                                         <li><a href="#">Help</a></li>

@@ -7,6 +7,7 @@ const cat_man = require("../../Controller/admin/catogory");
 const prd_man = require("../../Controller/admin/products");
 const order = require("../../Controller/admin/orders");
 const coupon = require("../../Controller/admin/coupon");
+const offer = require("../../Controller/admin/offers");
 
 const productImageUpload = require("../../config/multer");
 const auth = require("../../middleware/adminAuth");
@@ -79,5 +80,19 @@ router.get("/coupon-management/:couponId", coupon.getCouponById);
 router.put("/coupon-management/:couponId", coupon.updateCoupon);
 
 router.post("/coupons/toggle-status", coupon.toggleCouponStatus);
+
+//----------- Offer management -----------------//
+
+router.get("/offer-management" , offer.getOffer);
+
+router.post('/offer-management/add-offer' , offer.addOffer);
+
+router.put('/offer-management/update-status/:offerId', offer.updateOfferStatus);
+
+router.delete('/offer-management/delete-offer/:offerId', offer.deleteOffer);
+
+router.get('/offer-management/:offerId', offer.getOfferById);
+
+router.put('/offer-management/edit-offer/:offerId', offer.editOffer)
 
 module.exports = router;

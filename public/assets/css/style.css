@@ -8123,8 +8123,16 @@ p {
 }
 
 .btn-wishlist:before {
-    content: '\f234'
+    content: '\f234';
+    color: black;
+    /* Default color */
 }
+
+.btn-wishlist.in-wishlist:before {
+    color: red;
+    /* Red color when the product is already in the wishlist */
+}
+
 
 .product-body .btn-wishlist {
     position: absolute;
@@ -16291,7 +16299,7 @@ button:focus {
 }
 
 .table.table-cart .price-col {
-    width: 120px
+    width: 190px
 }
 
 .table.table-cart .total-col {

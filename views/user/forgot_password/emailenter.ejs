@@ -115,8 +115,8 @@
 
         <script>
             function validateEmail() {
-                const email = document.getElementById("email").value || document.getElementById("signinEmail").value;
-                const emailError = document.getElementById("emailError") || document.getElementById("signinEmailError");
+                const email = document.getElementById("email").value 
+                const emailError = document.getElementById("emailError")
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
                 if (email.trim().length === 0) {

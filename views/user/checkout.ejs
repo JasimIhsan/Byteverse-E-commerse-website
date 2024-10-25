@@ -44,12 +44,83 @@
 
     <body>
         <div class="page-wrapper">
-            <%- include('partials/header.ejs') %>
+            <header class="header">
+                <div class="header-middle sticky-header">
+                    <div class="container">
+                        <div class="header-left">
+                            <button class="mobile-menu-toggler">
+                                <span class="sr-only">Toggle mobile menu</span>
+                                <i class="icon-bars"></i>
+                            </button>
+
+                            <a href="#" class="logo">
+                                <span style="font-size: 2.5rem; font-weight: 600; color: black">Byteverse</span>
+                            </a>
+
+                            <nav class="main-nav">
+                                <ul class="menu sf-arrows">
+                                    <li>
+                                        <a href="/">Home</a>
+                                    </li>
+                                    <li>
+                                        <a href="/shop">Shop</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">About</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Contact</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Help</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                        <div class="header-right">
+                            <div class="dropdown cart-dropdown">
+                                <% if (userLoggedIn) { %>
+                                <a href="/profile/wishlist" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11">
+                                    <img style="width: 30px" src="/images/icons/wishlist.png" alt="wishlist" />
+                                </a>
+                                <% } else { %>
+                                <a href="/login" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11">
+                                    <img style="width: 30px" src="/images/icons/wishlist.png" alt="wishlist" />
+                                </a>
+                                <% } %>
+                            </div>
+                            <div class="dropdown cart-dropdown">
+                                <% if (userLoggedIn) { %>
+                                <a href="/cart">
+                                    <img style="width: 30px" src="/images/icons/cart.png" alt="Account" />
+                                </a>
+                                <% } else { %>
+                                <a href="/login">
+                                    <img style="width: 30px" src="/images/icons/cart.png" alt="Account" />
+                                </a>
+                                <% } %>
+                            </div>
+                            <div class="dropdown cart-dropdown">
+                                <% if (userLoggedIn) { %>
+                                <a href="/<%= user._id %>/profile">
+                                    <img style="width: 30px" src="/images/icons/user.png" alt="Account" />
+                                </a>
+                                <% } else { %>
+                                <a href="/login">
+                                    <img style="width: 30px" src="/images/icons/user.png" alt="Account" />
+                                </a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
             <main class="main">
-                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg'); margin-top: 65px">
+                <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
                     <div class="container">
-                        <h1 class="page-title">Checkout<span>Shop</span></h1>
+                        <h1 class="page-title">Checkout</h1>
                     </div>
                     <!-- End .container -->
                 </div>
@@ -142,7 +213,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <% orderItems.forEach(function(item) { %>
+                                                    <% orderDetails.forEach(function(item) { %>
                                                     <tr>
                                                         <td><a href="#"><%= item.productName %></a></td>
                                                         <td>$<%= item.productTotal.toFixed(2) %></td>
@@ -150,19 +221,20 @@
                                                     <% }); %>
                                                     <tr>
                                                         <td>Delivery Charge:</td>
-                                                        <td>$<%= deliveryCharge ? deliveryCharge.toFixed(2) : "Free Delivery" %></td>
+                                                        <td><%= cartTotal < 1500 ? "$" + deliveryCharge.toFixed(2) : "Free Delivery" %></td>
                                                     </tr>
                                                     <tr id="coupon-code-row" style="display: none">
-                                                        <td style="width: 175px;">Coupon (<span id="coupon-code"></span>):</td>
+                                                        <td style="width: 175px">Coupon (<span id="coupon-code"></span>):</td>
                                                         <td id="discount-amount"></td>
                                                     </tr>
                                                     <tr class="summary-total">
                                                         <td style="font-weight: bold">Total:</td>
                                                         <td>
-                                                            <span id="original-price" style="text-decoration: line-through; display: none; color: gray">$<%= totalPrice.toFixed(2) %></span>
-                                                            <span id="total-amount" style="font-weight: bold">$<%= totalPrice.toFixed(2) %></span>
+                                                            <span id="original-price" style="text-decoration: line-through; display: none; color: gray">$<%= cartTotal.toFixed(2) %></span>
+                                                            <span id="total-amount" style="font-weight: bold">$<%= cartTotal.toFixed(2) %></span>
                                                         </td>
                                                     </tr>
+                                                   
                                                 </tbody>
                                             </table>
 
@@ -225,18 +297,117 @@
                 <!-- End .page-content -->
             </main>
             <!-- End .main -->
+            <footer class="footer">
+                <div class="footer-middle">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget widget-about">
+                                    <!-- <img src="/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25" /> -->
+                                    <h3><strong>Byteverse</strong></h3>
+                                    <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat.</p>
+
+                                    <div class="social-icons">
+                                        <a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
+                                        <a href="#" class="social-icon" target="_blank" title="Pinterest"><i class="icon-pinterest"></i></a>
+                                    </div>
+                                    <!-- End .soial-icons -->
+                                </div>
+                                <!-- End .widget about-widget -->
+                            </div>
+                            <!-- End .col-sm-6 col-lg-3 -->
+
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                    <h4 class="widget-title">Useful Links</h4>
+                                    <!-- End .widget-title -->
+
+                                    <ul class="widget-list">
+                                        <li><a href="#">About </a></li>
+                                        <li><a href="#">How to shop on </a></li>
+                                        <li><a href="#">FAQ</a></li>
+                                        <li><a href="#">Contact us</a></li>
+                                        <li><a href="#">Log in</a></li>
+                                    </ul>
+                                    <!-- End .widget-list -->
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-sm-6 col-lg-3 -->
+
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                    <h4 class="widget-title">Customer Service</h4>
+                                    <!-- End .widget-title -->
+
+                                    <ul class="widget-list">
+                                        <li><a href="#">Payment Methods</a></li>
+                                        <li><a href="#">Money-back guarantee!</a></li>
+                                        <li><a href="#">Returns</a></li>
+                                        <li><a href="#">Shipping</a></li>
+                                        <li><a href="#">Terms and conditions</a></li>
+                                        <li><a href="#">Privacy Policy</a></li>
+                                    </ul>
+                                    <!-- End .widget-list -->
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-sm-6 col-lg-3 -->
+
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="widget">
+                                    <h4 class="widget-title">My Account</h4>
+                                    <!-- End .widget-title -->
+
+                                    <ul class="widget-list">
+                                        <li><a href="#">Sign In</a></li>
+                                        <li><a href="#">View Cart</a></li>
+                                        <li><a href="#">My Wishlist</a></li>
+                                        <li><a href="#">Track My Order</a></li>
+                                        <li><a href="#">Help</a></li>
+                                    </ul>
+                                    <!-- End .widget-list -->
+                                </div>
+                                <!-- End .widget -->
+                            </div>
+                            <!-- End .col-sm-6 col-lg-3 -->
+                        </div>
+                        <!-- End .row -->
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .footer-middle -->
+
+                <div class="footer-bottom">
+                    <div class="container">
+                        <p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p>
+                        <!-- End .footer-copyright -->
+                        <figure class="footer-payments">
+                            <img src="/assets/images/payments.png" alt="Payment methods" width="272" height="20" />
+                        </figure>
+                        <!-- End .footer-payments -->
+                    </div>
+                    <!-- End .container -->
+                </div>
+                <!-- End .footer-bottom -->
+            </footer>
         </div>
         <!-- End .page-wrapper -->
     </body>
 
-    <!-- Plugins JS File -->
     <script src="/assets/js/jquery.min.js"></script>
     <script src="/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/jquery.hoverIntent.min.js"></script>
     <script src="/assets/js/jquery.waypoints.min.js"></script>
     <script src="/assets/js/superfish.min.js"></script>
     <script src="/assets/js/owl.carousel.min.js"></script>
-    <!-- Main JS File -->
+    <script src="/assets/js/wNumb.js"></script>
+    <script src="/assets/js/bootstrap-input-spinner.js"></script>
+    <script src="/assets/js/jquery.magnific-popup.min.js"></script>
+    <script src="/assets/js/nouislider.min.js"></script>
     <script src="/assets/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

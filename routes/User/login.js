@@ -28,40 +28,17 @@ router.post("/signup/resend-otp", auth.isLogged, home.resendOTP);
 
 router.post("/logout", home.Logout);
 
-// router.get("/login/enter-email", home.forgotPasswordEmailEnter);
+router.get("/login/enter-email", home.forgotPasswordEmailEnter);
 
-// router.post("/login/enter-email", home.postForgotPasswordEmailEnter);
+router.post("/login/enter-email", home.postForgotPasswordEmailEnter);
 
-// router.get("/login/enter-email/otp-enter", home.forgotOtp);
+router.get("/login/enter-email/otp-enter", home.forgotOtp);
 
-// router.post("/login/enter-email/otp-enter", home.verifyForgotPasswordOTP);
+router.post("/login/enter-email/otp-enter", home.verifyForgotPasswordOTP);
 
-// router.get("/login/enter-email/otp-enter/new-password", home.getNewPassword);
+router.get("/login/enter-email/otp-enter/new-password", home.getNewPassword);
 
-// router.get(
-//     "/auth/google",
-//     auth.isLogged,
-//     passport.authenticate("google", {
-//         scope: ["profile", "email"],
-//     })
-// );
-
-// router.get("/auth/google/callback", auth.isLogged, (req, res, next) => {
-//     passport.authenticate("google", (err, user, info) => {
-//         if (err) {
-//             return next(err);
-//         }
-//         if (!user) {
-//             return res.redirect(`/login?error=${encodeURIComponent(info.message)}`);
-//         }
-//         req.logIn(user, (err) => {
-//             if (err) {
-//                 return next(err);
-//             }
-//             return res.redirect("/");
-//         });
-//     })(req, res, next);
-// });
+router.post("/login/enter-email/otp-enter/new-password", home.postNewPassword);
 
 // Google Authentication Routes
 
@@ -115,7 +92,7 @@ router.get("/:userId/profile/orders", auth.checkSession, profile.getOrders);
 
 router.post("/profile/orders/cancel-order", auth.checkSession, profile.cancelOrder);
 
-router.get('/profile/orders/orderdetail/:orderId', profile.getOrderDetails)
+router.get("/profile/orders/orderdetail/:orderId", profile.getOrderDetails);
 
 //---- address -----//
 
