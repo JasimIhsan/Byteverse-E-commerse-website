@@ -151,46 +151,43 @@
                         <label for="minimumSpend">Minimum Spend</label>
                         <input type="number" id="minimumSpend" name="minimumSpend" class="form-control" />
                         <span class="error" id="minimumSpendError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
-                        <!-- Changed ID -->
                     </div>
-                    <button type="button" id="submitCouponBtn" class="btn btn-primary">Add Coupon</button>
+                    <button type="button" id="submitCouponBtn" class="btn btn-primary" onclick="submitCoupon()">Add Coupon</button>
                 </form>
             </div>
         </div>
-
         <!-- Edit Coupon Modal -->
         <div id="editCouponModal" class="custom-modal" style="display: none">
             <div class="custom-modal-content">
-                <!-- <span class="custom-modal-close">&times;</span> -->
                 <h2>Edit Coupon</h2>
                 <form id="editCouponForm">
                     <input type="hidden" id="editCouponId" name="editCouponId" />
                     <div class="form-group">
                         <label for="editCouponCode">Coupon Code</label>
                         <input type="text" id="editCouponCode" name="editCouponCode" class="form-control" required />
-                        <span class="error" id="couponCodeError" style="color: red; display: none"></span>
+                        <span class="error" id="editCouponCodeError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
                     <div class="form-group">
                         <label for="editDiscountAmount">Discount (Flat Discount)</label>
                         <input type="number" id="editDiscountAmount" name="editDiscountAmount" class="form-control" required />
-                        <span class="error" id="discountAmountError" style="color: red; display: none"></span>
+                        <span class="error" id="editDiscountAmountError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
                     <div class="form-group">
                         <label for="editExpiryDate">Expiry Date</label>
                         <input type="date" id="editExpiryDate" name="editExpiryDate" class="form-control" required />
-                        <span class="error" id="expiryDateError" style="color: red; display: none"></span>
+                        <span class="error" id="editExpiryDateError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
                     <div class="form-group">
                         <label for="editUsageLimit">Usage Limit</label>
                         <input type="number" id="editUsageLimit" name="editUsageLimit" class="form-control" />
-                        <span class="error" id="usageLimitError" style="color: red; display: none"></span>
+                        <span class="error" id="editUsageLimitError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
                     <div class="form-group">
                         <label for="editMinimumSpend">Minimum Spend</label>
                         <input type="number" id="editMinimumSpend" name="editMinimumSpend" class="form-control" />
-                        <span class="error" id="minimumSpendError" style="color: red; display: none"></span>
+                        <span class="error" id="editMinimumSpendError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
-                    <button type="button" id="submitEditCouponBtn" class="btn btn-primary">Update Coupon</button>
+                    <button type="button" id="submitEditCouponBtn" class="btn btn-primary" onclick="submitEditCoupon()">Update Coupon</button>
                 </form>
             </div>
         </div>
@@ -528,6 +525,190 @@
                     }
                 });
             }
+        </script>
+        <script>
+            // Validate Coupon Code
+            function validateCouponCode() {
+                const couponCodeInput = document.getElementById("couponCode");
+                const errorElement = document.getElementById("couponCodeError");
+                if (couponCodeInput.value.trim().length < 3) {
+                    errorElement.innerText = "Coupon code must be at least 3 characters long.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Discount Amount
+            function validateDiscountAmount() {
+                const discountInput = document.getElementById("discountAmount");
+                const errorElement = document.getElementById("discountAmountError");
+                if (discountInput.value <= 0) {
+                    errorElement.innerText = "Discount must be a positive number.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Expiry Date
+            function validateExpiryDate() {
+                const expiryDateInput = document.getElementById("expiryDate");
+                const errorElement = document.getElementById("expiryDateError");
+                const today = new Date().toISOString().split("T")[0]; // Get today's date
+                if (expiryDateInput.value < today) {
+                    errorElement.innerText = "Expiry date must be in the future.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Usage Limit
+            function validateUsageLimit() {
+                const usageLimitInput = document.getElementById("usageLimit");
+                const errorElement = document.getElementById("usageLimitError");
+                if (usageLimitInput.value < 0) {
+                    errorElement.innerText = "Usage limit cannot be negative.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Minimum Spend
+            function validateMinimumSpend() {
+                const minimumSpendInput = document.getElementById("minimumSpend");
+                const errorElement = document.getElementById("minimumSpendError");
+                if (minimumSpendInput.value < 0) {
+                    errorElement.innerText = "Minimum spend cannot be negative.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Submit Coupon Function
+            function submitCoupon() {
+                // Validate all fields before submission
+                validateCouponCode();
+                validateDiscountAmount();
+                validateExpiryDate();
+                validateUsageLimit();
+                validateMinimumSpend();
+
+                // Check if any errors are visible
+                const errorElements = document.querySelectorAll(".error");
+                let hasError = false;
+                errorElements.forEach((error) => {
+                    if (error.style.display === "block") {
+                        hasError = true;
+                    }
+                });
+
+                if (!hasError) {
+                    // Submit the form if all validations pass
+                    document.getElementById("couponForm").submit();
+                }
+            }
+
+            // Attach onkeyup and onchange events
+            document.getElementById("couponCode").onkeyup = validateCouponCode;
+            document.getElementById("discountAmount").onkeyup = validateDiscountAmount;
+            document.getElementById("expiryDate").onchange = validateExpiryDate;
+            document.getElementById("usageLimit").onkeyup = validateUsageLimit;
+            document.getElementById("minimumSpend").onkeyup = validateMinimumSpend;
+
+            function validateEditCouponCode() {
+                const couponCodeInput = document.getElementById("editCouponCode");
+                const errorElement = document.getElementById("editCouponCodeError");
+                if (couponCodeInput.value.trim().length < 3) {
+                    errorElement.innerText = "Coupon code must be at least 3 characters long.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Discount Amount
+            function validateEditDiscountAmount() {
+                const discountInput = document.getElementById("editDiscountAmount");
+                const errorElement = document.getElementById("editDiscountAmountError");
+                if (discountInput.value <= 0) {
+                    errorElement.innerText = "Discount must be a positive number.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Expiry Date
+            function validateEditExpiryDate() {
+                const expiryDateInput = document.getElementById("editExpiryDate");
+                const errorElement = document.getElementById("editExpiryDateError");
+                const today = new Date().toISOString().split("T")[0]; // Get today's date
+                if (expiryDateInput.value < today) {
+                    errorElement.innerText = "Expiry date must be in the future.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Usage Limit
+            function validateEditUsageLimit() {
+                const usageLimitInput = document.getElementById("editUsageLimit");
+                const errorElement = document.getElementById("editUsageLimitError");
+                if (usageLimitInput.value < 0) {
+                    errorElement.innerText = "Usage limit cannot be negative.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Minimum Spend
+            function validateEditMinimumSpend() {
+                const minimumSpendInput = document.getElementById("editMinimumSpend");
+                const errorElement = document.getElementById("editMinimumSpendError");
+                if (minimumSpendInput.value < 0) {
+                    errorElement.innerText = "Minimum spend cannot be negative.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Submit Coupon Function
+            function submitEditCoupon() {
+                // Validate all fields before submission
+                validateEditCouponCode();
+                validateEditDiscountAmount();
+                validateEditExpiryDate();
+                validateEditUsageLimit();
+                validateEditMinimumSpend();
+
+                // Check if any errors are visible
+                const errorElements = document.querySelectorAll(".error");
+                let hasError = false;
+                errorElements.forEach((error) => {
+                    if (error.style.display === "block") {
+                        hasError = true;
+                    }
+                });
+
+                if (!hasError) {
+                    // Submit the form if all validations pass
+                    document.getElementById("editCouponForm").submit();
+                }
+            }
+
+            // Attach onkeyup and onchange events
+            document.getElementById("editCouponCode").onkeyup = validateEditCouponCode;
+            document.getElementById("editDiscountAmount").onkeyup = validateEditDiscountAmount;
+            document.getElementById("editExpiryDate").onchange = validateEditExpiryDate;
+            document.getElementById("editUsageLimit").onkeyup = validateEditUsageLimit;
+            document.getElementById("editMinimumSpend").onkeyup = validateEditMinimumSpend;
         </script>
     </body>
 </html>

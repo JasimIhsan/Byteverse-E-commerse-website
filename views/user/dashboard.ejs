@@ -216,13 +216,16 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="/<%= user._id %>/profile/orders">Orders</a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/profile/wallet">Wallet</a>
+                                        </li>
 
                                         <li class="nav-item">
                                             <a class="nav-link" href="/<%= user._id %>/profile/address">Addresses</a>
                                         </li>
                                         <li class="nav-item">
                                             <form action="/logout" method="POST" style="display: inline">
-                                                <button type="submit" class="nav-link" style="border: none; background: none; padding: 0">Sign Out</button>
+                                                <button type="submit" class="nav-link" style="border: none; background: none; padding: 0; margin-top: 10px">Sign Out</button>
                                             </form>
                                         </li>
                                     </ul>
@@ -255,10 +258,11 @@
                                                         </div>
                                                         <div class="edit-mode" id="profileEditMode" style="display: none">
                                                             <h2 style="font-size: 20px">Edit Profile</h2>
-                                                            <form id="profileForm">
+                                                            <form id="profileForm" onsubmit="return validateProfileForm()">
                                                                 <div class="form-group">
                                                                     <label style="font-size: 1.5rem" for="name">Name</label>
-                                                                    <input style="font-size: 1.5rem" type="text" id="name" value="<%= user.username %>" required />
+                                                                    <input style="font-size: 1.5rem" type="text" id="name" value="<%= user.username %>" required onkeyup="validateName()" />
+                                                                    <span id="nameError" style="color: red; display: none"></span>
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <label style="font-size: 1.5rem" for="email">Email <span style="font-weight: normal; color: red; font-size: 1.3rem">* email cannot be changed</span></label>
@@ -266,7 +270,8 @@
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <label style="font-size: 1.5rem" for="mobileNumber">Mobile Number</label>
-                                                                    <input style="font-size: 1.5rem" type="text" id="mobileNumber" value="<%= user.mobileNumber || '' %>" required />
+                                                                    <input style="font-size: 1.5rem" type="text" id="mobileNumber" value="<%= user.mobileNumber || '' %>" required onkeyup="validateMobileNumber()" />
+                                                                    <span id="mobileNumberError" style="color: red; display: none"></span>
                                                                 </div>
                                                                 <button type="submit">Update Profile</button>
                                                                 <button style="margin-left: 10px" type="button" id="cancelProfileEdit">Cancel</button>
@@ -284,34 +289,40 @@
                                                             <!-- Include Font Awesome in your HTML (head section) -->
                                                             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-                                                            <form id="passwordForm">
+                                                            <form id="passwordForm" onsubmit="return validateForm()">
                                                                 <div class="form-group">
                                                                     <label style="font-size: 1.5rem" for="currentPassword">Current Password</label>
                                                                     <div style="position: relative">
-                                                                        <input style="font-size: 1.5rem" type="password" id="currentPassword" required />
+                                                                        <input style="font-size: 1.5rem" type="password" id="currentPassword" onkeyup="validateCurrentPassword()" />
                                                                         <button type="button" class="toggle-password" data-target="#currentPassword" style="position: absolute; right: 3px; top: -14px; color: #000; border: none; background: none; cursor: pointer">
                                                                             <i class="fas fa-eye" id="currentPasswordToggle"></i>
                                                                         </button>
                                                                     </div>
+                                                                    <span id="currentPasswordError" style="color: red; display: none"></span>
                                                                 </div>
+
                                                                 <div class="form-group">
                                                                     <label style="font-size: 1.5rem" for="newPassword">New Password</label>
                                                                     <div style="position: relative">
-                                                                        <input style="font-size: 1.5rem" type="password" id="newPassword" required />
+                                                                        <input style="font-size: 1.5rem" type="password" id="newPassword" onkeyup="validateNewPassword()" />
                                                                         <button type="button" class="toggle-password" data-target="#newPassword" style="position: absolute; right: 3px; top: -14px; color: #000; border: none; background: none; cursor: pointer">
                                                                             <i class="fas fa-eye" id="newPasswordToggle"></i>
                                                                         </button>
                                                                     </div>
+                                                                    <span id="newPasswordError" style="color: red; display: none"></span>
                                                                 </div>
+
                                                                 <div class="form-group">
                                                                     <label style="font-size: 1.5rem" for="confirmPassword">Confirm New Password</label>
                                                                     <div style="position: relative">
-                                                                        <input style="font-size: 1.5rem" type="password" id="confirmPassword" required />
+                                                                        <input style="font-size: 1.5rem" type="password" id="confirmPassword" onkeyup="validateConfirmPassword()" />
                                                                         <button type="button" class="toggle-password" data-target="#confirmPassword" style="position: absolute; right: 3px; top: -14px; color: #000; border: none; background: none; cursor: pointer">
                                                                             <i class="fas fa-eye" id="confirmPasswordToggle"></i>
                                                                         </button>
                                                                     </div>
+                                                                    <span id="confirmPasswordError" style="color: red; display: none"></span>
                                                                 </div>
+
                                                                 <button type="submit">Change Password</button>
                                                                 <button type="button" id="cancelPasswordEdit">Cancel</button>
                                                             </form>
@@ -595,6 +606,112 @@
                         });
                     });
             });
+        </script>
+
+        <!-- validation -->
+        <script>
+            function validateCurrentPassword() {
+                const currentPassword = document.getElementById("currentPassword");
+                const currentPasswordError = document.getElementById("currentPasswordError");
+
+                if (currentPassword.value.trim() === "") {
+                    currentPasswordError.textContent = "Current password cannot be empty.";
+                    currentPasswordError.style.display = "block";
+                } else {
+                    currentPasswordError.textContent = "";
+                    currentPasswordError.style.display = "none";
+                }
+            }
+
+            function validateNewPassword() {
+                const newPassword = document.getElementById("newPassword");
+                const newPasswordError = document.getElementById("newPasswordError");
+
+                const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+
+                if (newPassword.value.trim() === "") {
+                    newPasswordError.textContent = "New password cannot be empty.";
+                    newPasswordError.style.display = "block";
+                } else if (newPassword.value.includes(" ")) {
+                    newPasswordError.textContent = "New password cannot contain spaces.";
+                    newPasswordError.style.display = "block";
+                } else if (newPassword.value.length < 6) {
+                    newPasswordError.textContent = "New password must be at least 6 characters long.";
+                    newPasswordError.style.display = "block";
+                } else if (!strongPasswordRegex.test(newPassword.value)) {
+                    newPasswordError.textContent = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
+                    newPasswordError.style.display = "block";
+                } else {
+                    newPasswordError.textContent = "";
+                    newPasswordError.style.display = "none";
+                }
+            }
+
+            function validateConfirmPassword() {
+                const newPassword = document.getElementById("newPassword").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+                const confirmPasswordError = document.getElementById("confirmPasswordError");
+
+                if (confirmPassword.trim() === "") {
+                    confirmPasswordError.textContent = "Please confirm the new password.";
+                    confirmPasswordError.style.display = "block";
+                } else if (newPassword !== confirmPassword) {
+                    confirmPasswordError.textContent = "Passwords do not match.";
+                    confirmPasswordError.style.display = "block";
+                } else {
+                    confirmPasswordError.textContent = "";
+                    confirmPasswordError.style.display = "none";
+                }
+            }
+
+            function validateForm() {
+                validateCurrentPassword();
+                validateNewPassword();
+                validateConfirmPassword();
+
+                // Check if there are any visible errors
+                const hasErrors = document.querySelector("#currentPasswordError").textContent !== "" || document.querySelector("#newPasswordError").textContent !== "" || document.querySelector("#confirmPasswordError").textContent !== "";
+
+                return !hasErrors; // Prevent form submission if there are errors
+            }
+
+            function validateName() {
+                const nameInput = document.getElementById("name");
+                const nameError = document.getElementById("nameError");
+
+                // Check if name is at least 3 characters and not only spaces
+                if (nameInput.value.trim().length < 3) {
+                    nameError.textContent = "Name must be at least 3 characters long and not contain only spaces.";
+                    nameError.style.display = "block";
+                } else {
+                    nameError.textContent = "";
+                    nameError.style.display = "none";
+                }
+            }
+
+            function validateMobileNumber() {
+                const mobileNumberInput = document.getElementById("mobileNumber");
+                const mobileNumberError = document.getElementById("mobileNumberError");
+
+                // Regular expression for exactly 10 digits
+                const mobileNumberRegex = /^\d{10}$/;
+
+                if (!mobileNumberRegex.test(mobileNumberInput.value)) {
+                    mobileNumberError.textContent = "Mobile number must be exactly 10 digits.";
+                    mobileNumberError.style.display = "block";
+                } else {
+                    mobileNumberError.textContent = "";
+                    mobileNumberError.style.display = "none";
+                }
+            }
+
+            function validateProfileForm() {
+                validateName();
+                validateMobileNumber();
+
+                // Check if there are any visible errors
+                const hasErrors = document.querySelector("#nameError").textContent !== "" || document.querySelector("#mobileNumberError").textContent !== "";
+            }
         </script>
     </body>
 </html>

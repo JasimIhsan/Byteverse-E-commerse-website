@@ -3,39 +3,35 @@ const Products = require("../../model/product");
 
 const getOrderManagement = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1; // Get the current page from the query or default to 1
-        const limit = 10; // Number of orders per page
-        const skip = (page - 1) * limit; // Calculate how many orders to skip for pagination
-        const search = req.query.search || ""; // Get the search query from the request
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const skip = (page - 1) * limit;
+        const search = req.query.search || "";
 
-        // Fetch all orders with user and product details
         const orders = await Order.find().populate("userId", "username").populate("products.productId").exec();
 
-        // Filter orders based on search criteria
         const filteredOrders = orders.filter((order) => {
             const userExists = order.userId && order.userId.username;
-            return (
-                userExists &&
-                (order.userId.username.toLowerCase().includes(search.toLowerCase()) || // Search by username
-                    order._id.toString().includes(search)) // Or search by order ID
-            );
+            return userExists && (order.userId.username.toLowerCase().includes(search.toLowerCase()) || order._id.toString().includes(search));
         });
 
-        // Calculate pagination parameters
-        const totalFilteredOrders = filteredOrders.length; // Count the filtered orders
-        const totalPages = Math.ceil(totalFilteredOrders / limit); // Total pages based on filtered count
-        const paginatedOrders = filteredOrders.slice(skip, skip + limit); // Get the specific orders for the current page
+        const totalFilteredOrders = filteredOrders.length;
+        const totalPages = Math.ceil(totalFilteredOrders / limit);
+        const paginatedOrders = filteredOrders.slice(skip, skip + limit);
 
-        // Render the order management page with the necessary data
+        // const totalFilteredOrders = orders.length;
+        // const totalPages = Math.ceil(totalFilteredOrders / limit);
+        // const paginatedOrders = orders.slice(skip, skip + limit);
+
         res.render("admin/orders", {
             orders: paginatedOrders,
-            currentPage: page, // Set currentPage to the actual page number
+            currentPage: page,
             totalPages,
             search,
         });
     } catch (error) {
         console.error("Error from get Order management: \n", error);
-        res.status(500).send("Internal Server Error"); // Send a 500 error response
+        res.status(500).send("Internal Server Error");
     }
 };
 

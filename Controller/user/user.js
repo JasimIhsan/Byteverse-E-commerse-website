@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const OTP = require("../../model/OTP");
 const session = require("express-session");
 const Products = require("../../model/product");
+const Offers = require("../../model/offers");
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 
@@ -57,6 +58,27 @@ const sendOTPEmail = async (email, otp) => {
     }
 };
 
+// ============================= find best offer =========================//
+
+function findBestOffer(product, offers) {
+    let bestOffer = null;
+    const currentDate = new Date();
+
+    const productOffers = offers.filter((offer) => offer.applicableProducts.includes(product._id) && offer.isActive && currentDate >= offer.startDate && currentDate <= offer.endDate && product.price >= offer.minimumPrice);
+
+    const categoryOffers = offers.filter((offer) => offer.applicableCategories.includes(product.category) && offer.isActive && currentDate >= offer.startDate && currentDate <= offer.endDate && product.price >= offer.minimumPrice);
+
+    const allOffers = [...productOffers, ...categoryOffers];
+
+    if (allOffers.length > 0) {
+        bestOffer = allOffers.reduce((best, current) => {
+            return current.discountAmount > best.discountAmount ? current : best;
+        });
+    }
+
+    return bestOffer;
+}
+
 //=================================================== routes =====================================================//
 
 const getHome = async (req, res) => {
@@ -65,7 +87,6 @@ const getHome = async (req, res) => {
         const { search = "", page = 1 } = req.query;
         const limit = 12;
         const skip = (page - 1) * limit;
-        // const regex = new RegExp("^" + search, "i");
 
         const products = await Products.find({ status: "listed" })
             .sort({ updatedAt: -1 })
@@ -75,19 +96,49 @@ const getHome = async (req, res) => {
 
         const filteredProducts = products.filter((product) => product.category);
 
-        const totalProducts = await Products.countDocuments({ name: { $regex: search, $options: "i" }, status: "listed" }).populate({ path: "category", match: { status: "listed" } });
+        const offers = await Offers.find({ isActive: true });
+
+        const productsWithBestOffers = filteredProducts.map((product) => {
+            const bestOffer = findBestOffer(product, offers);
+            return {
+                ...product.toObject(),
+                bestOffer,
+            };
+        });
+
+        const totalProducts = await Products.countDocuments({
+            name: { $regex: search, $options: "i" },
+            status: "listed",
+        });
+
         const totalPages = Math.ceil(totalProducts / limit);
 
         const userLoggedIn = req.session.user ? true : false;
+
         if (userLoggedIn) {
             const userId = req.session.userId;
             const user = await User.findById(userId);
-            return res.render("user/home", { userLoggedIn, user, products: filteredProducts, currentPage: Number(page), totalPages, title });
+            return res.render("user/home", {
+                userLoggedIn,
+                user,
+                products: productsWithBestOffers,
+                currentPage: Number(page),
+                totalPages,
+                title,
+            });
         }
 
-        res.render("user/home", { userLoggedIn, products: filteredProducts, currentPage: Number(page), totalPages, title });
+        // Render the home page for guest users
+        res.render("user/home", {
+            userLoggedIn,
+            products: productsWithBestOffers,
+            currentPage: Number(page),
+            totalPages,
+            title,
+        });
     } catch (error) {
-        console.error("Error from get Guest login page : \n", error);
+        console.error("Error from get Home page : \n", error);
+        res.status(500).send("An error occurred while fetching the home page data.");
     }
 };
 

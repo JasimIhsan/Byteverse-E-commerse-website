@@ -137,28 +137,29 @@
                 <form id="offerForm">
                     <div class="form-group">
                         <label for="offerTitle">Offer Title</label>
-                        <input type="text" id="offerTitle" name="offerTitle" class="form-control" required />
+                        <input type="text" id="offerTitle" name="offerTitle" class="form-control" required onkeyup="validateOfferTitle()" />
                         <span class="error" id="offerTitleError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
                     <div class="form-group">
                         <label for="discountAmount">Discount (Flat Discount)</label>
-                        <input type="number" id="discountAmount" name="discountAmount" class="form-control" required />
+                        <input type="number" id="discountAmount" name="discountAmount" class="form-control" required onkeyup="validateDiscountAmount()" />
                         <span class="error" id="discountAmountError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
                     <div class="form-group">
                         <label for="offerType">Offer Type</label>
-                        <select id="offerType" name="offerType" class="form-control" required>
+                        <select id="offerType" name="offerType" class="form-control" required onchange="validateOfferType()">
                             <option value="">Select Offer Type</option>
                             <option value="category">Category</option>
                             <option value="product">Product</option>
                         </select>
+                        <span class="error" id="offerTypeError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
                     <div class="form-group" id="categoryInputGroup" style="display: none">
                         <label style="margin-bottom: 20px">Applicable Categories</label>
                         <div>
                             <% categories.forEach(category => { %>
                             <div style="display: flex; align-items: center; margin-bottom: 10px">
-                                <input style="margin-right: 15px; width: 17px; height: 17px; background-color: black; color: white" type="checkbox" id="category_<%= category._id %>" name="editApplicableCategories" value="<%= category._id %>" />
+                                <input style="margin-right: 15px; width: 17px; height: 17px; background-color: black; color: white" type="checkbox" id="category_<%= category._id %>" name="editApplicableCategories" value="<%= category._id %>" onchange="validateApplicableCategories()" />
                                 <p style="margin: 0px"><%= category.name %></p>
                             </div>
                             <% }) %>
@@ -171,7 +172,7 @@
                         <div id="productList">
                             <% products.forEach(product => { %>
                             <div style="display: flex; align-items: center; margin-bottom: 10px" class="product-item">
-                                <input style="margin-right: 15px; width: 17px; height: 17px" type="checkbox" id="product_<%= product._id %>" name="editApplicableProducts" value="<%= product._id %>" />
+                                <input style="margin-right: 15px; width: 17px; height: 17px" type="checkbox" id="product_<%= product._id %>" name="editApplicableProducts" value="<%= product._id %>" onchange="validateApplicableProducts()" />
                                 <p style="margin: 0px"><%= product.name %></p>
                             </div>
                             <% }) %>
@@ -180,24 +181,25 @@
                     </div>
                     <div class="form-group">
                         <label for="minimumPrice">Minimum Price of Product</label>
-                        <input type="number" id="minimumPrice" name="minimumPrice" class="form-control" required />
+                        <input type="number" id="minimumPrice" name="minimumPrice" class="form-control" required onkeyup="validateMinimumPrice()" />
                         <span class="error" id="minimumPriceError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
                     <div class="form-group">
                         <label for="startDate">Start Date</label>
-                        <input type="date" id="startDate" name="startDate" class="form-control" required />
+                        <input type="date" id="startDate" name="startDate" class="form-control" required onchange="validateStartDate()" />
                         <span class="error" id="startDateError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
                     <div class="form-group">
                         <label for="endDate">End Date</label>
-                        <input type="date" id="endDate" name="endDate" class="form-control" required />
+                        <input type="date" id="endDate" name="endDate" class="form-control" required onchange="validateEndDate()" />
                         <span class="error" id="endDateError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
-
+                
                     <div class="form-group" style="display: flex; justify-content: center">
-                        <button style="width: 30%" type="button" id="submitOfferBtn" class="btn btn-primary">Add Offer</button>
+                        <button style="width: 30%" type="button" id="submitOfferBtn" class="btn btn-primary" onclick="submitOffer()">Add Offer</button>
                     </div>
                 </form>
+                
             </div>
         </div>
 
@@ -222,11 +224,11 @@
                         <label for="editOfferType">Offer Type</label>
                         <select id="editOfferType" name="offerType" class="form-control" required onchange="toggleOfferInputGroups()">
                             <option value="">Select Offer Type</option>
-                            <option  value="category" <%= offers.offerType === 'category' ? selected : '' %>>Category</option>
-                            <option value="product" <%= offers.offerType === 'product' ? selected : '' %>>Product</option>
+                            <option value="category" <%= offers.offerType === 'category' ? 'selected' : '' %>>Category</option>
+                            <option value="product" <%= offers.offerType === 'product' ? 'selected' : '' %>>Product</option>
                         </select>
                     </div>
-
+                
                     <div class="form-group" id="editCategoryInputGroup" style="display: none">
                         <label style="margin-bottom: 20px">Applicable Categories</label>
                         <div>
@@ -267,7 +269,7 @@
                         <input type="date" id="editEndDate" name="editEndDate" class="form-control" required />
                         <span class="error" id="editEndDateError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
-                    <button type="button" id="submitEditOfferBtn" class="btn btn-primary" onclick="updateOffer()">Update Offer</button>
+                    <button type="button" id="submitEditOfferBtn" class="btn btn-primary" onclick="submitEditOffer()">Update Offer</button>
                 </form>
             </div>
         </div>
@@ -616,6 +618,241 @@
                     }
                 });
             }
+        </script>
+        <script>
+            function validateOfferTitle() {
+        const offerTitle = document.getElementById("offerTitle").value.trim();
+        const errorElement = document.getElementById("offerTitleError");
+        if (offerTitle.length < 3) {
+            errorElement.innerText = "Offer title must be at least 3 characters.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    function validateDiscountAmount() {
+        const discountAmount = document.getElementById("discountAmount").value;
+        const errorElement = document.getElementById("discountAmountError");
+        if (discountAmount <= 0) {
+            errorElement.innerText = "Discount amount must be a positive number.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    function validateOfferType() {
+        const offerType = document.getElementById("offerType").value;
+        const errorElement = document.getElementById("offerTypeError");
+        if (!offerType) {
+            errorElement.innerText = "Please select an offer type.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+            // Show relevant input groups based on selected offer type
+            toggleInputGroups(offerType);
+        }
+    }
+
+    function toggleInputGroups(offerType) {
+        const categoryInputGroup = document.getElementById("categoryInputGroup");
+        const productInputGroup = document.getElementById("productInputGroup");
+        if (offerType === "category") {
+            categoryInputGroup.style.display = "block";
+            productInputGroup.style.display = "none";
+        } else if (offerType === "product") {
+            categoryInputGroup.style.display = "none";
+            productInputGroup.style.display = "block";
+        }
+    }
+
+    function validateApplicableCategories() {
+        const checkboxes = document.querySelectorAll('input[name="editApplicableCategories"]:checked');
+        const errorElement = document.getElementById("editApplicableCategoriesError");
+        if (checkboxes.length === 0) {
+            errorElement.innerText = "Please select at least one category.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    function validateApplicableProducts() {
+        const checkboxes = document.querySelectorAll('input[name="editApplicableProducts"]:checked');
+        const errorElement = document.getElementById("editApplicableProductsError");
+        if (checkboxes.length === 0) {
+            errorElement.innerText = "Please select at least one product.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    function validateMinimumPrice() {
+        const minimumPrice = document.getElementById("minimumPrice").value;
+        const errorElement = document.getElementById("minimumPriceError");
+        if (minimumPrice <= 0) {
+            errorElement.innerText = "Minimum price must be a positive number.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    function validateStartDate() {
+        const startDate = new Date(document.getElementById("startDate").value);
+        const errorElement = document.getElementById("startDateError");
+        if (isNaN(startDate)) {
+            errorElement.innerText = "Please select a valid start date.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    function validateEndDate() {
+        const endDate = new Date(document.getElementById("endDate").value);
+        const startDate = new Date(document.getElementById("startDate").value);
+        const errorElement = document.getElementById("endDateError");
+        if (isNaN(endDate)) {
+            errorElement.innerText = "Please select a valid end date.";
+            errorElement.style.display = "block";
+        } else if (endDate < startDate) {
+            errorElement.innerText = "End date must be after start date.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    function submitOffer() {
+        // Validate all fields before submission
+        validateOfferTitle();
+        validateDiscountAmount();
+        validateOfferType();
+        validateApplicableCategories();
+        validateApplicableProducts();
+        validateMinimumPrice();
+        validateStartDate();
+        validateEndDate();
+
+        // Check if any errors are visible
+        const errorElements = document.querySelectorAll('.error');
+        let hasError = false;
+        errorElements.forEach(error => {
+            if (error.style.display === "block") {
+                hasError = true;
+            }
+        });
+
+        if (!hasError) {
+            // Submit the form if all validations pass
+            document.getElementById("offerForm").submit();
+        }
+    }
+
+      // Validate Offer Title
+      function validateEditOfferTitle() {
+        const titleInput = document.getElementById("editOfferTitle");
+        const errorElement = document.getElementById("editOfferTitleError");
+        if (titleInput.value.trim().length < 3) {
+            errorElement.innerText = "Offer title must be at least 3 characters long.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    // Validate Discount Amount
+    function validateEditDiscountAmount() {
+        const discountInput = document.getElementById("editDiscountAmount");
+        const errorElement = document.getElementById("editDiscountAmountError");
+        if (discountInput.value <= 0) {
+            errorElement.innerText = "Discount must be a positive number.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    // Validate Minimum Price
+    function validateEditMinimumPrice() {
+        const minimumPriceInput = document.getElementById("editminimumPrice");
+        const errorElement = document.getElementById("editminimumPriceError");
+        if (minimumPriceInput.value < 0) {
+            errorElement.innerText = "Minimum price cannot be negative.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    // Validate Start Date
+    function validateEditStartDate() {
+        const startDateInput = document.getElementById("editStartDate");
+        const errorElement = document.getElementById("editStartDateError");
+        if (!startDateInput.value) {
+            errorElement.innerText = "Start date is required.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    // Validate End Date
+    function validateEditEndDate() {
+        const endDateInput = document.getElementById("editEndDate");
+        const startDateInput = document.getElementById("editStartDate");
+        const errorElement = document.getElementById("editEndDateError");
+
+        if (!endDateInput.value) {
+            errorElement.innerText = "End date is required.";
+            errorElement.style.display = "block";
+        } else if (endDateInput.value < startDateInput.value) {
+            errorElement.innerText = "End date must be after start date.";
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    }
+
+    // Handle Offer Type Change
+    function toggleOfferInputGroups() {
+        const offerType = document.getElementById("editOfferType").value;
+        document.getElementById("editCategoryInputGroup").style.display = offerType === "category" ? "block" : "none";
+        document.getElementById("editProductInputGroup").style.display = offerType === "product" ? "block" : "none";
+    }
+
+    function submitEditOffer() {
+        // Validate all fields before submission
+        validateEditOfferTitle();
+        validateEditDiscountAmount();
+        validateEditMinimumPrice();
+        validateEditStartDate();
+        validateEditEndDate();
+
+        // Check if any errors are visible
+        const errorElements = document.querySelectorAll('.error');
+        let hasError = false;
+        errorElements.forEach(error => {
+            if (error.style.display === "block") {
+                hasError = true;
+            }
+        });
+
+        if (!hasError) {
+            // Submit the form if all validations pass
+            document.getElementById("editOfferForm").submit();
+        }
+    }
+
+    // Attach onkeyup and onchange events
+    document.getElementById("editOfferTitle").onkeyup = validateEditOfferTitle;
+    document.getElementById("editDiscountAmount").onkeyup = validateEditDiscountAmount;
+    document.getElementById("editminimumPrice").onkeyup = validateEditMinimumPrice;
+    document.getElementById("editStartDate").onchange = validateEditStartDate;
+    document.getElementById("editEndDate").onchange = validateEditEndDate;
         </script>
     </body>
 </html>

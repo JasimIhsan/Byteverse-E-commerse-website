@@ -3,6 +3,25 @@ const Category = require("../../model/catogory");
 const User = require("../../model/user");
 const Offers = require("../../model/offers");
 
+function findBestOffer(product, offers) {
+    let bestOffer = null;
+    const currentDate = new Date();
+
+    const productOffers = offers.filter((offer) => offer.applicableProducts.includes(product._id) && offer.isActive && currentDate >= offer.startDate && currentDate <= offer.endDate && product.price >= offer.minimumPrice);
+
+    const categoryOffers = offers.filter((offer) => offer.applicableCategories.includes(product.category) && offer.isActive && currentDate >= offer.startDate && currentDate <= offer.endDate && product.price >= offer.minimumPrice);
+
+    const allOffers = [...productOffers, ...categoryOffers];
+
+    if (allOffers.length > 0) {
+        bestOffer = allOffers.reduce((best, current) => {
+            return current.discountAmount > best.discountAmount ? current : best;
+        });
+    }
+
+    return bestOffer;
+}
+
 const getShop = async (req, res) => {
     try {
         const title = "Shop | Byteverse E-commerce";
@@ -58,24 +77,6 @@ const getShop = async (req, res) => {
 
         const offers = await Offers.find({ isActive: true });
 
-        function findBestOffer(product, offers) {
-            let bestOffer = null;
-
-            const productOffers = offers.filter((offer) => offer.applicableProducts.includes(product._id));
-
-            const categoryOffers = offers.filter((offer) => offer.applicableCategories.includes(product.category._id));
-
-            const allOffers = [...productOffers, ...categoryOffers];
-
-            if (allOffers.length > 0) {
-                bestOffer = allOffers.reduce((best, current) => {
-                    return current.discountAmount > best.discountAmount ? current : best;
-                });
-            }
-
-            return bestOffer;
-        }
-
         const productsWithBestOffers = filteredProducts.map((product) => {
             const bestOffer = findBestOffer(product, offers);
             return {
@@ -126,7 +127,6 @@ const getProductDetail = async (req, res) => {
         const user = await User.findById(userId);
         const userLoggedIn = req.session.user ? true : false;
 
-        // Fetch the product details and its category
         const product = await Products.findOne({ _id: productId }).populate({
             path: "category",
             match: { status: "listed" },
@@ -136,7 +136,10 @@ const getProductDetail = async (req, res) => {
             return res.status(404).send("Product not found.");
         }
 
-        // Fetch related products based on the same category
+        const offers = await Offers.find({ isActive: true });
+
+        const bestOffer = findBestOffer(product, offers);
+
         const relatedProducts = await Products.find({
             category: product.category._id,
             _id: { $ne: productId },
@@ -145,32 +148,6 @@ const getProductDetail = async (req, res) => {
             .limit(4)
             .exec();
 
-        // Fetch active offers
-        const offers = await Offers.find({ isActive: true });
-
-        // Function to find the best offer for the product
-        function findBestOffer(product, offers) {
-            let bestOffer = null;
-
-            const productOffers = offers.filter((offer) => offer.applicableProducts.includes(product._id));
-
-            const categoryOffers = offers.filter((offer) => offer.applicableCategories.includes(product.category._id));
-
-            const allOffers = [...productOffers, ...categoryOffers];
-
-            if (allOffers.length > 0) {
-                bestOffer = allOffers.reduce((best, current) => {
-                    return current.discountAmount > best.discountAmount ? current : best;
-                });
-            }
-
-            return bestOffer;
-        }
-
-        // Get the best offer for this product
-        const bestOffer = findBestOffer(product, offers);
-
-        // Render the product detail page
         res.render("user/product-detail.ejs", {
             userLoggedIn,
             product: { ...product.toObject(), bestOffer },

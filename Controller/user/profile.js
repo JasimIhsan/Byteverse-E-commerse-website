@@ -3,7 +3,9 @@ const Orders = require("../../model/orders");
 const Address = require("../../model/Address");
 const Products = require("../../model/product");
 const Wishlist = require("../../model/wishlist");
+const Wallet = require("../../model/wallet");
 const bcrypt = require("bcrypt");
+const user = require("../../model/user");
 
 const getProfile = async (req, res) => {
     try {
@@ -11,6 +13,9 @@ const getProfile = async (req, res) => {
         const userId = req.session.userId;
 
         const userLoggedIn = req.session.user ? true : false;
+
+        // const userId = "671779c18dc25b26d1f7d8ea";
+        // const userLoggedIn = true;
 
         const user = await User.findById(userId).populate("defaultAddress").exec();
         const orders = await Orders.find({ userId }).populate("products.productId").exec();
@@ -58,6 +63,11 @@ const changePassword = async (req, res) => {
             return res.json({ success: false, message: "Current password is incorrect." });
         }
 
+        const isSameAsCurrent = await bcrypt.compare(newPassword, user.password);
+        if (isSameAsCurrent) {
+            return res.json({ success: false, message: "New password cannot be the same as the current password." });
+        }
+
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         user.password = hashedPassword;
@@ -78,18 +88,19 @@ const getOrders = async (req, res) => {
         const userLoggedIn = req.session.userId ? true : false;
         const userId = req.session.userId;
 
+        // const userId = "671779c18dc25b26d1f7d8ea";
+        // const userLoggedIn = true;
+
         const user = await User.findById(userId);
         if (!user) return res.redirect("/login");
 
         let filter = { userId: userId };
 
-        //filter based on status
         const { status, dateRange } = req.query;
         if (status && status !== "all") {
             filter.deliveryStatus = status;
         }
 
-        //filter based on date
         const currentDate = new Date();
         if (dateRange) {
             switch (dateRange) {
@@ -108,7 +119,7 @@ const getOrders = async (req, res) => {
             }
         }
 
-        const orders = await Orders.find(filter).populate("products.productId").populate("Address").sort({ orderTime: -1 });
+        const orders = await Orders.find(filter).populate("products.productId").populate("address").sort({ orderTime: -1 });
 
         res.render("user/orders", { title, userLoggedIn, user, orders, userId });
     } catch (error) {
@@ -121,31 +132,49 @@ const cancelOrder = async (req, res) => {
     const { orderId, reason } = req.body;
 
     try {
-        // Update the delivery status and reason directly in the database
-        const order = await Orders.findByIdAndUpdate(
-            orderId,
-            {
-                deliveryStatus: "Cancelled",
-                cancellationReason: reason,
-            },
-            { new: true }
-        ); // { new: true } returns the updated order document
+        const order = await Orders.findById(orderId);
 
         if (!order) {
             return res.json({ success: false, message: "Order not found." });
         }
 
-        console.log("Updated status: ", order.deliveryStatus);
+        if (order.paymentStatus === "completed") {
+            const userId = order.userId;
 
-        // Restore stock for each product in the order
+            const wallet = await Wallet.findOne({ userId: userId });
+            if (wallet) {
+                const refundAmount = order.total;
+                wallet.balance += refundAmount;
+
+                const newBalance = wallet.balance;
+
+                wallet.transactions.push({
+                    transactionId: `REFUND-${orderId}`,
+                    type: "credit",
+                    amount: refundAmount,
+                    newBalance: newBalance,
+                    description: `Refund for cancelled order #${orderId}`,
+                    status: "completed",
+                });
+
+                await wallet.save();
+            } else {
+                console.error("Wallet not found for user:", userId);
+            }
+        }
+
+        order.deliveryStatus = "Cancelled";
+        order.cancellationReason = reason;
+        await order.save();
+
         for (const item of order.products) {
-            const productId = item.productId; // Get the product ID
-            const product = await Products.findById(productId); // Fetch the product document
+            const productId = item.productId;
+            const product = await Products.findById(productId);
 
             if (product) {
                 console.log(`Restoring stock for product: ${productId}`);
-                product.stock += item.quantity; // Restore stock by adding the quantity
-                await product.save(); // Save the updated product
+                product.stock += item.quantity;
+                await product.save();
             } else {
                 console.error(`Product not found: ${productId}`);
             }
@@ -153,7 +182,7 @@ const cancelOrder = async (req, res) => {
 
         return res.json({ success: true, message: "Order cancelled successfully." });
     } catch (err) {
-        console.error(err);
+        console.error("Error cancelling order:", err);
         return res.json({ success: false, message: "Something went wrong." });
     }
 };
@@ -162,10 +191,14 @@ const getOrderDetails = async (req, res) => {
     try {
         const userId = req.session.userId;
         const userLoggedIn = Boolean(req.session.userId);
+
+        // const userId = "671779c18dc25b26d1f7d8ea";
+        // const userLoggedIn = true;
+
         const orderId = req.params.orderId;
 
         const user = await User.findById(userId);
-        const order = await Orders.findById(orderId).populate("products.productId").populate("Address").exec();
+        const order = await Orders.findById(orderId).populate("products.productId").populate("address").exec();
 
         console.log(order);
 
@@ -427,6 +460,89 @@ const removeFromWishlist = async (req, res) => {
     }
 };
 
+//------------------ wallet -------------------//
+
+const getWallet = async (req, res) => {
+    try {
+        // const userId = "671779c18dc25b26d1f7d8ea";
+        // const userLoggedIn = true;
+
+        const userId = req.session.userId;
+        const userLoggedIn = Boolean(req.session.userId);
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+
+        let wallet = await Wallet.findOne({ userId: userId });
+        const user = await User.findById(userId);
+
+        if (!wallet) {
+            wallet = new Wallet({
+                userId: userId,
+                balance: 0,
+                transactions: [],
+            });
+
+            await wallet.save();
+        }
+
+        const totalTransactions = wallet.transactions.length;
+        const totalPages = Math.ceil(totalTransactions / limit);
+        const startIndex = (page - 1) * limit;
+        const paginatedTransactions = wallet.transactions.slice(startIndex, startIndex + limit);
+
+        res.render("user/wallet", {
+            wallet: {
+                ...wallet.toObject(),
+                transactions: paginatedTransactions.map((transaction) => ({
+                    ...transaction,
+                    newBalance: transaction.newBalance || wallet.balance,
+                })),
+            },
+            page,
+            user,
+            userLoggedIn,
+            totalPages,
+        });
+    } catch (error) {
+        console.error("Error fetching wallet:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+const addMoney = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const { amount } = req.body;
+
+        if (!amount || isNaN(amount) || amount <= 0) {
+            return res.status(400).send("Invalid amount");
+        }
+
+        const wallet = await Wallet.findOne({ userId });
+        if (!wallet) {
+            return res.status(404).send("Wallet not found");
+        }
+
+        wallet.balance += parseFloat(amount);
+        wallet.transactions.unshift({
+            transactionId: `txn_${Date.now()}`,
+            type: "credit",
+            amount: parseFloat(amount),
+            description: "Money added to wallet",
+            status: "completed",
+            newBalance: wallet.balance,
+        });
+
+        await wallet.save();
+
+        res.redirect("/wallet");
+    } catch (error) {
+        console.error("Error adding money:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
 module.exports = {
     getProfile,
     updateProfile,
@@ -443,4 +559,6 @@ module.exports = {
     getWishlist,
     addToWishlist,
     removeFromWishlist,
+    getWallet,
+    addMoney,
 };

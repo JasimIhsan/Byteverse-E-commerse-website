@@ -7,6 +7,7 @@ const shop = require("../../Controller/user/shop");
 const profile = require("../../Controller/user/profile");
 const checkout = require("../../Controller/user/checkout");
 const User = require("../../model/user");
+const razorpay = require("../../config/razorpay");
 
 //------------------- login and sign up -----------------------//
 
@@ -28,17 +29,17 @@ router.post("/signup/resend-otp", auth.isLogged, home.resendOTP);
 
 router.post("/logout", home.Logout);
 
-router.get("/login/enter-email", home.forgotPasswordEmailEnter);
+router.get("/login/enter-email", auth.isLogged, home.forgotPasswordEmailEnter);
 
-router.post("/login/enter-email", home.postForgotPasswordEmailEnter);
+router.post("/login/enter-email", auth.isLogged, home.postForgotPasswordEmailEnter);
 
-router.get("/login/enter-email/otp-enter", home.forgotOtp);
+router.get("/login/enter-email/otp-enter", auth.isLogged, home.forgotOtp);
 
-router.post("/login/enter-email/otp-enter", home.verifyForgotPasswordOTP);
+router.post("/login/enter-email/otp-enter", auth.isLogged, home.verifyForgotPasswordOTP);
 
-router.get("/login/enter-email/otp-enter/new-password", home.getNewPassword);
+router.get("/login/enter-email/otp-enter/new-password", auth.isLogged, home.getNewPassword);
 
-router.post("/login/enter-email/otp-enter/new-password", home.postNewPassword);
+router.post("/login/enter-email/otp-enter/new-password", auth.isLogged, home.postNewPassword);
 
 // Google Authentication Routes
 
@@ -78,13 +79,13 @@ router.get("/shop/product-detail/:productId", shop.getProductDetail);
 
 // router.post('/shop/filter', shop.shopFilter)
 
-//------------------------------ User profile page -----------------------------------//
+//------------------------------ User profile page ----------------------------------//
 
 router.get("/:userId/profile", auth.checkSession, profile.getProfile);
 
-router.post("/profile/update-profile", profile.updateProfile);
+router.post("/profile/update-profile", auth.checkSession, profile.updateProfile);
 
-router.post("/profile/update-password", profile.changePassword);
+router.post("/profile/update-password", auth.checkSession, profile.changePassword);
 
 //---- order -----//
 
@@ -92,7 +93,7 @@ router.get("/:userId/profile/orders", auth.checkSession, profile.getOrders);
 
 router.post("/profile/orders/cancel-order", auth.checkSession, profile.cancelOrder);
 
-router.get("/profile/orders/orderdetail/:orderId", profile.getOrderDetails);
+router.get("/profile/orders/orderdetail/:orderId", auth.checkSession, profile.getOrderDetails);
 
 //---- address -----//
 
@@ -110,30 +111,38 @@ router.post("/:userId/profile/address/:addressId/edit-address", auth.checkSessio
 
 //----- wishlist -----//
 
-router.get("/profile/wishlist", profile.getWishlist);
+router.get("/profile/wishlist", auth.checkSession, profile.getWishlist);
 
-router.post("/profile/wishlist/add", profile.addToWishlist);
+router.post("/profile/wishlist/add", auth.checkSession, profile.addToWishlist);
 
-router.post("/wishlist/remove", profile.removeFromWishlist);
+router.post("/wishlist/remove", auth.checkSession, profile.removeFromWishlist);
+
+//----- wallet ------//
+
+router.get("/profile/wallet", auth.checkSession, profile.getWallet);
 
 //------------------------------ Checkout -----------------------------------//
 
-router.get("/cart", checkout.getCart);
+router.get("/cart", auth.checkSession, checkout.getCart);
 
-router.post("/:userId/add-to-cart", checkout.postAddtoCart);
+router.post("/:userId/add-to-cart", auth.checkSession, checkout.postAddtoCart);
 
-router.post("/cart/update", checkout.updateCart);
+router.post("/cart/update", auth.checkSession, checkout.updateCart);
 
-router.post("/cart/:productId/delete-item", checkout.delete_item);
+router.post("/cart/:productId/delete-item", auth.checkSession, checkout.delete_item);
 
 router.get("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.getCheckout);
 
-router.post("/apply-coupon", checkout.applyCoupon);
+router.post("/apply-coupon", auth.checkSession, auth.checkOrderPlaced, checkout.applyCoupon);
 
-router.post("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.creatingOrder);
+router.post("/cart/checkout/cod", auth.checkSession, auth.checkOrderPlaced, checkout.creatingOrder);
 
-router.get("/:userId/cart/checkout/order-placed/:orderId", auth.checkSession, checkout.getPlaceOrder);
+router.get("/cart/checkout/order-placed/:orderId", auth.checkSession, checkout.getPlaceOrder);
 
-//------------------------------ Wishlist -----------------------------------//
+//------------------------------ Razor pay -----------------------------------//
+
+router.post("/cart/checkout/upi", auth.checkSession, razorpay.createOrder);
+
+router.post("/cart/checkout/upi/verify-payment", auth.checkSession, razorpay.verifyPayment);
 
 module.exports = router;

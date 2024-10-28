@@ -132,7 +132,7 @@
                                                         <span class="original-price" style="text-decoration: line-through; color: gray">$<%= item.price.toFixed(2) %></span>
                                                         <span class="discounted-price ml-2" style="color: green">$<%= item.finalPrice.toFixed(2) %></span>
                                                     </div>
-                                                    <% } else { %> 
+                                                    <% } else { %>
                                                     <span class="original-price">$<%= item.price.toFixed(2) %></span>
                                                     <% } %>
                                                 </td>
@@ -313,6 +313,8 @@
                 const updateCart = async (productId, quantity, inputElement) => {
                     try {
                         const response = await axios.post("/cart/update", { productId, quantity });
+
+                        console.log(response);
 
                         if (!response.data.success) throw new Error(response.data.message);
 

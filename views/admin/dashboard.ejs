@@ -1,68 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Byteverse | User-management</title>
+        <link rel="stylesheet" href="/css/admin/dashboard.css" />
+        <style></style>
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Byteverse | User-management</title>
-    <link rel="stylesheet" href="/css/admin/dashboard.css">
-</head>
+    <body>
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="unique-sidebar">
+                <div class="unique-sidebar-header">
+                    <h2>Byteverse</h2>
+                </div>
+                <ul class="unique-sidebar-menu">
+                    <li class="active"><a href="#">Dashboard</a></li>
+                    <li><a href="/admin/user-management">Users</a></li>
+                    <li><a href="/admin/product-management">Products</a></li>
+                    <li><a href="/admin/order-management">Orders</a></li>
+                    <li><a href="/admin/category-management">Categories</a></li>
+                    <li><a href="/admin/coupon-management">Coupon</a></li>
+                    <li><a href="/admin/offer-management">Offers</a></li>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Settings</a></li>
+                </ul>
+            </aside>
+            <!-- Main Content -->
+            <div class="product-list-container">
+                <h1>Dashboard</h1>
 
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="unique-sidebar">
-            <div class="unique-sidebar-header">
-                <h2>Byteverse</h2>
-            </div>
-            <ul class="unique-sidebar-menu">
-                <li class="active"><a href="#">Dashboard</a></li>
-                <li><a href="/admin/user-management">Users</a></li>
-                <li><a href="/admin/product-management">Products</a></li>
-                <li><a href="/admin/order-management">Orders</a></li>
-                <li><a href="/admin/category-management">Categories</a></li>
-                <li><a href="/admin/coupon-management">Coupon</a></li>
-                <li><a href="/admin/offer-management">Offers</a></li>
-                <li><a href="#">Support</a></li>
-                <li><a href="#">Settings</a></li>
-            </ul>
-        </aside>
-        <!-- Main Content -->
-        <div class="product-list-container">
-            <h1>Dashboard</h1>
+                <!-- Breadcrumbs -->
+                <nav class="breadcrumbs">
+                    <a href="/admin/dashboard">Dashboard</a>
+                    <span>&gt;</span>
+                </nav>
 
-            <!-- Breadcrumbs -->
-            <nav class="breadcrumbs">
-                <a href="/admin/dashboard">Dashboard</a>
-                <span>&gt;</span>
-            </nav>
-
-            <div class="product-search-filter">
-                <div style="display: flex">
-                    <form action="/admin/dashboard" method="get">
-                        <input type="text" name="search" placeholder="Search products..." class="search-input"
-                            value="<%= search %>" />
-                        <button class="add-product-btn" type="submit">Search</button>
-                    </form>
-                    <% if (search) { %>
+                <!-- <div class="product-search-filter">
+                    <div style="display: flex">
+                        <form action="/admin/dashboard" method="get">
+                            <input type="text" name="search" placeholder="Search products..." class="search-input" value="<%= search %>" />
+                            <button class="add-product-btn" type="submit">Search</button>
+                        </form>
+                        <% if (search) { %>
                         <form action="/admin/dashboard" method="GET" style="margin-left: 10px">
                             <input type="hidden" name="search" value="" />
                             <button type="submit" class="add-product-btn">Show All</button>
                         </form>
                         <% } %>
+                    </div>
+                    <form action="/admin/dashboard/logout" method="post">
+                        <button class="logout-btn">Logout</button>
+                    </form>
+                </div> -->
+
+                <div class="card mb-4">
+                    <h2 class="card-title">Sales Report</h2>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div class="flex flex-wrap gap-4 mb-4">
+                            <!-- Time Filter Options -->
+                            <select id="time-filter" onchange="handleFilterChange()">
+                                <option value="all" <%= timeFilter === 'all' ? 'selected' : '' %>>All</option>
+                                <option value="today" <%= timeFilter === 'today' ? 'selected' : '' %>>Today</option>
+                                <option value="week" <%= timeFilter === 'week' ? 'selected' : '' %>>Weekly</option>
+                                <option value="month" <%= timeFilter === 'month' ? 'selected' : '' %>>Monthly</option>
+                                <option value="custom" <%= timeFilter === 'custom' ? 'selected' : '' %>>Custom Date</option>
+                            </select>
+                            
+                            <!-- Custom Date Range Picker -->
+                            <div id="custom-date-range" style='display: none;' %>'>
+                                <input type="date" id="start-date" value="<%= startDate || '' %>" />
+                                <input type="date" id="end-date" value="<%= endDate || '' %>" />
+                                <button onclick="generateReport()" style="width: 125px;">Apply</button>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex gap-4">
+                            <button style="height: 35px;" onclick="downloadReport('pdf')">Download PDF</button>
+                            <button style="height: 35px;" onclick="downloadReport('excel')">Download Excel</button>
+                        </div>
+                    </div>
                 </div>
-                <form action="/admin/dashboard/logout" method="post">
-                    <button class="logout-btn">Logout</button>
-                </form>
+                
+
+                <div class="grid grid-cols-3 mb-4">
+                    <div class="card">
+                        <h2 class="card-title">Overall Sales Count</h2>
+                        <div class="stat-value" id="sales-count"><%= overallSalesCount %></div>
+                    </div>
+                    <div class="card">
+                        <h2 class="card-title">Overall Order Amount</h2>
+                        <div class="stat-value" id="order-amount">$<%= overallOrderAmount.toLocaleString() %></div>
+                    </div>
+                    <div class="card">
+                        <h2 class="card-title">Overall Discount</h2>
+                        <div class="stat-value" id="overall-discount">$<%= overallDiscount.toLocaleString() %></div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <h2 class="card-title">Sales Report Graph</h2>
+                    <canvas id="sales-chart"></canvas>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Detailed Sales Report</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total Orders</th>
+                                <th>Total Amount</th>
+                                <th>Coupon Discount</th>
+                                <th>Offer Discount</th>
+                                <th>Total Discount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% salesData.forEach(data => { %>
+                            <tr>
+                                <td><%= data.date %></td>
+                                <td><%= data.totalOrders %></td>
+                                <td>$<%= data.totalAmount.toFixed(2) %></td>
+                                <td>$<%= data.totalCouponDiscount.toFixed(2) %></td>
+                                <td>$<%= data.totalOfferDiscount.toFixed(2) %></td>
+                                <td>$<%= (data.totalCouponDiscount + data.totalOfferDiscount).toFixed(2) %></td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+
+                
             </div>
+        </div>
+        <!-- <script src="/javascripts/admin/product.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- <script>
+            // Mock data for the sales report
+            const dailySalesData = [
+                { date: "2023-05-01", orders: 120, amount: 15000, discount: 500, coupons: 200 },
+                { date: "2023-05-02", orders: 150, amount: 18000, discount: 600, coupons: 300 },
+                { date: "2023-05-03", orders: 100, amount: 12000, discount: 400, coupons: 150 },
+                { date: "2023-05-04", orders: 180, amount: 22000, discount: 700, coupons: 350 },
+                { date: "2023-05-05", orders: 200, amount: 25000, discount: 800, coupons: 400 },
+                { date: "2023-05-06", orders: 160, amount: 20000, discount: 650, coupons: 250 },
+                { date: "2023-05-07", orders: 140, amount: 17000, discount: 550, coupons: 220 },
+            ];
+
+            const weeklySalesData = [
+                { week: "Week 1", orders: 950, amount: 112000, discount: 3650, coupons: 1650 },
+                { week: "Week 2", orders: 1050, amount: 128000, discount: 4100, coupons: 1850 },
+                { week: "Week 3", orders: 980, amount: 118000, discount: 3800, coupons: 1700 },
+                { week: "Week 4", orders: 1100, amount: 135000, discount: 4300, coupons: 1950 },
+            ];
+
+            const monthlySalesData = [
+                { month: "Jan", orders: 3800, amount: 460000, discount: 15000, coupons: 6800 },
+                { month: "Feb", orders: 3500, amount: 420000, discount: 13500, coupons: 6200 },
+                { month: "Mar", orders: 4200, amount: 510000, discount: 16800, coupons: 7500 },
+                { month: "Apr", orders: 3900, amount: 470000, discount: 15600, coupons: 7000 },
+                { month: "May", orders: 4100, amount: 495000, discount: 16400, coupons: 7300 },
+        ];  
+
+            let currentData = dailySalesData;
+            let chart;
+
+            function generateReport() {
+                const timeFilter = document.getElementById("time-filter").value;
+                switch (timeFilter) {
+                    case "day":
+                        currentData = dailySalesData;
+                        break;
+                    case "week":
+                        currentData = weeklySalesData;
+                        break;
+                    case "month":
+                        currentData = monthlySalesData;
+                        break;
+                }
+                updateChart();
+                updateTable();
+                updateStats();
+            }
+
+            function updateChart() {
+                const ctx = document.getElementById("sales-chart").getContext("2d");
+                const labels = currentData.map((item) => item.date || item.week || item.month);
+                const amounts = currentData.map((item) => item.amount);
+                const orders = currentData.map((item) => item.orders);
+                const discounts = currentData.map((item) => item.discount);
+
+                if (chart) {
+                    chart.destroy();
+                }
+
+                chart = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Sales Amount",
+                                data: amounts,
+                                borderColor: "rgb(75, 192, 192)",
+                                tension: 0.1,
+                            },
+                            {
+                                label: "Orders",
+                                data: orders,
+                                borderColor: "rgb(255, 99, 132)",
+                                tension: 0.1,
+                            },
+                            {
+                                label: "Discount",
+                                data: discounts,
+                                borderColor: "rgb(255, 205, 86)",
+                                tension: 0.1,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            },
+                        },
+                    },
+                });
+            }
+
+            function updateTable() {
+                const tableBody = document.getElementById("sales-data");
+                tableBody.innerHTML = "";
+                currentData.forEach((item) => {
+                    const row = `
+                        <tr>
+                            <td>${item.date || item.week || item.month}</td>
+                            <td>${item.orders}</td>
+                            <td>$${item.amount.toLocaleString()}</td>
+                            <td>$${item.discount.toLocaleString()}</td>
+                            <td>$${item.coupons.toLocaleString()}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            }
+
+            function updateStats() {
+                const overallStats = currentData.reduce(
+                    (acc, item) => {
+                        acc.salesCount += item.orders;
+                        acc.orderAmount += item.amount;
+                        acc.discount += item.discount + item.coupons;
+                        return acc;
+                    },
+                    { salesCount: 0, orderAmount: 0, discount: 0 }
+                );
+
+                document.getElementById("sales-count").textContent = overallStats.salesCount.toLocaleString();
+                document.getElementById("order-amount").textContent = "$" + overallStats.orderAmount.toLocaleString();
+                document.getElementById("overall-discount").textContent = "$" + overallStats.discount.toLocaleString();
+            }
+
+            function downloadReport(format) {
+                console.log("Downloading report as:", format);
+                // Implement download logic here
+            }
+
+            // Initial render
+            generateReport();
+        </script> -->
+
+        <script>
+
+            function handleFilterChange() {
+                const filter = document.getElementById('time-filter').value;
+                const customDateRange = document.getElementById('custom-date-range');
+
+                // Show or hide custom date range input based on selection
+                if (filter === 'custom') {
+                    customDateRange.style.display = 'block';
+                } else {
+                    customDateRange.style.display = 'none';
+                    generateReport(); // Trigger report generation for predefined options
+                }
+            }
+
+            async function generateReport() {
+                const timeFilter = document.getElementById("time-filter").value;
+                const response = await fetch(`/admin/dashboard?timeFilter=${timeFilter}`);
+                const data = await response.text();
+                document.body.innerHTML = data;
+            }
 
             
-        </div>
-
-        <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
-
-
-        <!-- <script src="/javascripts/admin/product.js"></script> -->
-</body>
-
+        </script>
+        <script>
+            // Assume these variables are set from your server-side rendering
+            const labels = <%- JSON.stringify(labels) %>;
+            const ordersData = <%- JSON.stringify(ordersData) %>;
+            const amountData = <%- JSON.stringify(amountData) %>;
+            const discountData = <%- JSON.stringify(discountData) %>; // You may need to define this in your server-side data
+        
+            const ctx = document.getElementById('sales-chart').getContext('2d');
+        
+            // Check if the data arrays have been populated correctly
+            console.log('Labels:', labels);
+            console.log('Orders Data:', ordersData);
+            console.log('Amount Data:', amountData);
+            console.log('Discount Data:', discountData); // Ensure this is defined
+        
+            let chart;
+        
+            // Function to initialize the chart with data
+            function initChart() {
+                if (labels.length > 0 && ordersData.length > 0 && amountData.length > 0) {
+                    chart = new Chart(ctx, {
+                        type: 'line', // Change to 'bar' or other types as needed
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Total Orders',
+                                    data: ordersData,
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    borderWidth: 2,
+                                },
+                                {
+                                    label: 'Total Amount',
+                                    data: amountData,
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                    borderWidth: 2,
+                                },
+                                {
+                                    label: 'Discount',
+                                    data: discountData, // Add discount data
+                                    borderColor: 'rgba(255, 205, 86, 1)',
+                                    backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                                    borderWidth: 2,
+                                },
+                            ],
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                },
+                            },
+                        },
+                    });
+                } else {
+                    console.error("No data available for the chart.");
+                }
+            }
+        
+            // Function to update the chart based on the selected time filter
+            function updateChart() {
+                const timeFilter = document.getElementById("time-filter").value;
+                let currentData;
+        
+                switch (timeFilter) {
+                    case "day":
+                        currentData = dailySalesData; // Ensure these arrays are defined
+                        break;
+                    case "week":
+                        currentData = weeklySalesData;
+                        break;
+                    case "month":
+                        currentData = monthlySalesData;
+                        break;
+                    default:
+                        currentData = [];
+                }
+        
+                const labels = currentData.map(item => item.date || item.week || item.month);
+                const orders = currentData.map(item => item.orders);
+                const amounts = currentData.map(item => item.amount);
+                const discounts = currentData.map(item => item.discount || 0); // Use 0 if discount is not available
+        
+                // Update chart data
+                if (chart) {
+                    chart.data.labels = labels;
+                    chart.data.datasets[0].data = orders;
+                    chart.data.datasets[1].data = amounts;
+                    chart.data.datasets[2].data = discounts;
+                    chart.update();
+                }
+            }
+        
+            // Event listener for the time filter
+            document.getElementById("time-filter").addEventListener("change", function() {
+                updateChart();
+            });
+        
+            // Initial render
+            initChart();
+        
+            document.addEventListener("DOMContentLoaded", function () {
+                window.downloadReport = function (format) {
+                    const timeFilterElement = document.getElementById('time-filter');
+                    if (!timeFilterElement) {
+                        console.error("Time filter dropdown not found!");
+                        return;
+                    }
+                    
+                    const timeFilter = timeFilterElement.value;
+        
+                    window.location.href = `/admin/dashboard/download-report?format=${format}&timeFilter=${timeFilter}`;
+                };
+            });
+        </script>
+        
+    </body>
 </html>

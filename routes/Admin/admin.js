@@ -19,7 +19,9 @@ router.get("/", auth.isLogged, dash.getAdminLogin);
 
 router.get("/dashboard", auth.checkSession, dash.getAdminDashboard);
 
-router.post("/dashboard", dash.postAdminLogin);
+router.post("/dashboard", auth.isLogged, dash.postAdminLogin);
+
+router.get("/dashboard/download-report", auth.checkSession, dash.downloadReport);
 
 router.post("/dashboard/logout", auth.checkSession, dash.logout);
 
@@ -45,7 +47,7 @@ router.patch("/category-management/update-status/:id", auth.checkSession, cat_ma
 
 router.get("/product-management", auth.checkSession, prd_man.getProduts);
 
-router.get("/product-management/product-detail/:productId", prd_man.getProductDetail);
+router.get("/product-management/product-detail/:productId", auth.checkSession, prd_man.getProductDetail);
 
 router.patch("/product-management/update-status/:id", auth.checkSession, prd_man.updateProductStatus);
 
@@ -59,40 +61,40 @@ router.post("/product-management/edit-product/:id", auth.checkSession, productIm
 
 //----------- Order management -----------------//
 
-router.get("/order-management", order.getOrderManagement);
+router.get("/order-management", auth.checkSession, order.getOrderManagement);
 
-router.post("/order-management/update-status/:orderId", order.updateOrderStatus);
+router.post("/order-management/update-status/:orderId", auth.checkSession, order.updateOrderStatus);
 
-router.get("/order-management/order-detail/:orderId", order.getOrderDetail);
+router.get("/order-management/order-detail/:orderId", auth.checkSession, order.getOrderDetail);
 
-router.post("/order-management/order-detail/remove-order-item", order.cancelOrderItem);
+router.post("/order-management/order-detail/remove-order-item", auth.checkSession, order.cancelOrderItem);
 
 //----------- Coupon management -----------------//
 
-router.get("/coupon-management", coupon.getCoupon);
+router.get("/coupon-management", auth.checkSession, coupon.getCoupon);
 
-router.post("/coupon-management/add-coupon", coupon.addCoupon);
+router.post("/coupon-management/add-coupon", auth.checkSession, coupon.addCoupon);
 
-router.delete("/coupon-management/delete/:couponId", coupon.deleteCopon);
+router.delete("/coupon-management/delete/:couponId", auth.checkSession, coupon.deleteCopon);
 
-router.get("/coupon-management/:couponId", coupon.getCouponById);
+router.get("/coupon-management/:couponId", auth.checkSession, coupon.getCouponById);
 
-router.put("/coupon-management/:couponId", coupon.updateCoupon);
+router.put("/coupon-management/:couponId", auth.checkSession, coupon.updateCoupon);
 
-router.post("/coupons/toggle-status", coupon.toggleCouponStatus);
+router.post("/coupons/toggle-status", auth.checkSession, coupon.toggleCouponStatus);
 
 //----------- Offer management -----------------//
 
-router.get("/offer-management" , offer.getOffer);
+router.get("/offer-management", auth.checkSession, offer.getOffer);
 
-router.post('/offer-management/add-offer' , offer.addOffer);
+router.post("/offer-management/add-offer", auth.checkSession, offer.addOffer);
 
-router.put('/offer-management/update-status/:offerId', offer.updateOfferStatus);
+router.put("/offer-management/update-status/:offerId", auth.checkSession, offer.updateOfferStatus);
 
-router.delete('/offer-management/delete-offer/:offerId', offer.deleteOffer);
+router.delete("/offer-management/delete-offer/:offerId", auth.checkSession, offer.deleteOffer);
 
-router.get('/offer-management/:offerId', offer.getOfferById);
+router.get("/offer-management/:offerId", auth.checkSession, offer.getOfferById);
 
-router.put('/offer-management/edit-offer/:offerId', offer.editOffer)
+router.put("/offer-management/edit-offer/:offerId", auth.checkSession, offer.editOffer);
 
 module.exports = router;

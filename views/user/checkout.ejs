@@ -140,7 +140,7 @@
                 <div class="page-content">
                     <div class="checkout">
                         <div class="container">
-                            <form action="/<%= user %>/cart/checkout" method="POST">
+                            <form>
                                 <div class="row">
                                     <div class="col-lg-9">
                                         <h2 class="checkout-title">Billing Details</h2>
@@ -157,42 +157,50 @@
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <label>First Name *</label>
-                                                <input type="text" class="form-control" name="firstName" value="<%= defaultAddress ? defaultAddress.firstName : '' %>" required />
+                                                <input type="text" class="form-control" name="firstName" value="<%= defaultAddress ? defaultAddress.firstName : '' %>" required onkeyup="validateName(this)" />
+                                                <span style="color: red; font-size: 0.9em; margin-top: 5px" id="firstNameError"></span>
                                             </div>
 
                                             <div class="col-sm-6">
                                                 <label>Last Name *</label>
-                                                <input type="text" class="form-control" name="lastName" value="<%= defaultAddress ? defaultAddress.lastName : '' %>" required />
+                                                <input type="text" class="form-control" name="lastName" value="<%= defaultAddress ? defaultAddress.lastName : '' %>" required onkeyup="validateName(this)" />
+                                                <span style="color: red; font-size: 0.9em; margin-top: 5px" id="lastNameError"></span>
                                             </div>
                                         </div>
 
                                         <label>Phone Number *</label>
-                                        <input type="tel" class="form-control" name="phoneNumber" value="<%= defaultAddress ? defaultAddress.phoneNumber : '' %>" required />
+                                        <input type="tel" class="form-control" name="phoneNumber" value="<%= defaultAddress ? defaultAddress.phoneNumber : '' %>" required onkeyup="validatePhoneNumber(this)" />
+                                        <span style="color: red; font-size: 0.9em; margin-top: 5px" id="phoneNumberError"></span>
 
                                         <label>Street Address *</label>
-                                        <input type="text" class="form-control" name="street" placeholder="House number and Street name" value="<%= defaultAddress ? defaultAddress.street : '' %>" required />
+                                        <input type="text" class="form-control" name="street" placeholder="House number and Street name" value="<%= defaultAddress ? defaultAddress.street : '' %>" required onkeyup="validateStreetAddress(this)" />
+                                        <span style="color: red; font-size: 0.9em; margin-top: 5px" id="streetError"></span>
 
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <label>City *</label>
-                                                <input type="text" class="form-control" name="city" value="<%= defaultAddress ? defaultAddress.city : '' %>" required />
+                                                <input type="text" class="form-control" name="city" value="<%= defaultAddress ? defaultAddress.city : '' %>" required onkeyup="validateCity(this)" />
+                                                <span style="color: red; font-size: 0.9em; margin-top: 5px" id="cityError"></span>
                                             </div>
 
                                             <div class="col-sm-6">
                                                 <label>State *</label>
-                                                <input type="text" class="form-control" name="state" value="<%= defaultAddress ? defaultAddress.state : '' %>" required />
+                                                <input type="text" class="form-control" name="state" value="<%= defaultAddress ? defaultAddress.state : '' %>" required onkeyup="validateState(this)" />
+                                                <span style="color: red; font-size: 0.9em; margin-top: 5px" id="stateError"></span>
                                             </div>
                                         </div>
 
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <label>Postal Code *</label>
-                                                <input type="text" class="form-control" name="postalCode" value="<%= defaultAddress ? defaultAddress.postalCode : '' %>" required />
+                                                <input type="text" class="form-control" name="postalCode" value="<%= defaultAddress ? defaultAddress.postalCode : '' %>" required onkeyup="validatePostalCode(this)" />
+                                                <span style="color: red; font-size: 0.9em; margin-top: 5px" id="postalCodeError"></span>
                                             </div>
 
                                             <div class="col-sm-6">
                                                 <label>Country *</label>
-                                                <input type="text" class="form-control" name="country" value="<%= defaultAddress ? defaultAddress.country : '' %>" required />
+                                                <input type="text" class="form-control" name="country" value="<%= defaultAddress ? defaultAddress.country : '' %>" required onkeyup="validateCountry(this)" />
+                                                <span style="color: red; font-size: 0.9em; margin-top: 5px" id="countryError"></span>
                                             </div>
                                         </div>
 
@@ -234,7 +242,6 @@
                                                             <span id="total-amount" style="font-weight: bold">$<%= cartTotal.toFixed(2) %></span>
                                                         </td>
                                                     </tr>
-                                                   
                                                 </tbody>
                                             </table>
 
@@ -278,7 +285,7 @@
 
                                             <h3 class="summary-title">Place Order</h3>
 
-                                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" id="placeOrderBtn">
                                                 <span class="btn-text">Place Order</span>
                                                 <span class="btn-hover-text">Place Order</span>
                                             </button>
@@ -412,6 +419,8 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <script>
         function populateAddress() {
             const selectedAddress = document.getElementById("savedAddress").selectedOptions[0]; // Get the selected option
@@ -501,5 +510,217 @@
                     });
                 });
         });
+
+        document.getElementById("placeOrderBtn").addEventListener("click", async function (event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+
+            // Get selected payment method
+            const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+            // Get form data
+            const addressId = document.getElementById("savedAddress").value;
+            const firstName = document.querySelector('input[name="firstName"]').value;
+            const lastName = document.querySelector('input[name="lastName"]').value;
+            const phoneNumber = document.querySelector('input[name="phoneNumber"]').value;
+            const street = document.querySelector('input[name="street"]').value;
+            const city = document.querySelector('input[name="city"]').value;
+            const state = document.querySelector('input[name="state"]').value;
+            const postalCode = document.querySelector('input[name="postalCode"]').value;
+            const country = document.querySelector('input[name="country"]').value;
+            const additionalInfo = document.querySelector('input[name="additionalInfo"]').value;
+            const couponCode = document.getElementById("couponCode").value; // Assuming couponCode is from a separate input
+
+            const totalAmount = parseFloat(document.getElementById("total-amount").textContent.replace("$", ""));
+
+            const orderData = {
+                addressId,
+                paymentMethod: selectedPaymentMethod,
+                couponCode,
+                firstName,
+                lastName,
+                phoneNumber,
+                street,
+                city,
+                state,
+                postalCode,
+                country,
+                additionalInfo,
+            };
+
+            // Determine the route based on selected payment method
+            let paymentUrl;
+            switch (selectedPaymentMethod) {
+                case "UPI Payment":
+                    paymentUrl = "/cart/checkout/upi";
+                    break;
+                case "Wallet Payments":
+                    paymentUrl = "#";
+                    alert("Wallet payment option is currently not implemented.");
+                    return;
+                case "Cash on Delivery":
+                    paymentUrl = "/cart/checkout/cod";
+                    break;
+                default:
+                    console.error("Invalid payment method selected");
+                    return;
+            }
+
+            // For UPI Payment, initiate Razorpay payment
+            if (selectedPaymentMethod === "UPI Payment") {
+                try {
+                    const response = await axios.post(paymentUrl, {
+                        amount: totalAmount,
+                        ...orderData,
+                    });
+                    const { orderId, user, key } = response.data;
+
+                    const options = {
+                        key: key,
+                        amount: totalAmount * 100,
+                        currency: "USD",
+                        name: "Byteverse",
+                        description: "Laptop Purchase",
+                        order_id: orderId,
+                        handler: function (response) {
+                            verifyPayment(response, orderData);
+                        },
+                        prefill: {
+                            name: `${firstName} ${lastName}`,
+                            email: user.email,
+                        },
+                        theme: {
+                            color: "#3399cc",
+                        },
+                        method: {
+                            card: true,
+                            upi: true,
+                            wallet: true,
+                            netbanking: true,
+                        },
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                } catch (error) {
+                    console.error(error);
+                    alert("Error creating order. Please try again.");
+                }
+            } else {
+                // For Cash on Delivery
+                try {
+                    const response = await axios.post(paymentUrl, orderData, {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+                    console.log(response);
+
+                    const order_Id = response.data.orderDetails.orderId;
+
+                    window.location.href = `/cart/checkout/order-placed/${order_Id}`;
+                } catch (error) {
+                    // Handle error response
+                    alert("Error placing order. Please try again.");
+                    console.error(error);
+                }
+            }
+        });
+
+        async function verifyPayment(paymentResponse, orderData) {
+            try {
+                console.log(paymentResponse);
+
+                const verificationResponse = await axios.post("/cart/checkout/upi/verify-payment", {
+                    order_id: paymentResponse.razorpay_order_id,
+                    payment_id: paymentResponse.razorpay_payment_id,
+                    razorpay_signature: paymentResponse.razorpay_signature,
+                    ...orderData,
+                });
+
+                console.log("verificationResponse : ", verificationResponse);
+
+                let order_Id = verificationResponse.data.newOrderId;
+
+                if (verificationResponse.status === 200) {
+                    window.location.href = `/cart/checkout/order-placed/${order_Id}`;
+                } else {
+                    alert("Payment verification failed. Please contact support.");
+                }
+            } catch (error) {
+                console.error("Error verifying payment:", error);
+                alert("Error verifying payment. Please try again.");
+            }
+        }
+    </script>
+
+    <!-- validation -->
+    <script>
+        function clearError(elementId) {
+            document.getElementById(elementId).innerText = "";
+        }
+
+        function validateName(input) {
+            const value = input.value.trim();
+            const errorElementId = input.name === "firstName" ? "firstNameError" : "lastNameError";
+            if (value.length < 3) {
+                document.getElementById(errorElementId).innerText = "Name must be at least 3 characters.";
+            } else {
+                clearError(errorElementId);
+            }
+        }
+
+        function validatePhoneNumber(input) {
+            const value = input.value.trim();
+            if (!/^\d{10}$/.test(value)) {
+                document.getElementById("phoneNumberError").innerText = "Phone number must be 10 digits.";
+            } else {
+                clearError("phoneNumberError");
+            }
+        }
+
+        function validateStreetAddress(input) {
+            const value = input.value.trim();
+            if (value.length === 0) {
+                document.getElementById("streetError").innerText = "Street address cannot be empty.";
+            } else {
+                clearError("streetError");
+            }
+        }
+
+        function validateCity(input) {
+            const value = input.value.trim();
+            if (value.length === 0) {
+                document.getElementById("cityError").innerText = "City cannot be empty.";
+            } else {
+                clearError("cityError");
+            }
+        }
+
+        function validateState(input) {
+            const value = input.value.trim();
+            if (value.length === 0) {
+                document.getElementById("stateError").innerText = "State cannot be empty.";
+            } else {
+                clearError("stateError");
+            }
+        }
+
+        function validatePostalCode(input) {
+            const value = input.value.trim();
+            if (!/^\d{6}$/.test(value)) {
+                document.getElementById("postalCodeError").innerText = "Postal code must be 6 digits.";
+            } else {
+                clearError("postalCodeError");
+            }
+        }
+
+        function validateCountry(input) {
+            const value = input.value.trim();
+            if (value.length === 0) {
+                document.getElementById("countryError").innerText = "Country cannot be empty.";
+            } else {
+                clearError("countryError");
+            }
+        }
     </script>
 </html>

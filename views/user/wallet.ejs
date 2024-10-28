@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <title><%= title %></title>
+        <title>Wallet | Byteverse E-commerse</title>
         <meta name="keywords" content="HTML5 Template" />
         <meta name="description" content="Molla - Bootstrap eCommerce Template" />
         <meta name="author" content="p-themes" />
@@ -25,6 +25,119 @@
         <!-- Main CSS File -->
         <link rel="stylesheet" href="/assets/css/style.css" />
         <link rel="stylesheet" href="/css/user/main.css" />
+        <style>
+            .card {
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                padding: 24px;
+            }
+
+            .card-title {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+
+            .card-description {
+                color: #666;
+                margin-bottom: 24px;
+            }
+
+            .balance {
+                color: black;
+                font-size: 40px;
+                font-weight: bold;
+                margin-bottom: 24px;
+            }
+
+            .add-money-form {
+                display: flex;
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .input {
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                width: 200px;
+            }
+
+            .button {
+                background-color: #5c59e8;
+                color: white;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .button:disabled {
+                background-color: #ffffff;
+                cursor: not-allowed;
+                color: gray;
+            }
+
+            .button-outline {
+                background-color: white;
+                color: #3b82f6;
+                border: 1px solid #5c59e8;
+            }
+
+            .table-container {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                overflow-x: auto;
+                margin-bottom: 24px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            th {
+                background-color: #f9fafb;
+                padding: 12px 16px;
+                text-align: left;
+                font-weight: 500;
+                color: #6b7280;
+                border-bottom: 1px solid #ddd;
+            }
+
+            td {
+                padding: 12px 16px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            tr:hover {
+                background-color: #f9fafb;
+            }
+
+            .credit {
+                color: #059669;
+            }
+
+            .debit {
+                color: #dc2626;
+            }
+
+            .pagination {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .plus-icon {
+                width: 16px;
+                height: 16px;
+            }
+        </style>
     </head>
 
     <body>
@@ -104,22 +217,18 @@
             <main class="main">
                 <div class="page-header text-center" style="background-image: url('/assets/images/page-header-bg.jpg')">
                     <div class="container">
-                        <h1 class="page-title">Address Details</h1>
+                        <h1 class="page-title">My Account</h1>
                     </div>
-                    <!-- End .container -->
                 </div>
-                <!-- End .page-header -->
                 <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
                     <div class="container">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item"><a href="/">Home</a></li>
                             <li class="breadcrumb-item"><a href="#">Shop</a></li>
                             <li class="breadcrumb-item active" aria-current="page">My Account</li>
                         </ol>
                     </div>
-                    <!-- End .container -->
                 </nav>
-                <!-- End .breadcrumb-nav -->
 
                 <div class="page-content">
                     <div class="dashboard">
@@ -134,97 +243,85 @@
                                             <a class="nav-link" href="/<%= user._id %>/profile/orders">Orders</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/<%= user._id %>/profile/wallet">Wallet</a>
+                                            <a class="nav-link active" href="/profile/wallet">Wallet</a>
                                         </li>
 
                                         <li class="nav-item">
-                                            <a class="nav-link active" href="/<%= user._id %>/profile/address">Addresses</a>
+                                            <a class="nav-link" href="/<%= user._id %>/profile/address">Addresses</a>
                                         </li>
-                                        <li class="nav-item" style="margin-top: 10px">
+                                        <li class="nav-item">
                                             <form action="/logout" method="POST" style="display: inline">
-                                                <button type="submit" class="nav-link" style="border: none; background: none; padding: 0">Sign Out</button>
+                                                <button type="submit" class="nav-link" style="border: none; background: none; padding: 0; margin-top: 10px;">Sign Out</button>
                                             </form>
                                         </li>
                                     </ul>
                                 </aside>
-                                <!-- End .col-lg-3 -->
 
                                 <div class="col-md-8 col-lg-9">
-                                    <div class="tab-content">
-                                        <div>
-                                            <h2>Your Addresses</h2>
-                                            <p>The following addresses will be used on the checkout page.</p>
-
-                                            <% if (error_msg) { %>
-                                            <div class="error-message" id="error"><%= error_msg %></div>
-                                            <% } %> <% if (success_msg) { %>
-                                            <div class="success-message" id="error"><%= success_msg %></div>
-                                            <% } %>
-                                            <div class="row mt-2">
-                                                <div class="col-lg-12">
-                                                    <% if (addresses.length > 0) { %> <% addresses.forEach(address => { %>
-                                                    <div class="card card-dashboard mb-3">
-                                                        <div class="card-body">
-                                                            <div class="card-title d-flex justify-content-end">
-                                                                <% if (address.isDefault) { %>
-                                                                <p class="d-flex justify-content-end">Default Address</p>
-                                                                <% } %>
-                                                            </div>
-                                                            <p>
-                                                                <%= address.firstName %> <%= address.lastName %><br />
-                                                                <%= address.street %><br />
-                                                                <%= address.city %>, <%= address.state %> <%= address.postalCode %><br />
-                                                                <%= address.country %><br />
-                                                                <%= address.phoneNumber %><br />
-                                                            </p>
-                                                            <div class="d-flex gap-3 w-100 mt-2">
-                                                                <form action="/<%= user._id %>/profile/address/<%= address._id %>/edit-address" method="get">
-                                                                    <button class="btn btn-primary rounded">Edit</button>
-                                                                </form>
-                                                                <button class="btn btn-danger rounded" style="margin-left: 10px" onclick="deleteAddress('<%= address._id %>')">Delete</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <% }); %> <% } else { %>
-                                                    <p>You have not set up any addresses yet.</p>
+                                    <div class="card">
+                                        <h1 class="card-title">Wallet Balance</h1>
+                                        <p class="card-description">Your current balance and transactions</p>
+                                
+                                        <!-- Display the user's wallet balance dynamically -->
+                                        <div class="balance" id="balance">$<%= wallet.balance.toFixed(2) %></div>
+                                
+                                        <!-- Form to add money to the wallet -->
+                                        <form class="add-money-form" id="addMoneyForm" style="width: 60%" action="#" method="POST">
+                                            <input type="number" placeholder="Enter amount" class="input" name="amount" min="0" step="0.01" required />
+                                            <button style="height: 40px; width: 220px" type="submit" class="button">
+                                                <svg class="plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M12 5v14m-7-7h14"></path>
+                                                </svg>
+                                                Add Money
+                                            </button>
+                                        </form>
+                                
+                                        <!-- Table to display transactions dynamically -->
+                                        <div class="table-container">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Type</th>
+                                                        <th>Amount</th>
+                                                        <th>Balance</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="transactionTable">
+                                                    <% if (wallet.transactions.length === 0) { %>
+                                                        <tr>
+                                                            <td colspan="4" style="text-align: center;">No transactions available</td>
+                                                        </tr>
+                                                    <% } else { %>
+                                                        <% wallet.transactions.forEach(transaction => { %>
+                                                            <tr>
+                                                                <td><%= new Date(transaction.date).toLocaleDateString() %></td>
+                                                                <td><%= transaction.type %></td>
+                                                                <td>$<%= transaction.amount.toFixed(2) %></td>
+                                                                <td>$<%= transaction.newBalance.toFixed(2) %></td>
+                                                            </tr>
+                                                        <% }); %>
                                                     <% } %>
-
-                                                    <form action="/<%= user._id %>/profile/address/add-address" method="get">
-                                                        <button type="submit" class="btn btn-success rounded">Add Address</button>
-                                                    </form>
-                                                </div>
-                                            </div>
+                                                </tbody>
+                                                
+                                            </table>
                                         </div>
-
-                                        <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-                                            <h3 class="card-title">Account Details</h3>
-                                            <form action="/account/update" method="POST">
-                                                <div class="form-group">
-                                                    <label for="firstName">First Name</label>
-                                                    <input type="text" class="form-control" id="firstName" name="firstName" value="<%= user.firstName %>" required />
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="lastName">Last Name</label>
-                                                    <input type="text" class="form-control" id="lastName" name="lastName" value="<%= user.lastName %>" required />
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="email">Email Address</label>
-                                                    <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required />
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="password">Password</label>
-                                                    <input type="password" class="form-control" id="password" name="password" />
-                                                </div>
-                                                <button type="submit" class="btn btn-outline-primary-2"><span>Save Changes</span></button>
-                                            </form>
+                                
+                                        <!-- Pagination controls (if needed) -->
+                                        <div class="pagination">
+                                            <button style="height: 35px" class="button button-outline" id="prevButton" <%= page <= 1 ? 'disabled' : '' %>>Previous</button>
+                                            <span id="pageInfo">Page <%= page %> of <%= totalPages %></span>
+                                            <button style="height: 35px" class="button button-outline" id="nextButton" <%= page >= totalPages ? 'disabled' : '' %>>Next</button>
                                         </div>
                                     </div>
                                 </div>
+                                
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
+
             <footer class="footer">
                 <div class="footer-middle">
                     <div class="container">
@@ -323,6 +420,7 @@
                 <!-- End .footer-bottom -->
             </footer>
         </div>
+        <!-- End .page-wrapper -->
 
         <script src="/assets/js/jquery.min.js"></script>
         <script src="/assets/js/bootstrap.bundle.min.js"></script>
@@ -336,19 +434,108 @@
         <script src="/assets/js/nouislider.min.js"></script>
         <script src="/assets/js/main.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script>
-            function deleteAddress(addressId) {
-                const userId = "<%= user._id %>";
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- <script>
+            let transactions = [
+                { id: 1, type: "Credit", amount: 500, date: "2024-10-27", balance: 1500 },
+                { id: 2, type: "Debit", amount: -200, date: "2024-10-26", balance: 1000 },
+                { id: 3, type: "Credit", amount: 300, date: "2024-10-25", balance: 1200 },
+                { id: 4, type: "Debit", amount: -400, date: "2024-10-24", balance: 900 },
+                { id: 5, type: "Credit", amount: 600, date: "2024-10-23", balance: 1300 },
+            ];
 
-                axios
-                    .delete(`/${userId}/profile/address/${addressId}`)
-                    .then((response) => {
-                        window.location.reload();
-                    })
-                    .catch((error) => {
-                        console.error("Error from deleting address : \n", error);
-                    });
+            let currentPage = 1;
+            const itemsPerPage = 3;
+            let currentBalance = 1000;
+
+            // Format currency
+            function formatCurrency(amount) {
+                return amount.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 2,
+                });
             }
-        </script>
+
+            // Update transaction table
+            function updateTable() {
+                const tbody = document.getElementById("transactionTable");
+                tbody.innerHTML = "";
+
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                const paginatedTransactions = transactions.slice(start, end);
+
+                paginatedTransactions.forEach((transaction) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${transaction.date}</td>
+                        <td>${transaction.type}</td>
+                        <td class="${transaction.amount > 0 ? "credit" : "debit"}">
+                            ${formatCurrency(Math.abs(transaction.amount))}
+                        </td>
+                        <td>${formatCurrency(transaction.balance)}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                updatePagination();
+                updateBalance();
+            }
+
+            // Update pagination controls
+            function updatePagination() {
+                const totalPages = Math.ceil(transactions.length / itemsPerPage);
+                document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${totalPages}`;
+                document.getElementById("prevButton").disabled = currentPage === 1;
+                document.getElementById("nextButton").disabled = currentPage === totalPages;
+            }
+
+            // Update balance display
+            function updateBalance() {
+                document.getElementById("balance").textContent = formatCurrency(currentBalance);
+            }
+
+            // Event Listeners
+            document.getElementById("addMoneyForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+                const input = document.getElementById("amountInput");
+                const amount = parseFloat(input.value);
+
+                if (amount <= 0 || isNaN(amount)) return;
+
+                currentBalance += amount;
+                const newTransaction = {
+                    id: transactions.length + 1,
+                    type: "Credit",
+                    amount: amount,
+                    date: new Date().toISOString().split("T")[0],
+                    balance: currentBalance,
+                };
+
+                transactions.unshift(newTransaction);
+                input.value = "";
+                currentPage = 1;
+                updateTable();
+            });
+
+            document.getElementById("prevButton").addEventListener("click", function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateTable();
+                }
+            });
+
+            document.getElementById("nextButton").addEventListener("click", function () {
+                const totalPages = Math.ceil(transactions.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updateTable();
+                }
+            });
+
+            // Initial render
+            updateTable();
+        </script> -->
     </body>
 </html>

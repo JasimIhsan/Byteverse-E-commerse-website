@@ -300,8 +300,26 @@
                         <a href="/shop/product-detail/<%= product._id %>" class="unique-product-card">
                             <div class="unique-product-info">
                                 <h3 class="unique-product-title"><%= product.name %></h3>
-                                <div class="unique-product-price-rating">
-                                    <p class="unique-product-price">$<%= product.price.toFixed(2) %></p>
+
+                                <!-- Display the best offer if available -->
+                                <% if (product.bestOffer) { %>
+                                <div class="unique-product-offer">
+                                    <p class="best-offer-text" style="color: green; font-size: 0.8rem">Best Offer: $<%= product.bestOffer.discountAmount %> off</p>
+                                </div>
+                                <% } %>
+
+                                <div class="unique-product-price-rating" style="flex-direction: column; justify-content: center; align-items: start">
+                                    <div>
+                                        <% if (product.bestOffer) { %>
+                                        <div style="display: flex;">
+                                            <p class="unique-product-price original-price" style="text-decoration: line-through; color: gray; margin-right: 10px;">$<%= product.price.toFixed(2) %></p>
+                                            <p class="unique-product-price discounted-price" style="color: green">$<%= (product.price - product.bestOffer.discountAmount).toFixed(2) %></p>
+                                        </div>
+                                        <% } else { %>
+                                        <p class="unique-product-price">$<%= product.price.toFixed(2) %></p>
+                                        <% } %>
+                                    </div>
+
                                     <div class="unique-product-rating">
                                         <span class="unique-rating-star">★</span>
                                         <span class="unique-rating-star">★</span>
@@ -600,7 +618,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-
         //add to cart button axios
         document.querySelectorAll(".unique-add-to-cart-form").forEach((form) => {
             form.addEventListener("submit", (event) => {

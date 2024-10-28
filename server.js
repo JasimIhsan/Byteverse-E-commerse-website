@@ -30,7 +30,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// Initialize session before Passport
 app.use(
     session({
         secret: "secretKey",
