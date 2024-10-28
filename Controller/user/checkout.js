@@ -510,12 +510,12 @@ const creatingOrder = async (req, res) => {
 
         await User.findByIdAndUpdate(userId, { $inc: { orders: 1 } });
 
-        // for (const item of orderItems) {
-        //     await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
-        // }
+        for (const item of orderItems) {
+            await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
+        }
 
-        // cart.products = [];
-        // await cart.save();
+        cart.products = [];
+        await cart.save();
 
         req.session.orderPlaced = true;
 

@@ -135,11 +135,11 @@ const verifyPayment = async (req, res) => {
             await order.save();
             console.log("Order saved successfully");
 
-            // for (const item of order.products) {
-            //     await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
-            // }
+            for (const item of order.products) {
+                await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
+            }
 
-            // await Cart.findOneAndUpdate({ userId }, { products: [] });
+            await Cart.findOneAndUpdate({ userId }, { products: [] });
 
             req.session.orderPlaced = true;
 
