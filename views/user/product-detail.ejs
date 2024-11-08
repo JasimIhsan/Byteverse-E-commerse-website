@@ -56,22 +56,22 @@
                                 <div class="d-flex align-items-center">
                                     <!-- Original Price (Strikethrough) -->
                                     <span class="mtext-106 cl2" style="text-decoration: line-through; color: grey;">
-                                        $<%= product.price.toFixed(2) %>
+                                        ₹<%= product.price.toFixed(2) %>
                                     </span>
                     
                                     <!-- Price with Offer -->
                                     <span class="mtext-106 cl2 ml-2" style="color: #5c59e8;">
-                                        $<%= (product.price - product.bestOffer.discountAmount).toFixed(2) %>
+                                        ₹<%= (product.price - product.bestOffer.discountAmount).toFixed(2) %>
                                     </span>
                     
                                 </div>
                                 <!-- Savings -->
                                 <span class="stext-102 cl2 " style="color: green; font-size: 0.9rem;">
-                                    (You save $<%= product.bestOffer.discountAmount.toFixed(2) %>)
+                                    (You save ₹<%= product.bestOffer.discountAmount.toFixed(2) %>)
                                 </span>
                             <% } else { %>
                                 <!-- Display only the price if no offer is available -->
-                                <span class="mtext-106 cl2">$<%= product.price.toFixed(2) %></span>
+                                <span class="mtext-106 cl2">₹<%= product.price.toFixed(2) %></span>
                             <% } %>
                     
                             <p class="stext-102 cl3 p-t-23">
@@ -275,7 +275,7 @@
                                 <div class="unique-product-info">
                                     <h3 class="unique-product-title"><%= product.name %></h3>
                                     <div class="unique-product-price-rating">
-                                        <p class="unique-product-price">$<%= product.price.toFixed(2) %></p>
+                                        <p class="unique-product-price">₹<%= product.price.toFixed(2) %></p>
                                         <div class="unique-product-rating">
                                             <span class="unique-rating-star">★</span>
                                             <span class="unique-rating-star">★</span>

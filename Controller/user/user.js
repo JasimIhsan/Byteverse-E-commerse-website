@@ -79,8 +79,9 @@ function findBestOffer(product, offers) {
     return bestOffer;
 }
 
-//=================================================== routes =====================================================//
+// =================================================== routes ===================================================== //
 
+// controller for getting home page ( landing page also) - get method
 const getHome = async (req, res) => {
     try {
         const title = "Home page | Byteverse E-commerce";
@@ -128,7 +129,6 @@ const getHome = async (req, res) => {
             });
         }
 
-        // Render the home page for guest users
         res.render("user/home", {
             userLoggedIn,
             products: productsWithBestOffers,
@@ -142,6 +142,7 @@ const getHome = async (req, res) => {
     }
 };
 
+// controller for getting the login page - get method
 const getLogin = async (req, res) => {
     try {
         const error = req.query.error;
@@ -152,6 +153,7 @@ const getLogin = async (req, res) => {
     }
 };
 
+// controller for handling the login form ( checking email and password ) - post method
 const postLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -191,6 +193,7 @@ const postLogin = async (req, res) => {
     }
 };
 
+// controller for getting login page from home page when clicking the login button - post method
 const postHome = async (req, res) => {
     try {
         res.redirect("/login");
@@ -199,15 +202,7 @@ const postHome = async (req, res) => {
     }
 };
 
-const getEnterOTP = async (req, res) => {
-    try {
-        const error = req.query.error;
-        res.render("user/otpVarify", { message: error });
-    } catch (error) {
-        console.error("Error from get otp verify page : \n", error);
-    }
-};
-
+// controller for collecting user credentials of new user , otp generating and sending to mail) - post method
 const postSignup = async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -218,16 +213,20 @@ const postSignup = async (req, res) => {
             return res.redirect("/login?error=User already Exist");
         }
 
-        const otp = generateOTP(); // Generate a new OTP
+        const otp = generateOTP();
         const hashedOTP = await securePassword(otp);
         const createdAt = Date.now();
+
+        console.log("---------------\n");
+        console.log("OTP : ", otp);
+        console.log("\n---------------");
 
         req.session.userTemp = { username, email, password };
         // console.log('req.session.userTemp : ', req.session.userTemp);
 
         await OTP.findOneAndUpdate({ email: email }, { otp: hashedOTP, createdAt: createdAt, verified: false }, { new: true, upsert: true });
 
-        await sendOTPEmail(email, otp); // Send the OTP email
+        await sendOTPEmail(email, otp);
 
         res.redirect("/login/enter-otp");
     } catch (error) {
@@ -235,6 +234,17 @@ const postSignup = async (req, res) => {
     }
 };
 
+// controller for gettting page for entering otp - get method
+const getEnterOTP = async (req, res) => {
+    try {
+        const error = req.query.error;
+        res.render("user/otpVarify", { message: error });
+    } catch (error) {
+        console.error("Error from get otp verify page : \n", error);
+    }
+};
+
+// controller for varifyiing the otp and creating new user by storing username, email and password to database - post method
 const varifyOTP = async (req, res) => {
     try {
         const { username, email, password } = req.session.userTemp;
@@ -298,12 +308,17 @@ const varifyOTP = async (req, res) => {
     }
 };
 
+// controller for resending the otp to the mail - post method
 const resendOTP = async (req, res) => {
     try {
         const { email } = req.session.userTemp;
 
         const otp = generateOTP();
         const hashedOTP = await securePassword(otp);
+
+        console.log("---------------\n");
+        console.log("RESENDED OTP : ", otp);
+        console.log("\n---------------");
 
         const createdAt = Date.now();
 
@@ -317,6 +332,7 @@ const resendOTP = async (req, res) => {
     }
 };
 
+// controller for google sign up / login - post method
 const handleGoogleAuth = async (req, res) => {
     if (req.session.user) {
         return res.redirect("/?error=You are already signed in");
@@ -326,6 +342,7 @@ const handleGoogleAuth = async (req, res) => {
     res.redirect("/");
 };
 
+// controller for getting email entering page for forgot password - get method
 const forgotPasswordEmailEnter = async (req, res) => {
     try {
         const errorMessage = req.query.error;
@@ -336,6 +353,18 @@ const forgotPasswordEmailEnter = async (req, res) => {
     }
 };
 
+// controller for getting otp entering page for forgot password - get method
+const forgotOtp = async (req, res) => {
+    try {
+        const errorMessage = req.query.error;
+        res.render("user/forgot_password/otp", { message: errorMessage });
+    } catch (error) {
+        console.error("Error from forgot OTP password:", error);
+        res.redirect("/login?error=Internal server error");
+    }
+};
+
+// controller for generating the otp and sending it to the mail and redirecting to the otp entering page - post method
 const postForgotPasswordEmailEnter = async (req, res) => {
     try {
         const { email } = req.body;
@@ -364,16 +393,7 @@ const postForgotPasswordEmailEnter = async (req, res) => {
     }
 };
 
-const forgotOtp = async (req, res) => {
-    try {
-        const errorMessage = req.query.error;
-        res.render("user/forgot_password/otp", { message: errorMessage });
-    } catch (error) {
-        console.error("Error from forgot OTP password:", error);
-        res.redirect("/login?error=Internal server error");
-    }
-};
-
+// controller for varifiying otp that sent to the mail and checking the credentials then redirecting to the new password entering page - post method
 const verifyForgotPasswordOTP = async (req, res) => {
     try {
         const { otp1, otp2, otp3, otp4, otp5, otp6 } = req.body;
@@ -404,6 +424,7 @@ const verifyForgotPasswordOTP = async (req, res) => {
     }
 };
 
+// controller for getting new password entering page - get method
 const getNewPassword = async (req, res) => {
     try {
         const errorMessage = req.query.error;
@@ -414,6 +435,7 @@ const getNewPassword = async (req, res) => {
     }
 };
 
+// controller for saving the new password to the database - post method
 const postNewPassword = async (req, res) => {
     try {
         const { password } = req.body;
@@ -425,11 +447,12 @@ const postNewPassword = async (req, res) => {
             return res.status(404).json({ success: false, error: "User not found" });
         }
 
-        // console.log("USER.PASSWORD:", user.password);
+        const isMatched = await bcrypt.compare(password, user.password);
+        if (isMatched) {
+            return res.status(400).json({ success: false, message: "New password should not be the same as the current password" });
+        }
 
         const hashedPassword = await securePassword(password);
-        // console.log("HASHED:", hashedPassword);
-
         user.password = hashedPassword;
         await user.save();
 
@@ -442,64 +465,9 @@ const postNewPassword = async (req, res) => {
     }
 };
 
-//----------------------------- product detail page ------------------------------//
+//----------------------------- Logout account ------------------------------//
 
-const getProductDetail = async (req, res) => {
-    try {
-        const title = "Product detail page | Byteverse E-commerce";
-        const productId = req.params.productId;
-
-        const product = await Products.findOne({ _id: productId }).populate({
-            path: "category",
-            match: { status: "listed" },
-        });
-
-        let errorMessage = null;
-        // Check if the product is found
-        if (!product) {
-            return res.render("user/product-detail", {
-                user: req.session.user ? true : false,
-                product: null,
-                relatedProducts: [],
-                title,
-                errorMessage: "Product not found.",
-            });
-        }
-
-        // Check if the category exists and is listed
-        if (!product.category) {
-            return res.render("user/product-detail", {
-                user: req.session.user ? true : false,
-                product,
-                relatedProducts: [],
-                title,
-                errorMessage: "Product category is not listed.",
-            });
-        }
-
-        // Fetch related products only if category is valid
-        const relatedProducts = await Products.find({
-            category: product.category._id,
-            _id: { $ne: productId },
-            status: "listed",
-        }).limit(4);
-
-        res.render("user/product-detail", {
-            user: req.session.user ? true : false,
-            product,
-            relatedProducts,
-            title,
-            errorMessage,
-        });
-    } catch (error) {
-        console.error("Error from get product detail page : \n", error);
-        res.status(500).render("error", {
-            user: req.session.user ? true : false,
-            errorMessage: "An error occurred while fetching product details.",
-        });
-    }
-};
-
+// controller for handling the logout functionality - post method
 const Logout = async (req, res) => {
     try {
         console.log("logout");
@@ -526,7 +494,6 @@ module.exports = {
     varifyOTP,
     resendOTP,
     handleGoogleAuth,
-    getProductDetail,
     Logout,
     forgotPasswordEmailEnter,
     postForgotPasswordEmailEnter,

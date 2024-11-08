@@ -93,7 +93,11 @@ router.get("/:userId/profile/orders", auth.checkSession, profile.getOrders);
 
 router.post("/profile/orders/cancel-order", auth.checkSession, profile.cancelOrder);
 
+router.post("/profile/orders/return-order", auth.checkSession, profile.returnOrder);
+
 router.get("/profile/orders/orderdetail/:orderId", auth.checkSession, profile.getOrderDetails);
+
+router.get("/profile/orders/orderdetail/:orderId/invoice", auth.checkSession, profile.downloadInvoice);
 
 //---- address -----//
 
@@ -121,7 +125,13 @@ router.post("/wishlist/remove", auth.checkSession, profile.removeFromWishlist);
 
 router.get("/profile/wallet", auth.checkSession, profile.getWallet);
 
+router.post("/profile/wallet/add-money", auth.checkSession, razorpay.walletAddMoney);
+
+router.post("/profile/wallet/add-money/varify", auth.checkSession, razorpay.walletVerifyPayment);
+
 //------------------------------ Checkout -----------------------------------//
+
+// ------------ cart ---------------- //
 
 router.get("/cart", auth.checkSession, checkout.getCart);
 
@@ -131,11 +141,19 @@ router.post("/cart/update", auth.checkSession, checkout.updateCart);
 
 router.post("/cart/:productId/delete-item", auth.checkSession, checkout.delete_item);
 
+// ----------- checkout ----------- //
+
 router.get("/:userId/cart/checkout", auth.checkSession, auth.checkOrderPlaced, checkout.getCheckout);
 
 router.post("/apply-coupon", auth.checkSession, auth.checkOrderPlaced, checkout.applyCoupon);
 
+router.post("/remove-coupon", auth.checkSession, auth.checkOrderPlaced, checkout.removeCoupon);
+
 router.post("/cart/checkout/cod", auth.checkSession, auth.checkOrderPlaced, checkout.creatingOrder);
+
+router.post("/cart/checkout/wallet", auth.checkSession, auth.checkOrderPlaced, checkout.creatingOrder);
+
+// ------------ get order placed --------- //
 
 router.get("/cart/checkout/order-placed/:orderId", auth.checkSession, checkout.getPlaceOrder);
 
@@ -144,5 +162,9 @@ router.get("/cart/checkout/order-placed/:orderId", auth.checkSession, checkout.g
 router.post("/cart/checkout/upi", auth.checkSession, razorpay.createOrder);
 
 router.post("/cart/checkout/upi/verify-payment", auth.checkSession, razorpay.verifyPayment);
+
+router.post("/cart/checkout/upi/order-failure", auth.checkSession, razorpay.paymentFailure);
+
+router.post("/cart/checkout/upi/retry-payment/:orderId", auth.checkSession, razorpay.retryPayment);
 
 module.exports = router;

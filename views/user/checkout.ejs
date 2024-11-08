@@ -32,12 +32,30 @@
                 color: #5c59e8;
                 border-color: #5c59e8;
                 border-width: 1px;
+                transition: background-color 0.3s ease, color 0.3s ease;
+
                 /* margin-bottom: -5px; */
             }
             .coupon-button :hover {
                 background-color: #5c59e8;
                 color: #ffffff;
                 border-color: #5c59e8;
+            }
+            #remove-coupon-btn {
+                display: none;
+                padding: 5px 78px;
+                margin-top: 10px;
+                background-color: rgb(255, 152, 152);
+                color: rgb(149, 0, 0);
+                border-width: 1px;
+                border-color: rgb(149, 0, 0);
+                cursor: pointer;
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+
+            #remove-coupon-btn:hover {
+                background-color: rgb(197, 3, 3); /* Darker red background on hover */
+                color: white; /* White text color on hover */
             }
         </style>
     </head>
@@ -224,12 +242,12 @@
                                                     <% orderDetails.forEach(function(item) { %>
                                                     <tr>
                                                         <td><a href="#"><%= item.productName %></a></td>
-                                                        <td>$<%= item.productTotal.toFixed(2) %></td>
+                                                        <td>₹<%= item.productTotal.toFixed(2) %></td>
                                                     </tr>
                                                     <% }); %>
                                                     <tr>
                                                         <td>Delivery Charge:</td>
-                                                        <td><%= cartTotal < 1500 ? "$" + deliveryCharge.toFixed(2) : "Free Delivery" %></td>
+                                                        <td><%= cartTotal < 1500 ? "₹" + deliveryCharge.toFixed(2) : "Free Delivery" %></td>
                                                     </tr>
                                                     <tr id="coupon-code-row" style="display: none">
                                                         <td style="width: 175px">Coupon (<span id="coupon-code"></span>):</td>
@@ -238,8 +256,8 @@
                                                     <tr class="summary-total">
                                                         <td style="font-weight: bold">Total:</td>
                                                         <td>
-                                                            <span id="original-price" style="text-decoration: line-through; display: none; color: gray">$<%= cartTotal.toFixed(2) %></span>
-                                                            <span id="total-amount" style="font-weight: bold">$<%= cartTotal.toFixed(2) %></span>
+                                                            <span id="original-price" style="text-decoration: line-through; display: none; color: gray">₹<%= cartTotal.toFixed(2) %></span>
+                                                            <span id="total-amount" style="font-weight: bold">₹<%= cartTotal.toFixed(2) %></span>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -266,18 +284,20 @@
                                                     <label for="payment-cash-on-delivery">
                                                         <span class="payment-label">Cash on Delivery</span>
                                                     </label>
+                                                    <br />
+                                                    <span id="cod-message" style="color: gray; font-size: 1.3rem; margin-left: 1.6rem; display: none"> (Unavailable for orders above ₹1000) </span>
                                                 </div>
                                             </div>
 
                                             <h3 class="summary-title">Redeem Coupon</h3>
                                             <div class="cart-discount" style="margin: 20px 0px">
                                                 <form id="couponForm">
-                                                    <div class="">
+                                                    <div>
                                                         <!-- Input for coupon code -->
                                                         <input type="text" class="form-control" name="couponCode" id="couponCode" placeholder="Enter your coupon code" />
-
                                                         <div class="coupon-button">
-                                                            <button id="apply-coupon-btn">Apply Coupon</button>
+                                                            <button id="apply-coupon-btn" type="button" onclick="applyCoupon()">Apply Coupon</button>
+                                                            <button id="remove-coupon-btn" type="button" onclick="removeCoupon()">Remove Coupon</button>
                                                         </div>
                                                     </div>
                                                 </form>
@@ -422,6 +442,30 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const codOption = document.getElementById("payment-cash-on-delivery");
+            const codMessage = document.getElementById("cod-message");
+
+            function updatePaymentOptions() {
+                // Parse the total amount as an integer after removing the dollar sign
+                const totalAmount = parseInt(document.getElementById("total-amount").textContent.replace("₹", ""));
+
+                if (totalAmount >= 1000) {
+                    codOption.disabled = true;
+                    codMessage.style.display = "inline"; // Show the message
+                } else {
+                    codOption.disabled = false;
+                    codMessage.style.display = "none"; // Hide the message
+                }
+            }
+
+            // Run once when the page loads
+            updatePaymentOptions();
+
+            // If total amount changes, recheck the payment options
+            document.getElementById("total-amount").addEventListener("change", updatePaymentOptions);
+        });
+
         function populateAddress() {
             const selectedAddress = document.getElementById("savedAddress").selectedOptions[0]; // Get the selected option
             const firstName = selectedAddress.getAttribute("data-firstname");
@@ -479,11 +523,13 @@
                         if (discountAmount != null && newTotal != null) {
                             document.getElementById("coupon-code-row").style.display = "table-row";
                             document.getElementById("coupon-code").innerText = appliedCoupon;
-                            document.getElementById("discount-amount").innerText = `-$${discountAmount.toFixed(2)}`;
+                            document.getElementById("discount-amount").innerText = `-₹${discountAmount.toFixed(2)}`;
 
                             document.getElementById("original-price").style.display = "inline";
-                            document.getElementById("original-price").innerText = `$${originalTotal.toFixed(2)}`;
-                            document.getElementById("total-amount").innerText = `$${newTotal.toFixed(2)}`;
+                            document.getElementById("original-price").innerText = `₹${originalTotal.toFixed(2)}`;
+                            document.getElementById("total-amount").innerText = `₹${newTotal.toFixed(2)}`;
+
+                            document.getElementById("remove-coupon-btn").style.display = "inline-block";
                         } else {
                             console.error("Error: Discount amount or new total is null or undefined.");
                         }
@@ -491,7 +537,7 @@
                         Swal.fire({
                             icon: "success",
                             title: "Coupon Applied",
-                            text: `Discount: $${discountAmount}`,
+                            text: `Discount: ₹${discountAmount}`,
                         });
                     } else {
                         Swal.fire({
@@ -511,13 +557,48 @@
                 });
         });
 
-        document.getElementById("placeOrderBtn").addEventListener("click", async function (event) {
-            event.preventDefault(); // Prevent the form from submitting normally
+        document.getElementById("remove-coupon-btn").addEventListener("click", function () {
+            axios
+                .post("/remove-coupon")
+                .then(function (response) {
+                    if (response.data.success) {
+                        document.getElementById("coupon-code-row").style.display = "none";
+                        document.getElementById("remove-coupon-btn").style.display = "none";
 
-            // Get selected payment method
+                        const originalTotal = response.data.total;
+                        document.getElementById("total-amount").innerText = `₹${originalTotal.toFixed(2)}`;
+                        document.getElementById("original-price").style.display = "none";
+
+                        document.getElementById("couponCode").value = "";
+
+                        Swal.fire({
+                            icon: "info",
+                            title: "Coupon Removed",
+                            text: "The coupon has been removed.",
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: response.data.message,
+                        });
+                    }
+                })
+                .catch(function (error) {
+                    console.error("Error removing coupon:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Server Error",
+                        text: "An error occurred while removing the coupon.",
+                    });
+                });
+        });
+
+        document.getElementById("placeOrderBtn").addEventListener("click", async function (event) {
+            event.preventDefault();
+
             const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
 
-            // Get form data
             const addressId = document.getElementById("savedAddress").value;
             const firstName = document.querySelector('input[name="firstName"]').value;
             const lastName = document.querySelector('input[name="lastName"]').value;
@@ -528,9 +609,9 @@
             const postalCode = document.querySelector('input[name="postalCode"]').value;
             const country = document.querySelector('input[name="country"]').value;
             const additionalInfo = document.querySelector('input[name="additionalInfo"]').value;
-            const couponCode = document.getElementById("couponCode").value; // Assuming couponCode is from a separate input
+            const couponCode = document.getElementById("couponCode").value;
 
-            const totalAmount = parseFloat(document.getElementById("total-amount").textContent.replace("$", ""));
+            const totalAmount = parseFloat(document.getElementById("total-amount").textContent.replace("₹", ""));
 
             const orderData = {
                 addressId,
@@ -547,16 +628,14 @@
                 additionalInfo,
             };
 
-            // Determine the route based on selected payment method
             let paymentUrl;
             switch (selectedPaymentMethod) {
                 case "UPI Payment":
                     paymentUrl = "/cart/checkout/upi";
                     break;
                 case "Wallet Payments":
-                    paymentUrl = "#";
-                    alert("Wallet payment option is currently not implemented.");
-                    return;
+                    paymentUrl = "/cart/checkout/wallet";
+                    break;
                 case "Cash on Delivery":
                     paymentUrl = "/cart/checkout/cod";
                     break;
@@ -565,14 +644,15 @@
                     return;
             }
 
-            // For UPI Payment, initiate Razorpay payment
             if (selectedPaymentMethod === "UPI Payment") {
                 try {
                     const response = await axios.post(paymentUrl, {
                         amount: totalAmount,
                         ...orderData,
                     });
-                    const { orderId, user, key } = response.data;
+                    const { orderId, newOrderId, user, key } = response.data;
+
+                    console.log("response.data : ", response.data);
 
                     const options = {
                         key: key,
@@ -582,6 +662,7 @@
                         description: "Laptop Purchase",
                         order_id: orderId,
                         handler: function (response) {
+                            console.log(response);
                             verifyPayment(response, orderData);
                         },
                         prefill: {
@@ -601,23 +682,103 @@
 
                     const rzp = new Razorpay(options);
                     rzp.open();
+
+                    rzp.on("payment.failed", async function (response) {
+                        const failureData = response.error;
+
+                        rzp.close();
+                        document.querySelector(".razorpay-container")?.remove();
+
+                        console.log("response : ", response);
+
+                        Swal.fire({
+                            title: "Payment Failed",
+                            text: "Unfortunately, the payment failed. Please try again in order history.",
+                            icon: "error",
+                            confirmButtonText: "Okay",
+                        }).then(async (result) => {
+                            if (result.isConfirmed) {
+                                try {
+                                    await axios.post("/cart/checkout/upi/order-failure", {
+                                        order_id: failureData.metadata.order_id,
+                                        payment_id: failureData.metadata.payment_id,
+                                        paymentStatus: "Failed",
+                                        deliveryStatus: "Pending",
+                                        failureDetails: {
+                                            code: failureData.code,
+                                            description: failureData.description,
+                                            source: failureData.source,
+                                            step: failureData.step,
+                                            reason: failureData.reason,
+                                        },
+                                    });
+
+                                    window.location.href = `/cart/checkout/order-placed/${newOrderId}`;
+                                } catch (error) {
+                                    console.error("Error updating order on payment failure:", error);
+                                }
+                            }
+                        });
+                    });
                 } catch (error) {
                     console.error(error);
                     alert("Error creating order. Please try again.");
                 }
+            } else if (selectedPaymentMethod == "Wallet Payments") {
+                console.log("qweqweqw ");
+                try {
+                    const response = await axios.post(paymentUrl, {
+                        ...orderData,
+                    });
+                    const order_Id = response.data.orderDetails.orderId;
+
+                    window.location.href = `/cart/checkout/order-placed/${order_Id}`;
+                } catch (error) {
+                    console.log(error);
+                    Swal.fire({
+                        title: "Payment Failed",
+                        text: error?.response?.data?.message || "Payment failed. Please try again.",
+                        icon: "error",
+                        confirmButtonText: "Okay",
+                    });
+                }
+
+                // console.log("1231");
+
+                // console.log("resopoonse wall : ", response);
+
+                // if (response.status == 200) {
+                //     const order_Id = response.data.orderDetails.orderId;
+
+                //     window.location.href = `/cart/checkout/order-placed/${order_Id}`;
+                // } else {
+                //     Swal.fire({
+                //         title: "Payment Failed",
+                //         text: response.data.message || "Payment failed. Please try again.",
+                //         icon: "error",
+                //         confirmButtonText: "Okay",
+                //     });
+                // }
             } else {
-                // For Cash on Delivery
                 try {
                     const response = await axios.post(paymentUrl, orderData, {
                         headers: {
                             "Content-Type": "application/json",
                         },
                     });
-                    console.log(response);
 
-                    const order_Id = response.data.orderDetails.orderId;
+                    if (response.status == 200) {
+                        const order_Id = response.data.orderDetails.orderId;
 
-                    window.location.href = `/cart/checkout/order-placed/${order_Id}`;
+                        window.location.href = `/cart/checkout/order-placed/${order_Id}`;
+                    } else {
+                        Swal.fire({
+                            title: "Payment Failed",
+                            text: response.data.message || "Payment failed. Please try again.",
+                            icon: "error",
+                            confirmButtonText: "Okay",
+                        });
+                    }
                 } catch (error) {
                     // Handle error response
                     alert("Error placing order. Please try again.");
@@ -634,7 +795,6 @@
                     order_id: paymentResponse.razorpay_order_id,
                     payment_id: paymentResponse.razorpay_payment_id,
                     razorpay_signature: paymentResponse.razorpay_signature,
-                    ...orderData,
                 });
 
                 console.log("verificationResponse : ", verificationResponse);
@@ -644,7 +804,17 @@
                 if (verificationResponse.status === 200) {
                     window.location.href = `/cart/checkout/order-placed/${order_Id}`;
                 } else {
-                    alert("Payment verification failed. Please contact support.");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Payment Verification Failed",
+                        text: "We couldn't verify your payment. Please contact support.",
+                        confirmButtonText: "OK",
+                        footer: "<a href='/contact'>Contact Support</a>",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `/cart/checkout/order-placed/${order_Id}`;
+                        }
+                    });
                 }
             } catch (error) {
                 console.error("Error verifying payment:", error);

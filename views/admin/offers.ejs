@@ -77,7 +77,7 @@
                         <tr>
                             <td><%= index + 1 %></td>
                             <td><%= offer.title %></td>
-                            <td>$<%= offer.discountAmount.toFixed(2) %></td>
+                            <td>₹<%= offer.discountAmount.toFixed(2) %></td>
 
                             <!-- Display applicable categories -->
                             <td><% if (offer.applicableCategories.length > 0) { %> <%= offer.applicableCategories.length %> category <% } else { %> - <% } %></td>
@@ -194,12 +194,11 @@
                         <input type="date" id="endDate" name="endDate" class="form-control" required onchange="validateEndDate()" />
                         <span class="error" id="endDateError" style="color: red; display: none; font-size: 0.8rem; margin-top: 5px"></span>
                     </div>
-                
+
                     <div class="form-group" style="display: flex; justify-content: center">
                         <button style="width: 30%" type="button" id="submitOfferBtn" class="btn btn-primary" onclick="submitOffer()">Add Offer</button>
                     </div>
                 </form>
-                
             </div>
         </div>
 
@@ -228,7 +227,7 @@
                             <option value="product" <%= offers.offerType === 'product' ? 'selected' : '' %>>Product</option>
                         </select>
                     </div>
-                
+
                     <div class="form-group" id="editCategoryInputGroup" style="display: none">
                         <label style="margin-bottom: 20px">Applicable Categories</label>
                         <div>
@@ -621,238 +620,256 @@
         </script>
         <script>
             function validateOfferTitle() {
-        const offerTitle = document.getElementById("offerTitle").value.trim();
-        const errorElement = document.getElementById("offerTitleError");
-        if (offerTitle.length < 3) {
-            errorElement.innerText = "Offer title must be at least 3 characters.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    function validateDiscountAmount() {
-        const discountAmount = document.getElementById("discountAmount").value;
-        const errorElement = document.getElementById("discountAmountError");
-        if (discountAmount <= 0) {
-            errorElement.innerText = "Discount amount must be a positive number.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    function validateOfferType() {
-        const offerType = document.getElementById("offerType").value;
-        const errorElement = document.getElementById("offerTypeError");
-        if (!offerType) {
-            errorElement.innerText = "Please select an offer type.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-            // Show relevant input groups based on selected offer type
-            toggleInputGroups(offerType);
-        }
-    }
-
-    function toggleInputGroups(offerType) {
-        const categoryInputGroup = document.getElementById("categoryInputGroup");
-        const productInputGroup = document.getElementById("productInputGroup");
-        if (offerType === "category") {
-            categoryInputGroup.style.display = "block";
-            productInputGroup.style.display = "none";
-        } else if (offerType === "product") {
-            categoryInputGroup.style.display = "none";
-            productInputGroup.style.display = "block";
-        }
-    }
-
-    function validateApplicableCategories() {
-        const checkboxes = document.querySelectorAll('input[name="editApplicableCategories"]:checked');
-        const errorElement = document.getElementById("editApplicableCategoriesError");
-        if (checkboxes.length === 0) {
-            errorElement.innerText = "Please select at least one category.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    function validateApplicableProducts() {
-        const checkboxes = document.querySelectorAll('input[name="editApplicableProducts"]:checked');
-        const errorElement = document.getElementById("editApplicableProductsError");
-        if (checkboxes.length === 0) {
-            errorElement.innerText = "Please select at least one product.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    function validateMinimumPrice() {
-        const minimumPrice = document.getElementById("minimumPrice").value;
-        const errorElement = document.getElementById("minimumPriceError");
-        if (minimumPrice <= 0) {
-            errorElement.innerText = "Minimum price must be a positive number.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    function validateStartDate() {
-        const startDate = new Date(document.getElementById("startDate").value);
-        const errorElement = document.getElementById("startDateError");
-        if (isNaN(startDate)) {
-            errorElement.innerText = "Please select a valid start date.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    function validateEndDate() {
-        const endDate = new Date(document.getElementById("endDate").value);
-        const startDate = new Date(document.getElementById("startDate").value);
-        const errorElement = document.getElementById("endDateError");
-        if (isNaN(endDate)) {
-            errorElement.innerText = "Please select a valid end date.";
-            errorElement.style.display = "block";
-        } else if (endDate < startDate) {
-            errorElement.innerText = "End date must be after start date.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    function submitOffer() {
-        // Validate all fields before submission
-        validateOfferTitle();
-        validateDiscountAmount();
-        validateOfferType();
-        validateApplicableCategories();
-        validateApplicableProducts();
-        validateMinimumPrice();
-        validateStartDate();
-        validateEndDate();
-
-        // Check if any errors are visible
-        const errorElements = document.querySelectorAll('.error');
-        let hasError = false;
-        errorElements.forEach(error => {
-            if (error.style.display === "block") {
-                hasError = true;
+                const offerTitle = document.getElementById("offerTitle").value.trim();
+                const errorElement = document.getElementById("offerTitleError");
+                if (offerTitle.length < 3) {
+                    errorElement.innerText = "Offer title must be at least 3 characters.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
             }
-        });
 
-        if (!hasError) {
-            // Submit the form if all validations pass
-            document.getElementById("offerForm").submit();
-        }
-    }
-
-      // Validate Offer Title
-      function validateEditOfferTitle() {
-        const titleInput = document.getElementById("editOfferTitle");
-        const errorElement = document.getElementById("editOfferTitleError");
-        if (titleInput.value.trim().length < 3) {
-            errorElement.innerText = "Offer title must be at least 3 characters long.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    // Validate Discount Amount
-    function validateEditDiscountAmount() {
-        const discountInput = document.getElementById("editDiscountAmount");
-        const errorElement = document.getElementById("editDiscountAmountError");
-        if (discountInput.value <= 0) {
-            errorElement.innerText = "Discount must be a positive number.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    // Validate Minimum Price
-    function validateEditMinimumPrice() {
-        const minimumPriceInput = document.getElementById("editminimumPrice");
-        const errorElement = document.getElementById("editminimumPriceError");
-        if (minimumPriceInput.value < 0) {
-            errorElement.innerText = "Minimum price cannot be negative.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    // Validate Start Date
-    function validateEditStartDate() {
-        const startDateInput = document.getElementById("editStartDate");
-        const errorElement = document.getElementById("editStartDateError");
-        if (!startDateInput.value) {
-            errorElement.innerText = "Start date is required.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    // Validate End Date
-    function validateEditEndDate() {
-        const endDateInput = document.getElementById("editEndDate");
-        const startDateInput = document.getElementById("editStartDate");
-        const errorElement = document.getElementById("editEndDateError");
-
-        if (!endDateInput.value) {
-            errorElement.innerText = "End date is required.";
-            errorElement.style.display = "block";
-        } else if (endDateInput.value < startDateInput.value) {
-            errorElement.innerText = "End date must be after start date.";
-            errorElement.style.display = "block";
-        } else {
-            errorElement.style.display = "none";
-        }
-    }
-
-    // Handle Offer Type Change
-    function toggleOfferInputGroups() {
-        const offerType = document.getElementById("editOfferType").value;
-        document.getElementById("editCategoryInputGroup").style.display = offerType === "category" ? "block" : "none";
-        document.getElementById("editProductInputGroup").style.display = offerType === "product" ? "block" : "none";
-    }
-
-    function submitEditOffer() {
-        // Validate all fields before submission
-        validateEditOfferTitle();
-        validateEditDiscountAmount();
-        validateEditMinimumPrice();
-        validateEditStartDate();
-        validateEditEndDate();
-
-        // Check if any errors are visible
-        const errorElements = document.querySelectorAll('.error');
-        let hasError = false;
-        errorElements.forEach(error => {
-            if (error.style.display === "block") {
-                hasError = true;
+            function validateDiscountAmount() {
+                const discountAmount = document.getElementById("discountAmount").value;
+                const errorElement = document.getElementById("discountAmountError");
+                if (discountAmount <= 0) {
+                    errorElement.innerText = "Discount amount must be a positive number.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
             }
-        });
 
-        if (!hasError) {
-            // Submit the form if all validations pass
-            document.getElementById("editOfferForm").submit();
-        }
-    }
+            function validateOfferType() {
+                const offerType = document.getElementById("offerType").value;
+                const errorElement = document.getElementById("offerTypeError");
+                if (!offerType) {
+                    errorElement.innerText = "Please select an offer type.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                    // Show relevant input groups based on selected offer type
+                    toggleInputGroups(offerType);
+                }
+            }
 
-    // Attach onkeyup and onchange events
-    document.getElementById("editOfferTitle").onkeyup = validateEditOfferTitle;
-    document.getElementById("editDiscountAmount").onkeyup = validateEditDiscountAmount;
-    document.getElementById("editminimumPrice").onkeyup = validateEditMinimumPrice;
-    document.getElementById("editStartDate").onchange = validateEditStartDate;
-    document.getElementById("editEndDate").onchange = validateEditEndDate;
+            function toggleInputGroups(offerType) {
+                const categoryInputGroup = document.getElementById("categoryInputGroup");
+                const productInputGroup = document.getElementById("productInputGroup");
+                if (offerType === "category") {
+                    categoryInputGroup.style.display = "block";
+                    productInputGroup.style.display = "none";
+                } else if (offerType === "product") {
+                    categoryInputGroup.style.display = "none";
+                    productInputGroup.style.display = "block";
+                }
+            }
+
+            function validateApplicableCategories() {
+                const checkboxes = document.querySelectorAll('input[name="editApplicableCategories"]:checked');
+                const errorElement = document.getElementById("editApplicableCategoriesError");
+                if (checkboxes.length === 0) {
+                    errorElement.innerText = "Please select at least one category.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            function validateApplicableProducts() {
+                const checkboxes = document.querySelectorAll('input[name="editApplicableProducts"]:checked');
+                const errorElement = document.getElementById("editApplicableProductsError");
+                if (checkboxes.length === 0) {
+                    errorElement.innerText = "Please select at least one product.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            function validateMinimumPrice() {
+                const minimumPrice = document.getElementById("minimumPrice").value;
+                const errorElement = document.getElementById("minimumPriceError");
+                if (minimumPrice <= 0) {
+                    errorElement.innerText = "Minimum price must be a positive number.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+            function validateStartDate() {
+                const startDate = new Date(document.getElementById("startDate").value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Set time to midnight to only compare dates
+                const errorElement = document.getElementById("startDateError");
+
+                if (isNaN(startDate)) {
+                    errorElement.innerText = "Please select a valid start date.";
+                    errorElement.style.display = "block";
+                    return false;
+                } else if (startDate < today) {
+                    errorElement.innerText = "Start date must be today or a future date.";
+                    errorElement.style.display = "block";
+                    return false;
+                } else {
+                    errorElement.style.display = "none";
+                    return true;
+                }
+            }
+
+            function validateEndDate() {
+                const endDate = new Date(document.getElementById("endDate").value);
+                const startDate = new Date(document.getElementById("startDate").value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Set time to midnight to only compare dates
+                const errorElement = document.getElementById("endDateError");
+
+                if (isNaN(endDate)) {
+                    errorElement.innerText = "Please select a valid end date.";
+                    errorElement.style.display = "block";
+                    return false;
+                } else if (endDate < today) {
+                    errorElement.innerText = "End date must be today or a future date.";
+                    errorElement.style.display = "block";
+                    return false;
+                } else if (endDate < startDate) {
+                    errorElement.innerText = "End date must be after the start date.";
+                    errorElement.style.display = "block";
+                    return false;
+                } else {
+                    errorElement.style.display = "none";
+                    return true;
+                }
+            }
+
+            function submitOffer() {
+                // Validate all fields before submission
+                validateOfferTitle();
+                validateDiscountAmount();
+                validateOfferType();
+                validateApplicableCategories();
+                validateApplicableProducts();
+                validateMinimumPrice();
+                validateStartDate();
+                validateEndDate();
+
+                // Check if any errors are visible
+                const errorElements = document.querySelectorAll(".error");
+                let hasError = false;
+                errorElements.forEach((error) => {
+                    if (error.style.display === "block") {
+                        hasError = true;
+                    }
+                });
+
+                if (!hasError) {
+                    // Submit the form if all validations pass
+                    document.getElementById("offerForm").submit();
+                }
+            }
+
+            // Validate Offer Title
+            function validateEditOfferTitle() {
+                const titleInput = document.getElementById("editOfferTitle");
+                const errorElement = document.getElementById("editOfferTitleError");
+                if (titleInput.value.trim().length < 3) {
+                    errorElement.innerText = "Offer title must be at least 3 characters long.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Discount Amount
+            function validateEditDiscountAmount() {
+                const discountInput = document.getElementById("editDiscountAmount");
+                const errorElement = document.getElementById("editDiscountAmountError");
+                if (discountInput.value <= 0) {
+                    errorElement.innerText = "Discount must be a positive number.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Minimum Price
+            function validateEditMinimumPrice() {
+                const minimumPriceInput = document.getElementById("editminimumPrice");
+                const errorElement = document.getElementById("editminimumPriceError");
+                if (minimumPriceInput.value < 0) {
+                    errorElement.innerText = "Minimum price cannot be negative.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate Start Date
+            function validateEditStartDate() {
+                const startDateInput = document.getElementById("editStartDate");
+                const errorElement = document.getElementById("editStartDateError");
+                if (!startDateInput.value) {
+                    errorElement.innerText = "Start date is required.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Validate End Date
+            function validateEditEndDate() {
+                const endDateInput = document.getElementById("editEndDate");
+                const startDateInput = document.getElementById("editStartDate");
+                const errorElement = document.getElementById("editEndDateError");
+
+                if (!endDateInput.value) {
+                    errorElement.innerText = "End date is required.";
+                    errorElement.style.display = "block";
+                } else if (endDateInput.value < startDateInput.value) {
+                    errorElement.innerText = "End date must be after start date.";
+                    errorElement.style.display = "block";
+                } else {
+                    errorElement.style.display = "none";
+                }
+            }
+
+            // Handle Offer Type Change
+            function toggleOfferInputGroups() {
+                const offerType = document.getElementById("editOfferType").value;
+                document.getElementById("editCategoryInputGroup").style.display = offerType === "category" ? "block" : "none";
+                document.getElementById("editProductInputGroup").style.display = offerType === "product" ? "block" : "none";
+            }
+
+            function submitEditOffer() {
+                // Validate all fields before submission
+                validateEditOfferTitle();
+                validateEditDiscountAmount();
+                validateEditMinimumPrice();
+                validateEditStartDate();
+                validateEditEndDate();
+
+                // Check if any errors are visible
+                const errorElements = document.querySelectorAll(".error");
+                let hasError = false;
+                errorElements.forEach((error) => {
+                    if (error.style.display === "block") {
+                        hasError = true;
+                    }
+                });
+
+                if (!hasError) {
+                    // Submit the form if all validations pass
+                    document.getElementById("editOfferForm").submit();
+                }
+            }
+
+            // Attach onkeyup and onchange events
+            document.getElementById("editOfferTitle").onkeyup = validateEditOfferTitle;
+            document.getElementById("editDiscountAmount").onkeyup = validateEditDiscountAmount;
+            document.getElementById("editminimumPrice").onkeyup = validateEditMinimumPrice;
+            document.getElementById("editStartDate").onchange = validateEditStartDate;
+            document.getElementById("editEndDate").onchange = validateEditEndDate;
         </script>
     </body>
 </html>

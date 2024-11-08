@@ -402,6 +402,22 @@ function validateWarranty() {
     }
 }
 
+function validateDescripion() {
+    const description = document.getElementById("description").value;
+    const descriptionError = document.getElementById("description-error");
+
+    if (description.trim().length === 0) {
+        descriptionError.textContent = "Description cannot be empty";
+        return false;
+    } else if (description.trim().split(/\s+/).length <= 5) {
+        descriptionError.textContent = "Description should be more than 10 words";
+        return false;
+    } else {
+        descriptionError.textContent = "";
+        return true;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector("form");
 
@@ -436,6 +452,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const isHeightValid = validateHeight();
         const isDepthValid = validateDepth();
         const isWarrantyValid = validateWarranty();
+        const isDescriptionValid = validateDescripion();
         // const areImagesValid = validateImages();
 
         // Check if all validations pass
@@ -465,11 +482,11 @@ document.addEventListener("DOMContentLoaded", function () {
             isWidthValid &&
             isHeightValid &&
             isDepthValid &&
-            isWarrantyValid;
+            isWarrantyValid &&
+            isDescriptionValid;
         // areImagesValid;
 
         if (isFormValid) {
-           
             form.submit();
         } else {
             // If form is invalid, show error messages

@@ -1,6 +1,7 @@
 const Products = require("../../model/product");
 const Category = require("../../model/catogory");
 
+// controller for getting product management page - get method
 const getProduts = async (req, res) => {
     try {
         const { search = "", page = 1 } = req.query;
@@ -26,6 +27,7 @@ const getProduts = async (req, res) => {
     }
 };
 
+// controller for updating product status (listed or unlisted) - patch method 
 const updateProductStatus = async (req, res) => {
     try {
         const productId = req.params.id;
@@ -40,6 +42,7 @@ const updateProductStatus = async (req, res) => {
     }
 };
 
+// controller for getting the product adding page - get method
 const getAddProduct = async (req, res) => {
     try {
         const categories = await Category.find();
@@ -52,6 +55,7 @@ const getAddProduct = async (req, res) => {
     }
 };
 
+// controller for adding new product to the datatbase - post method
 const postAddProduct = async (req, res) => {
     try {
         // const isExist = await Products.findOne({ name: req.body.name });
@@ -115,6 +119,7 @@ const postAddProduct = async (req, res) => {
             },
             warranty: req.body.warranty,
             images: imageName,
+            description: req.body.description,
             status: req.body.status || "listed",
         });
 
@@ -131,6 +136,7 @@ const postAddProduct = async (req, res) => {
     }
 };
 
+// controller for getting page for editing the existing product - get method
 const getEditProduct = async (req, res) => {
     try {
         const productId = req.params.id;
@@ -151,6 +157,7 @@ const getEditProduct = async (req, res) => {
     }
 };
 
+// controller for updating the details of the existing product - post method
 const postEditProduct = async (req, res) => {
     try {
         const productId = req.params.id;
@@ -217,6 +224,7 @@ const postEditProduct = async (req, res) => {
             },
             warranty: req.body.warranty || "",
             images: updatedImages,
+            description: req.body.description,
             status: req.body.status || "listed",
         };
 
@@ -233,6 +241,7 @@ const postEditProduct = async (req, res) => {
     }
 };
 
+// controller for getting the product detail page - get method
 const getProductDetail = async (req, res) => {
     try {
         const productId = req.params.productId;

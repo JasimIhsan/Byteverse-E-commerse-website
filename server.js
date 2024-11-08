@@ -6,6 +6,7 @@ const userRoutes = require("./routes/User/login");
 const adminRoutes = require("./routes/Admin/admin");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
+const MongoStore = require("connect-mongo");
 
 const passport = require("passport");
 const methodOverride = require("method-override");
@@ -35,6 +36,13 @@ app.use(
         secret: "secretKey",
         resave: false,
         saveUninitialized: true,
+        store: MongoStore.create({
+            mongoUrl: "mongodb://localhost:27017/Byteverse_E-commerse",
+            collectionName: "sessions",
+        }),
+        cookie: {
+            maxAge: 1000 * 60 * 60,
+        },
     })
 );
 

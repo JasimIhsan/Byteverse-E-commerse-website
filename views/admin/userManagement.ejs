@@ -59,7 +59,6 @@
                             <th>Customer Name</th>
                             <th>Email</th>
                             <th>Orders</th>
-                            <th>Wallet Balance</th>
                             <th>Status</th>
                             <th>Created</th>
                             <th>Action</th>
@@ -72,7 +71,6 @@
                             <td><%= users.username %></td>
                             <td><%= users.email %></td>
                             <td><%= users.orders %></td>
-                            <td>$<%= users.walletBalance.toFixed(2) %></td>
                             <td>
                                 <form id="status-form-<%= users._id %>">
                                     <button type="button" class="status-btn <%= users.status == 'Blocked' ? 'unblock-btn' : 'block-btn' %>" onclick="toggleUserStatus('<%= users._id %>', '<%= users.status %>')"><%= users.status==='Blocked' ? 'Unblock' : 'Block' %></button>

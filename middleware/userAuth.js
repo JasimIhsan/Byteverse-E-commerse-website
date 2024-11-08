@@ -3,6 +3,7 @@ const checkSession = (req, res, next) => {
         next();
     } else {
         return res.redirect("/login");
+        // next();
     }
 };
 
@@ -16,7 +17,7 @@ const isLogged = (req, res, next) => {
 
 function checkOrderPlaced(req, res, next) {
     if (req.session.orderPlaced) {
-        return res.redirect(`/cart`);
+        return res.redirect(`/`);
     } else {
         next();
     }

@@ -136,25 +136,37 @@
             }
 
             .status-delivered {
-                background-color: #d1fae5;
-                color: #065f46;
+                background-color: #d1fae5; /* Light Green */
+                color: #065f46; /* Dark Green */
             }
+
             .status-processing {
-                background-color: #dbeafe;
-                color: #1e40af;
+                background-color: #dbeafe; /* Light Blue */
+                color: #1e40af; /* Dark Blue */
             }
+
             .status-shipped {
-                background-color: #fef3c7;
-                color: #92400e;
+                background-color: #fef3c7; /* Light Yellow */
+                color: #92400e; /* Dark Orange */
             }
+
             .status-pending {
-                background-color: rgb(191, 220, 255);
-                color: blue;
+                background-color: #e0f2fe; /* Light Sky Blue */
+                color: #0369a1; /* Dark Sky Blue */
             }
+
             .status-cancelled {
-                background-color: rgb(255, 149, 149);
-                color: rgb(98, 0, 0);
+                background-color: #fee2e2; /* Light Red */
+                color: #991b1b; /* Dark Red */
             }
+
+            .status-returned {
+                background-color: #f3e8ff; /* Light Purple */
+                color: #6b21a8; /* Dark Purple */
+            }
+
+
+
             .item-list {
                 list-style-type: none;
                 padding: 0;
@@ -224,6 +236,68 @@
                 color: #6b7280;
                 border-bottom: 1px solid #e5e7eb;
             }
+            .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .pagination button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
+            font-size: 1.5rem;
+            font-weight: 500;
+            height: 3.25rem;
+            width: 3.25rem;
+            border: 1px solid #d1d5db;
+            background-color: #ffffff;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover {
+            background-color: #f3f4f6;
+        }
+
+        .pagination button:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination button.active {
+            background-color: #3b82f6;
+            color: #ffffff;
+            border-color: #3b82f6;
+        }
+
+        .pagination .ellipsis {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
         </style>
     </head>
 
@@ -334,7 +408,7 @@
                                             <a class="nav-link active" href="/<%= user._id %>/profile/orders">Orders</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/<%= user._id %>/profile/wallet">Wallet</a>
+                                            <a class="nav-link" href="/profile/wallet">Wallet</a>
                                         </li>
 
                                         <li class="nav-item">
@@ -378,14 +452,14 @@
                                                 <div class="card">
                                                     <div class="card-header">
                                                         <div class="card-title">
-                                                            <span>Order ORD-<%= order._id %></span>
+                                                            <span>Order <%= order.orderId %></span>
                                                             <span class="card-date"><%= order.orderDate.toDateString() %></span>
                                                         </div>
                                                     </div>
                                                     <div class="card-content">
                                                         <div class="order-summary">
                                                             <div>
-                                                                <p class="order-total">Total: $<%= order.total.toFixed(2) %></p>
+                                                                <p class="order-total">Total: ₹<%= order.total.toFixed(2) %></p>
                                                                 <p class="order-items"><%= order.products.length %> item(s)</p>
                                                             </div>
                                                             <div>
@@ -397,20 +471,21 @@
                                                             <li class="item d-flex align-items-center">
                                                                 <img src="/<%= product.productId.images[0] %>" alt="<%= product.productId.name %>" style="width: 75px; height: 75px" />
                                                                 <span><%= product.productId.name %> (x<%= product.quantity %>)</span>
-                                                                <span>$<%= product.price.toFixed(2) %></span>
+                                                                <span>₹<%= product.price.toFixed(2) %></span>
                                                             </li>
                                                             <% }); %>
                                                         </ul>
                                                     </div>
                                                     <div class="card-footer">
-                                                        <% if (order.deliveryStatus === 'Pending' || order.deliveryStatus === 'Processing' ) { %>
-                                                        <button class="btn btn-outline" style="font-size: 12px" onclick="cancelOrder('<%= order._id %>', '<%= order.deliveryStatus %>')">Cancel Order</button>
+                                                        <% if (order.deliveryStatus === 'Pending' || order.deliveryStatus === 'Processing') { %>
+                                                            <button class="btn btn-outline" style="font-size: 12px" onclick="cancelOrder('<%= order._id %>', '<%= order.deliveryStatus %>')">Cancel Order</button>
                                                         <% } else if (order.deliveryStatus === 'Cancelled') { %>
-                                                        <!-- Do nothing or show a message if needed -->
-                                                        <p>Order cancelled successfully</p>
-                                                        <% } else { %>
-                                                        <button class="btn btn-outline" style="font-size: 12px" ">Return</button>
-                                                        <% } %>
+                                                            <p>Order cancelled successfully</p>
+                                                        <% } else if (order.deliveryStatus === 'Delivered' ) { %>
+                                                            <button class="btn btn-outline" style="font-size: 12px" onclick="returnOrder('<%= order._id %>', '<%= order.deliveryStatus %>')">Return</button>
+                                                        <% } else if (order.deliveryStatus === 'Returned' && order.paymentStatus === 'Refunded') { %>
+                                                            <p>Order returned successfully</p>
+                                                        <% } %>                                                        
                                                         <form action="/profile/orders/orderdetail/<%= order._id %>" method="get">
                                                             <button type="submit" class="btn btn-outline" style="font-size: 12px" >Order Details</button>
                                                         </form>
@@ -422,6 +497,43 @@
                                                 <% } %>
                                             </div>
                                         </div>
+                                        <nav class="pagination" aria-label="Pagination">
+                                            <!-- Previous Button -->
+                                            <button aria-label="Go to previous page" <%= currentPage === 1 ? 'disabled' : '' %> onclick="window.location.href='?page=<%= currentPage - 1 %>'">
+                                                <span class="sr-only">Previous</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="m15 18-6-6 6-6"/>
+                                                </svg>
+                                            </button>
+                                        
+                                            <!-- Page Numbers -->
+                                            <% 
+                                                const startPage = Math.max(1, currentPage - 2);
+                                                const endPage = Math.min(totalPages, currentPage + 2);
+                                            %>
+                                        
+                                            <% for (let i = startPage; i <= endPage; i++) { %>
+                                                <button class="<%= i === currentPage ? 'active' : '' %>" aria-current="<%= i === currentPage ? 'page' : '' %>"
+                                                        onclick="window.location.href='?page=<%= i %>'">
+                                                    <%= i %>
+                                                </button>
+                                            <% } %>
+                                        
+                                            <!-- Ellipsis if more pages exist -->
+                                            <% if (endPage < totalPages) { %>
+                                                <span class="ellipsis" aria-hidden="true">…</span>
+                                                <button onclick="window.location.href='?page=<%= totalPages %>'"><%= totalPages %></button>
+                                            <% } %>
+                                        
+                                            <!-- Next Button -->
+                                            <button aria-label="Go to next page" <%= currentPage === totalPages ? 'disabled' : '' %> onclick="window.location.href='?page=<%= currentPage + 1 %>'">
+                                                <span class="sr-only">Next</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="m9 18 6-6-6-6"/>
+                                                </svg>
+                                            </button>
+                                        </nav>
+                                        
                                     </div>
                                 </div>
 
@@ -609,6 +721,60 @@
                         Swal.fire("Error!", "Something went wrong.", "error");
                     });
             }
+
+            function returnOrder(orderId, deliveryStatus) {
+                if (deliveryStatus !== "Delivered") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Not Eligible',
+                        text: 'Order is not eligible for return.',
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Return Reason',
+                    input: 'textarea',
+                    inputLabel: 'Please provide a reason for the return:',
+                    inputPlaceholder: 'Enter reason here',
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    cancelButtonText: 'Cancel',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return 'You need to provide a reason!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        axios.post('/profile/orders/return-order', { orderId, reason: result.value })
+                            .then(response => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Return Successful',
+                                    text: response.data.message,
+                                }).then((result) => {
+                                    location.reload()
+                                });
+                                console.log("Refund processed:", response.data);
+                            })
+                            .catch(error => {
+                                let errorMessage = "An error occurred while processing the return.";
+                                if (error.response && error.response.data && error.response.data.message) {
+                                    errorMessage = error.response.data.message;
+                                }
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: errorMessage,
+                                });
+                                console.error("Error processing return:", error);
+                            });
+                    }
+                });
+            }
+
+
         </script>
         
     </body>

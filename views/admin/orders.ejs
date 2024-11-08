@@ -47,8 +47,8 @@
                 <thead>
                     <tr>
                         <th>SI No</th>
+                        <th>Order ID</th>
                         <th>Customer Name</th>
-                        <th>Orders</th>
                         <th>Total</th>
                         <th>Payment Method</th>
                         <th>Delivery Status</th>
@@ -61,9 +61,9 @@
                         <% orders.forEach(function(order, index) { %>
                         <tr>
                             <td><%= index + 1 %></td>
+                            <td><%= order.orderId %></td>
                             <td><%= order.userId ? order.userId.username : 'User Not Found' %></td>
-                            <td><%= order._id %></td>
-                            <td>$<%= order.total.toFixed(2) %></td>
+                            <td>₹<%= order.total.toFixed(2) %></td>
                             <td><%= order.paymentMethod %></td>
                             <td>
                                 <select style="height: 30px; border-radius: 4px;" name="deliveryStatus" onchange="updateDeliveryStatus('<%= order._id %>', this.value)">
@@ -72,6 +72,7 @@
                                     <option value="Shipped" <%= order.deliveryStatus === "Shipped" ? "selected" : "" %>>Shipped</option>
                                     <option value="Delivered" <%= order.deliveryStatus === "Delivered" ? "selected" : "" %>>Delivered</option>
                                     <option value="Cancelled" <%= order.deliveryStatus === "Cancelled" ? "selected" : "" %>>Cancelled</option>
+                                    <option value="Returned" <%= order.deliveryStatus === "Returned" ? "selected" : "" %>>Returned</option>
                                 </select>
                             </td>
                             <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
@@ -110,7 +111,8 @@
     <script>
         function updateDeliveryStatus(orderId, status) {
             axios.post(`/admin/order-management/update-status/${orderId}`, {
-                deliveryStatus: status
+                deliveryStatus: status,
+
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -139,44 +141,45 @@
         }
 
         document.querySelectorAll("select[name='deliveryStatus']").forEach(selectElement => {
-    // Initial background color based on the current value
-    updateBackgroundColor(selectElement);
+            updateBackgroundColor(selectElement);
 
-    // Add event listener for change event to update background color dynamically
-    selectElement.addEventListener('change', function() {
-        updateBackgroundColor(selectElement);
-    });
-});
+            selectElement.addEventListener('change', function() {
+                updateBackgroundColor(selectElement);
+            });
+        });
 
-// Function to update the background color based on the status
-function updateBackgroundColor(selectElement) {
-    const status = selectElement.value;
-    switch (status) {
-        case "Pending":
-        selectElement.style.backgroundColor = "#FFF9C4"; // Light yellow background
-            selectElement.style.color = "#000"; // Orange text
-            break;
-        case "Processing":
-            selectElement.style.backgroundColor = "#D7CCC8";
-            selectElement.style.color = "#3E2723"
-            break;
-        case "Shipped":
-            selectElement.style.backgroundColor = "#B2EBF2"; // blue for Shipped
-            selectElement.style.color = "#006064"
-            break;
-        case "Delivered":
-            selectElement.style.backgroundColor = "#81C784"; // green for Delivered
-            selectElement.style.color = "#1B5E20"
-            break;
-        case "Cancelled":
-            selectElement.style.backgroundColor = "#FFCCBC"; // red for Cancelled
-            selectElement.style.color = "#900404"
-            break;
-        default:
-            selectElement.style.backgroundColor = ""; // default color
-            break;
-    }
-}
+        function updateBackgroundColor(selectElement) {
+            const status = selectElement.value;
+            switch (status) {
+                case "Pending":
+                selectElement.style.backgroundColor = "#FFF9C4"; // Light yellow background
+                    selectElement.style.color = "#000"; // Orange text
+                    break;
+                case "Processing":
+                    selectElement.style.backgroundColor = "#D7CCC8";
+                    selectElement.style.color = "#3E2723"
+                    break;
+                case "Shipped":
+                    selectElement.style.backgroundColor = "#B2EBF2"; // blue for Shipped
+                    selectElement.style.color = "#006064"
+                    break;
+                case "Delivered":
+                    selectElement.style.backgroundColor = "#81C784"; // green for Delivered
+                    selectElement.style.color = "#1B5E20"
+                    break;
+                case "Cancelled":
+                    selectElement.style.backgroundColor = "#FFCCBC"; // red for Cancelled
+                    selectElement.style.color = "#900404"
+                    break;
+                case 'Returned':
+                    selectElement.style.backgroundColor = "red"; // red for Cancelled
+                    selectElement.style.color = "white"
+                    break;
+                default:
+                    selectElement.style.backgroundColor = ""; // default color
+                    break;
+            }
+        }
 
     </script>
 </body>

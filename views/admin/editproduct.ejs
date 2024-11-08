@@ -258,8 +258,14 @@
                     <label for="warranty">Warranty:</label>
                     <input type="text" id="warranty" name="warranty" value="<%= product.warranty || '' %>" >
                     <span class="error" id="warranty-error"></span>
-
                 </div>
+
+                <div class="form-group" style="width: 100%">
+                    <label for="warranty">Description:</label>
+                    <textarea style="width: 97.3%; height: 100px;padding: 10px;" name="description" id="description" oninput="validateDescripion()" ><%= product.description || '' %></textarea>
+                    <span class="error" id="description-error"></span>
+                </div>
+
                 <div class="form-group">
                     <label for="images">Upload Product Images (Minimum 3):</label>
                     <div id="image-upload-container">

@@ -5,105 +5,156 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Byteverse | User-management</title>
         <link rel="stylesheet" href="/css/admin/dashboard.css" />
-        <style></style>
+        <style>
+  
+        </style>
     </head>
 
     <body>
         <div class="dashboard-container">
             <!-- Sidebar -->
             <aside class="unique-sidebar">
-                <div class="unique-sidebar-header">
-                    <h2>Byteverse</h2>
+                <div>
+                    <div class="unique-sidebar-header">
+                        <h2>Byteverse</h2>
+                    </div>
+                    <ul class="unique-sidebar-menu">
+                        <li class="active"><a href="#">Dashboard</a></li>
+                        <li><a href="/admin/user-management">Users</a></li>
+                        <li><a href="/admin/product-management">Products</a></li>
+                        <li><a href="/admin/order-management">Orders</a></li>
+                        <li><a href="/admin/category-management">Categories</a></li>
+                        <li><a href="/admin/coupon-management">Coupon</a></li>
+                        <li><a href="/admin/offer-management">Offers</a></li>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">Settings</a></li>
+                        
+                    </ul>
                 </div>
-                <ul class="unique-sidebar-menu">
-                    <li class="active"><a href="#">Dashboard</a></li>
-                    <li><a href="/admin/user-management">Users</a></li>
-                    <li><a href="/admin/product-management">Products</a></li>
-                    <li><a href="/admin/order-management">Orders</a></li>
-                    <li><a href="/admin/category-management">Categories</a></li>
-                    <li><a href="/admin/coupon-management">Coupon</a></li>
-                    <li><a href="/admin/offer-management">Offers</a></li>
-                    <li><a href="#">Support</a></li>
-                    <li><a href="#">Settings</a></li>
-                </ul>
+                <form action="/admin/dashboard/logout" method="post" style="margin-top: 50px;">
+                    <button style="padding: 9px 79px; background-color: red ;color: white;" type="submit">Logout</button>
+                </form>
             </aside>
+            
             <!-- Main Content -->
             <div class="product-list-container">
                 <h1>Dashboard</h1>
-
+        
                 <!-- Breadcrumbs -->
                 <nav class="breadcrumbs">
                     <a href="/admin/dashboard">Dashboard</a>
                     <span>&gt;</span>
                 </nav>
 
-                <!-- <div class="product-search-filter">
-                    <div style="display: flex">
-                        <form action="/admin/dashboard" method="get">
-                            <input type="text" name="search" placeholder="Search products..." class="search-input" value="<%= search %>" />
-                            <button class="add-product-btn" type="submit">Search</button>
-                        </form>
-                        <% if (search) { %>
-                        <form action="/admin/dashboard" method="GET" style="margin-left: 10px">
-                            <input type="hidden" name="search" value="" />
-                            <button type="submit" class="add-product-btn">Show All</button>
-                        </form>
-                        <% } %>
-                    </div>
-                    <form action="/admin/dashboard/logout" method="post">
-                        <button class="logout-btn">Logout</button>
-                    </form>
-                </div> -->
-
-                <div class="card mb-4">
-                    <h2 class="card-title">Sales Report</h2>
-                    <div style="display: flex; justify-content: space-between;">
-                        <div class="flex flex-wrap gap-4 mb-4">
-                            <!-- Time Filter Options -->
-                            <select id="time-filter" onchange="handleFilterChange()">
-                                <option value="all" <%= timeFilter === 'all' ? 'selected' : '' %>>All</option>
-                                <option value="today" <%= timeFilter === 'today' ? 'selected' : '' %>>Today</option>
-                                <option value="week" <%= timeFilter === 'week' ? 'selected' : '' %>>Weekly</option>
-                                <option value="month" <%= timeFilter === 'month' ? 'selected' : '' %>>Monthly</option>
-                                <option value="custom" <%= timeFilter === 'custom' ? 'selected' : '' %>>Custom Date</option>
-                            </select>
-                            
-                            <!-- Custom Date Range Picker -->
-                            <div id="custom-date-range" style='display: none;' %>'>
-                                <input type="date" id="start-date" value="<%= startDate || '' %>" />
-                                <input type="date" id="end-date" value="<%= endDate || '' %>" />
-                                <button onclick="generateReport()" style="width: 125px;">Apply</button>
+                <div class="card_badge " style="margin-top: 16px;">
+                   
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div >
+                            <div class="flex flex-wrap gap-4" style="margin-bottom: 5px;">
+                                <select id="time-filter" onchange="handleFilterChange()" style="padding: 5px 10px; border-radius: 4px; border: 1px solid #ddd;">
+                                    <option value="all" <%= timeFilter === 'all' ? 'selected' : '' %>>All</option>
+                                    <option value="today" <%= timeFilter === 'today' ? 'selected' : '' %>>Today</option>
+                                    <option value="week" <%= timeFilter === 'week' ? 'selected' : '' %>>Weekly</option>
+                                    <option value="month" <%= timeFilter === 'month' ? 'selected' : '' %>>Monthly</option>
+                                    <option value="custom" <%= timeFilter === 'custom' ? 'selected' : '' %>>Custom Date</option>
+                                </select>
+                                <div id="custom-date-range" style="display: <%= timeFilter === 'custom' ? 'block' : 'none' %>;">
+                                    <input type="date" id="start-date" value="<%= startDate ? new Date(startDate).toISOString().slice(0, 10) : '' %>" />
+                                    <input type="date" id="end-date" value="<%= endDate ? new Date(endDate).toISOString().slice(0, 10) : '' %>" />
+                                    <button onclick="generateReport()" style="padding: 5px 10px;">Apply</button>
+                                </div>
                             </div>
+                           
+                            <span id="date-error" style="font-size: .9rem; color: red;"></span>
                         </div>
-                        <div class="mt-4 flex gap-4">
-                            <button style="height: 35px;" onclick="downloadReport('pdf')">Download PDF</button>
-                            <button style="height: 35px;" onclick="downloadReport('excel')">Download Excel</button>
+                        <div class="mt-4 flex " style="flex-direction: column;">
+                            <h2 class="card-title" style="margin: 0px; font-size: 16px;">Download Sales Report</h2>
+                            <div style="margin-top: 5px;">
+                                <button style="height: 35px;" onclick="downloadReport('pdf')">Download PDF</button>
+                                <button style="height: 35px;" onclick="downloadReport('excel')">Download Excel</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-
-                <div class="grid grid-cols-3 mb-4">
-                    <div class="card">
+        
+                <div class="grid-badge grid-badge-cols-3 mb-4">
+                    <div class="card_badge">
                         <h2 class="card-title">Overall Sales Count</h2>
                         <div class="stat-value" id="sales-count"><%= overallSalesCount %></div>
                     </div>
-                    <div class="card">
+                    <div class="card_badge">
                         <h2 class="card-title">Overall Order Amount</h2>
-                        <div class="stat-value" id="order-amount">$<%= overallOrderAmount.toLocaleString() %></div>
+                        <div class="stat-value" id="order-amount">₹<%= overallOrderAmount.toLocaleString() %></div>
                     </div>
-                    <div class="card">
+                    <div class="card_badge">
                         <h2 class="card-title">Overall Discount</h2>
-                        <div class="stat-value" id="overall-discount">$<%= overallDiscount.toLocaleString() %></div>
+                        <div class="stat-value" id="overall-discount">₹<%= overallDiscount.toLocaleString() %></div>
                     </div>
                 </div>
+        
+                <div class="grid mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Best Selling Products</h2>
+                            <p class="card-description">Top 10 products</p>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="bestProductsChart"></canvas>
+                        </div>
+                    </div>
+        
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Best Selling Categories</h2>
+                            <p class="card-description">Top 10 categories</p>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="bestCategoriesChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Top 5 Brands Market Share</h2>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="brandsMarketPieChart"></canvas>
+                        </div>
+                    </div>
+        
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Year-over-Year Comparison</h2>
+                            <p class="card-description">Products, Categories, and Brands performance</p>
+                        </div>
+                        <div class="card-content">
+                            <canvas id="yearlyComparisonChart"></canvas>
+                        </div>
+                    </div>
+        
+                </div>
 
-                <div class="card mb-4">
+                <div class="decorative-divider">
+                    
+                    <div class="dividery" style="width: 100%;"></div>
+
+                </div>
+                
+        
+                <!-- Sales Report Section -->
+                <div class="card_badge mb-4" style="margin-top: 16px;">
+                    <h2 class="card-title" style="font-size: 1.8rem; font-weight: bold; color: #333; margin-bottom: 20px;">
+                        📊 Sales Report
+                    </h2>
+                    
+                </div>
+        
+                <div class="card_badge mb-4">
                     <h2 class="card-title">Sales Report Graph</h2>
                     <canvas id="sales-chart"></canvas>
                 </div>
-
-                <div class="card">
+        
+                <div class="card_badge">
                     <h2 class="card-title">Detailed Sales Report</h2>
                     <table>
                         <thead>
@@ -117,291 +168,343 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% salesData.forEach(data => { %>
+                            <% tableSalesData.forEach(data => { %>
                             <tr>
                                 <td><%= data.date %></td>
                                 <td><%= data.totalOrders %></td>
-                                <td>$<%= data.totalAmount.toFixed(2) %></td>
-                                <td>$<%= data.totalCouponDiscount.toFixed(2) %></td>
-                                <td>$<%= data.totalOfferDiscount.toFixed(2) %></td>
-                                <td>$<%= (data.totalCouponDiscount + data.totalOfferDiscount).toFixed(2) %></td>
+                                <td>₹<%= data.totalAmount.toFixed(2) %></td>
+                                <td>₹<%= data.totalCouponDiscount.toFixed(2) %></td>
+                                <td>₹<%= data.totalOfferDiscount.toFixed(2) %></td>
+                                <td>₹<%= (data.totalCouponDiscount + data.totalOfferDiscount).toFixed(2) %></td>
                             </tr>
                             <% }); %>
                         </tbody>
                     </table>
                 </div>
-
-                
             </div>
         </div>
-        <!-- <script src="/javascripts/admin/product.js"></script> -->
+        
+        
+        <script src="/javascripts/admin/dashboard"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- <script>
-            // Mock data for the sales report
-            const dailySalesData = [
-                { date: "2023-05-01", orders: 120, amount: 15000, discount: 500, coupons: 200 },
-                { date: "2023-05-02", orders: 150, amount: 18000, discount: 600, coupons: 300 },
-                { date: "2023-05-03", orders: 100, amount: 12000, discount: 400, coupons: 150 },
-                { date: "2023-05-04", orders: 180, amount: 22000, discount: 700, coupons: 350 },
-                { date: "2023-05-05", orders: 200, amount: 25000, discount: 800, coupons: 400 },
-                { date: "2023-05-06", orders: 160, amount: 20000, discount: 650, coupons: 250 },
-                { date: "2023-05-07", orders: 140, amount: 17000, discount: 550, coupons: 220 },
-            ];
-
-            const weeklySalesData = [
-                { week: "Week 1", orders: 950, amount: 112000, discount: 3650, coupons: 1650 },
-                { week: "Week 2", orders: 1050, amount: 128000, discount: 4100, coupons: 1850 },
-                { week: "Week 3", orders: 980, amount: 118000, discount: 3800, coupons: 1700 },
-                { week: "Week 4", orders: 1100, amount: 135000, discount: 4300, coupons: 1950 },
-            ];
-
-            const monthlySalesData = [
-                { month: "Jan", orders: 3800, amount: 460000, discount: 15000, coupons: 6800 },
-                { month: "Feb", orders: 3500, amount: 420000, discount: 13500, coupons: 6200 },
-                { month: "Mar", orders: 4200, amount: 510000, discount: 16800, coupons: 7500 },
-                { month: "Apr", orders: 3900, amount: 470000, discount: 15600, coupons: 7000 },
-                { month: "May", orders: 4100, amount: 495000, discount: 16400, coupons: 7300 },
-        ];  
-
-            let currentData = dailySalesData;
-            let chart;
-
-            function generateReport() {
-                const timeFilter = document.getElementById("time-filter").value;
-                switch (timeFilter) {
-                    case "day":
-                        currentData = dailySalesData;
-                        break;
-                    case "week":
-                        currentData = weeklySalesData;
-                        break;
-                    case "month":
-                        currentData = monthlySalesData;
-                        break;
-                }
-                updateChart();
-                updateTable();
-                updateStats();
-            }
-
-            function updateChart() {
-                const ctx = document.getElementById("sales-chart").getContext("2d");
-                const labels = currentData.map((item) => item.date || item.week || item.month);
-                const amounts = currentData.map((item) => item.amount);
-                const orders = currentData.map((item) => item.orders);
-                const discounts = currentData.map((item) => item.discount);
-
-                if (chart) {
-                    chart.destroy();
-                }
-
-                chart = new Chart(ctx, {
-                    type: "line",
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: "Sales Amount",
-                                data: amounts,
-                                borderColor: "rgb(75, 192, 192)",
-                                tension: 0.1,
-                            },
-                            {
-                                label: "Orders",
-                                data: orders,
-                                borderColor: "rgb(255, 99, 132)",
-                                tension: 0.1,
-                            },
-                            {
-                                label: "Discount",
-                                data: discounts,
-                                borderColor: "rgb(255, 205, 86)",
-                                tension: 0.1,
-                            },
-                        ],
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                            },
-                        },
-                    },
-                });
-            }
-
-            function updateTable() {
-                const tableBody = document.getElementById("sales-data");
-                tableBody.innerHTML = "";
-                currentData.forEach((item) => {
-                    const row = `
-                        <tr>
-                            <td>${item.date || item.week || item.month}</td>
-                            <td>${item.orders}</td>
-                            <td>$${item.amount.toLocaleString()}</td>
-                            <td>$${item.discount.toLocaleString()}</td>
-                            <td>$${item.coupons.toLocaleString()}</td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
-            }
-
-            function updateStats() {
-                const overallStats = currentData.reduce(
-                    (acc, item) => {
-                        acc.salesCount += item.orders;
-                        acc.orderAmount += item.amount;
-                        acc.discount += item.discount + item.coupons;
-                        return acc;
-                    },
-                    { salesCount: 0, orderAmount: 0, discount: 0 }
-                );
-
-                document.getElementById("sales-count").textContent = overallStats.salesCount.toLocaleString();
-                document.getElementById("order-amount").textContent = "$" + overallStats.orderAmount.toLocaleString();
-                document.getElementById("overall-discount").textContent = "$" + overallStats.discount.toLocaleString();
-            }
-
-            function downloadReport(format) {
-                console.log("Downloading report as:", format);
-                // Implement download logic here
-            }
-
-            // Initial render
-            generateReport();
-        </script> -->
-
-        <script>
-
-            function handleFilterChange() {
-                const filter = document.getElementById('time-filter').value;
-                const customDateRange = document.getElementById('custom-date-range');
-
-                // Show or hide custom date range input based on selection
-                if (filter === 'custom') {
-                    customDateRange.style.display = 'block';
-                } else {
-                    customDateRange.style.display = 'none';
-                    generateReport(); // Trigger report generation for predefined options
-                }
-            }
-
-            async function generateReport() {
-                const timeFilter = document.getElementById("time-filter").value;
-                const response = await fetch(`/admin/dashboard?timeFilter=${timeFilter}`);
-                const data = await response.text();
-                document.body.innerHTML = data;
-            }
 
             
-        </script>
-        <script>
-            // Assume these variables are set from your server-side rendering
-            const labels = <%- JSON.stringify(labels) %>;
-            const ordersData = <%- JSON.stringify(ordersData) %>;
-            const amountData = <%- JSON.stringify(amountData) %>;
-            const discountData = <%- JSON.stringify(discountData) %>; // You may need to define this in your server-side data
-        
-            const ctx = document.getElementById('sales-chart').getContext('2d');
-        
-            // Check if the data arrays have been populated correctly
-            console.log('Labels:', labels);
-            console.log('Orders Data:', ordersData);
-            console.log('Amount Data:', amountData);
-            console.log('Discount Data:', discountData); // Ensure this is defined
-        
-            let chart;
-        
-            // Function to initialize the chart with data
-            function initChart() {
-                if (labels.length > 0 && ordersData.length > 0 && amountData.length > 0) {
-                    chart = new Chart(ctx, {
-                        type: 'line', // Change to 'bar' or other types as needed
+        <script >
+
+            document.addEventListener('DOMContentLoaded', function() {
+                
+                const labels = <%- JSON.stringify(labels) %>;
+                const ordersData = <%- JSON.stringify(ordersData) %>;
+                const amountData = <%- JSON.stringify(amountData) %>;
+                const discountData = <%- JSON.stringify(discountData) %>;
+                const productsData = <%- JSON.stringify(productsData) %>;
+                const categoriesData = <%- JSON.stringify(categoriesData) %>;
+                const brandsData = <%- JSON.stringify(brandsData) %>;
+
+                // Best Selling Products Chart
+                const bestProductsChart = new Chart(
+                    document.getElementById('bestProductsChart'),
+                    {
+                        type: 'bar',
                         data: {
-                            labels: labels,
-                            datasets: [
-                                {
-                                    label: 'Total Orders',
-                                    data: ordersData,
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderWidth: 2,
-                                },
-                                {
-                                    label: 'Total Amount',
-                                    data: amountData,
-                                    borderColor: 'rgba(255, 99, 132, 1)',
-                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                    borderWidth: 2,
-                                },
-                                {
-                                    label: 'Discount',
-                                    data: discountData, // Add discount data
-                                    borderColor: 'rgba(255, 205, 86, 1)',
-                                    backgroundColor: 'rgba(255, 205, 86, 0.2)',
-                                    borderWidth: 2,
-                                },
-                            ],
+                            labels: productsData.map(item => item.name),
+                            datasets: [{
+                                label: 'Sales (₹)',
+                                data: productsData.map(item => item.quantitySold),
+                                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
                         },
                         options: {
                             responsive: true,
                             scales: {
                                 y: {
                                     beginAtZero: true,
-                                },
+                                    title: {
+                                        display: true,
+                                        text: 'Sales Amount (₹)'
+                                    }
+                                }
                             },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Best Selling Products'
+                                }
+                            }
+                        }
+                    }
+                );
+
+                // Best Selling Categories Chart
+                const bestCategoriesChart = new Chart(
+                    document.getElementById('bestCategoriesChart'),
+                    {
+                        type: 'bar',
+                        data: {
+                            labels: categoriesData.map(item => item.name),
+                            datasets: [{
+                                label: 'Quantity Sold',
+                                data: categoriesData.map(item => item.quantitySold),
+                                backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
                         },
-                    });
-                } else {
-                    console.error("No data available for the chart.");
-                }
-            }
-        
-            // Function to update the chart based on the selected time filter
-            function updateChart() {
-                const timeFilter = document.getElementById("time-filter").value;
-                let currentData;
-        
-                switch (timeFilter) {
-                    case "day":
-                        currentData = dailySalesData; // Ensure these arrays are defined
-                        break;
-                    case "week":
-                        currentData = weeklySalesData;
-                        break;
-                    case "month":
-                        currentData = monthlySalesData;
-                        break;
-                    default:
-                        currentData = [];
-                }
-        
-                const labels = currentData.map(item => item.date || item.week || item.month);
-                const orders = currentData.map(item => item.orders);
-                const amounts = currentData.map(item => item.amount);
-                const discounts = currentData.map(item => item.discount || 0); // Use 0 if discount is not available
-        
-                // Update chart data
-                if (chart) {
-                    chart.data.labels = labels;
-                    chart.data.datasets[0].data = orders;
-                    chart.data.datasets[1].data = amounts;
-                    chart.data.datasets[2].data = discounts;
-                    chart.update();
-                }
-            }
-        
-            // Event listener for the time filter
-            document.getElementById("time-filter").addEventListener("change", function() {
-                updateChart();
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Units Sold'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Best Selling Categories'
+                                }
+                            }
+                        }
+                    }
+                );
+
+                // Brands Market Share Pie Chart
+                const brandsMarketPieChart = new Chart(
+                    document.getElementById('brandsMarketPieChart'),
+                    {
+                        type: 'doughnut',
+                        data: {
+                            labels: brandsData.map(item => item.name),
+                            datasets: [{
+                                data: brandsData.map(item => item.quantitySold),
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.8)',
+                                    'rgba(54, 162, 235, 0.8)',
+                                    'rgba(255, 206, 86, 0.8)',
+                                    'rgba(75, 192, 192, 0.8)',
+                                    'rgba(153, 102, 255, 0.8)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Top 5 Brands Market Share'
+                                },
+                                legend: {
+                                    position: 'right'
+                                }
+                            }
+                        }
+                    }
+                );
+
+                // Sales Report Chart (Line Chart)
+                const salesChart = new Chart(
+                    document.getElementById('sales-chart'),
+                    {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Orders',
+                                    data: ordersData,
+                                    borderColor: 'rgba(116, 185, 255, 1)',
+                                    yAxisID: 'y',
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: 'rgba(116, 185, 255, 1)',
+                                    borderWidth: 3
+                                },
+                                {
+                                    label: 'Amount (₹)',
+                                    data: amountData,
+                                    borderColor: 'rgba(255, 149, 0, 1)',
+                                    yAxisID: 'y1',
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: 'rgba(255, 149, 0, 1)',
+                                    borderWidth: 3
+                                },
+                                {
+                                    label: 'Discount (₹)',
+                                    data: discountData,
+                                    borderColor: 'rgba(255, 105, 180, 1)',
+                                    tension: 0.4,
+                                    yAxisID: 'y1',
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                    pointBackgroundColor: 'rgba(255, 105, 180, 1)',
+                                    borderWidth: 3
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            interaction: {
+                                mode: 'nearest',
+                                intersect: false,
+                                axis: 'x'
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            size: 12,
+                                            weight: '500'
+                                        }
+                                    }
+                                },
+                                y: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'left',
+                                    title: {
+                                        display: true,
+                                        text: 'Number of Orders',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    },
+                                    grid: {
+                                        borderDash: [5, 5]
+                                    }
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    title: {
+                                        display: true,
+                                        text: 'Amount (₹)',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    },
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            },
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Sales Performance Overview',
+                                    font: {
+                                        size: 20,
+                                        weight: 'bold'
+                                    },
+                                    padding: {
+                                        top: 20,
+                                        bottom: 20
+                                    }
+                                },
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        usePointStyle: true,
+                                        padding: 20,
+                                        font: {
+                                            size: 12,
+                                            weight: '500'
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    titleColor: '#333',
+                                    bodyColor: '#666',
+                                    bodyFont: {
+                                        size: 13
+                                    },
+                                    titleFont: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    },
+                                    borderColor: '#ccc',
+                                    borderWidth: 1,
+                                    padding: 12,
+                                    displayColors: true,
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.parsed.y !== null) {
+                                                label += context.dataset.label.includes('₹') 
+                                                    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y)
+                                                    : context.parsed.y;
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                );
+
+
+                // Filter change handler
+                window.handleFilterChange = function() {
+                    const timeFilter = document.getElementById('time-filter').value;
+                    const customDateRange = document.getElementById('custom-date-range');
+                    const dateError = document.getElementById('date-error');
+                    
+                    if (timeFilter === 'custom') {
+                        customDateRange.style.display = 'block';
+                    } else {
+                        customDateRange.style.display = 'none';
+                        dateError.textContent = ''; 
+                        window.location.href = `/admin/dashboard?timeFilter=${timeFilter}`;
+                    }
+                };
+
+                //custom date range
+                window.generateReport = function() {
+                    const startDate = document.getElementById('start-date').value;
+                    const endDate = document.getElementById('end-date').value;
+                    const dateError = document.getElementById('date-error');
+                    const today = new Date().toISOString().split('T')[0];
+
+                    dateError.textContent = '';
+
+                    if (!startDate || !endDate) {
+                        dateError.textContent = 'Please select both start and end dates';
+                        return;
+                    }
+
+                    if (new Date(startDate) > new Date(endDate)) {
+                        dateError.textContent = 'End date cannot be earlier than the start date';
+                        return;
+                    }
+
+                    if (startDate > today || endDate > today) {
+                        dateError.textContent = 'Dates cannot be in the future';
+                        return;
+                    }
+
+                    window.location.href = `/admin/dashboard?timeFilter=custom&startDate=${startDate}&endDate=${endDate}`;
+                };
+
             });
-        
-            // Initial render
-            initChart();
-        
+
+            //download report
             document.addEventListener("DOMContentLoaded", function () {
                 window.downloadReport = function (format) {
                     const timeFilterElement = document.getElementById('time-filter');
@@ -411,11 +514,11 @@
                     }
                     
                     const timeFilter = timeFilterElement.value;
-        
+
                     window.location.href = `/admin/dashboard/download-report?format=${format}&timeFilter=${timeFilter}`;
                 };
             });
+
         </script>
-        
     </body>
 </html>

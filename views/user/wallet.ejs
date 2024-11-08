@@ -26,42 +26,45 @@
         <link rel="stylesheet" href="/assets/css/style.css" />
         <link rel="stylesheet" href="/css/user/main.css" />
         <style>
-            .card {
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                padding: 24px;
-            }
-
-            .card-title {
-                font-size: 24px;
-                font-weight: bold;
-                margin-bottom: 8px;
-            }
-
-            .card-description {
-                color: #666;
-                margin-bottom: 24px;
-            }
-
-            .balance {
-                color: black;
-                font-size: 40px;
-                font-weight: bold;
-                margin-bottom: 24px;
-            }
-
-            .add-money-form {
+            /* Header section */
+            .header {
                 display: flex;
-                gap: 16px;
-                margin-bottom: 24px;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+                margin-top: 2rem;
             }
 
-            .input {
-                padding: 8px 12px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                width: 200px;
+            .title {
+                font-size: 2rem;
+                font-weight: bold;
+            }
+
+            .description {
+                color: #666;
+                margin-top: 1rem;
+            }
+
+            /* Balance section */
+            .balance-card {
+                background-color: rgba(37, 99, 235, 0.1);
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                margin: 1rem 0;
+                text-align: center;
+                /* width: 50%; */
+            }
+
+            .balance-label {
+                color: #666;
+                font-size: 2rem;
+            }
+
+            .balance-amount {
+                font-size: 4rem;
+                font-weight: bold;
+                color: #333;
+                margin-top: 0.5rem;
             }
 
             .button {
@@ -137,12 +140,78 @@
                 width: 16px;
                 height: 16px;
             }
+
+            /* Modal styles */
+            .modal-backdrop {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 50;
+            }
+
+            .modal {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                width: 28%;
+                z-index: 51;
+                height: 30%;
+            }
+
+            .modal.active,
+            .modal-backdrop.active {
+                display: block;
+            }
+
+            .input {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.375rem;
+                margin: 1rem 0;
+                margin-bottom: 1rem;
+            }
+
+            /* Header section */
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+
+            .title {
+                font-size: 2.5rem;
+                font-weight: bold;
+            }
+
+            .description {
+                color: #666;
+                margin-top: 0.25rem;
+            }
+
+            .text-green {
+                color: green;
+            }
+
+            .text-red {
+                color: red;
+            }
         </style>
     </head>
 
     <body>
         <div class="page-wrapper">
-            <header class="header">
+            <header class="header" style="justify-content: center">
                 <div class="header-middle sticky-header">
                     <div class="container">
                         <div class="header-left">
@@ -251,7 +320,7 @@
                                         </li>
                                         <li class="nav-item">
                                             <form action="/logout" method="POST" style="display: inline">
-                                                <button type="submit" class="nav-link" style="border: none; background: none; padding: 0; margin-top: 10px;">Sign Out</button>
+                                                <button type="submit" class="nav-link" style="border: none; background: none; padding: 0; margin-top: 10px">Sign Out</button>
                                             </form>
                                         </li>
                                     </ul>
@@ -259,23 +328,24 @@
 
                                 <div class="col-md-8 col-lg-9">
                                     <div class="card">
-                                        <h1 class="card-title">Wallet Balance</h1>
-                                        <p class="card-description">Your current balance and transactions</p>
-                                
-                                        <!-- Display the user's wallet balance dynamically -->
-                                        <div class="balance" id="balance">$<%= wallet.balance.toFixed(2) %></div>
-                                
-                                        <!-- Form to add money to the wallet -->
-                                        <form class="add-money-form" id="addMoneyForm" style="width: 60%" action="#" method="POST">
-                                            <input type="number" placeholder="Enter amount" class="input" name="amount" min="0" step="0.01" required />
-                                            <button style="height: 40px; width: 220px" type="submit" class="button">
-                                                <svg class="plus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M12 5v14m-7-7h14"></path>
+                                        <div class="header">
+                                            <div>
+                                                <h1 class="title">Wallet Balance</h1>
+                                                <p class="description">Your current balance and transactions</p>
+                                            </div>
+                                            <button class="button button-primary" onclick="openModal()">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20" style="margin-right: 0.5rem">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                                 </svg>
                                                 Add Money
                                             </button>
-                                        </form>
-                                
+                                        </div>
+
+                                        <div class="balance-card">
+                                            <p class="balance-label">Current Balance</p>
+                                            <h2 class="balance-amount">₹<%= wallet.balance.toFixed(2) %></h2>
+                                        </div>
+
                                         <!-- Table to display transactions dynamically -->
                                         <div class="table-container">
                                             <table>
@@ -289,38 +359,45 @@
                                                 </thead>
                                                 <tbody id="transactionTable">
                                                     <% if (wallet.transactions.length === 0) { %>
-                                                        <tr>
-                                                            <td colspan="4" style="text-align: center;">No transactions available</td>
-                                                        </tr>
-                                                    <% } else { %>
-                                                        <% wallet.transactions.forEach(transaction => { %>
-                                                            <tr>
-                                                                <td><%= new Date(transaction.date).toLocaleDateString() %></td>
-                                                                <td><%= transaction.type %></td>
-                                                                <td>$<%= transaction.amount.toFixed(2) %></td>
-                                                                <td>$<%= transaction.newBalance.toFixed(2) %></td>
-                                                            </tr>
-                                                        <% }); %>
-                                                    <% } %>
+                                                    <tr>
+                                                        <td colspan="4" style="text-align: center">No transactions available</td>
+                                                    </tr>
+                                                    <% } else { %> <% wallet.transactions.forEach(transaction => { %>
+                                                    <tr>
+                                                        <td><%= transaction.date %></td>
+                                                        <td><%= transaction.type %></td>
+                                                        <td style="font-weight: 500" class="<%= transaction.type === 'Credit' || transaction.type === 'Refund' ? 'text-green' : 'text-red' %>"><%= transaction.type === 'Credit' || transaction.type === 'Refund' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %></td>
+
+                                                        <td style="font-weight: 500">₹<%= transaction.balanceAfterTransaction.toFixed(2) %></td>
+                                                    </tr>
+                                                    <% }); %> <% } %>
                                                 </tbody>
-                                                
                                             </table>
                                         </div>
-                                
+
                                         <!-- Pagination controls (if needed) -->
-                                        <div class="pagination">
+                                        <!-- <div class="pagination">
                                             <button style="height: 35px" class="button button-outline" id="prevButton" <%= page <= 1 ? 'disabled' : '' %>>Previous</button>
                                             <span id="pageInfo">Page <%= page %> of <%= totalPages %></span>
                                             <button style="height: 35px" class="button button-outline" id="nextButton" <%= page >= totalPages ? 'disabled' : '' %>>Next</button>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
+
+            <!-- Modal -->
+            <div class="modal-backdrop" id="modalBackdrop" onclick="closeModal()"></div>
+            <div class="modal" id="addMoneyModal">
+                <h2 class="title" style="font-size: 2rem; text-align: center; margin: 2.5rem 0rem">Add Money to Wallet</h2>
+                <form id="addMoneyForm" method="POST" onsubmit="closeModal()">
+                    <input type="number" name="amount" placeholder="Enter amount" min="0" step="0.01" required class="input" />
+                    <button type="submit" class="button button-primary" style="padding: 0.7rem 15.8rem; margin-top: 1rem; text-align: center">Add Money</button>
+                </form>
+            </div>
 
             <footer class="footer">
                 <div class="footer-middle">
@@ -435,107 +512,109 @@
         <script src="/assets/js/main.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <!-- <script>
-            let transactions = [
-                { id: 1, type: "Credit", amount: 500, date: "2024-10-27", balance: 1500 },
-                { id: 2, type: "Debit", amount: -200, date: "2024-10-26", balance: 1000 },
-                { id: 3, type: "Credit", amount: 300, date: "2024-10-25", balance: 1200 },
-                { id: 4, type: "Debit", amount: -400, date: "2024-10-24", balance: 900 },
-                { id: 5, type: "Credit", amount: 600, date: "2024-10-23", balance: 1300 },
-            ];
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-            let currentPage = 1;
-            const itemsPerPage = 3;
-            let currentBalance = 1000;
-
-            // Format currency
-            function formatCurrency(amount) {
-                return amount.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                    minimumFractionDigits: 2,
-                });
+        <script>
+            function openModal() {
+                document.getElementById("modalBackdrop").classList.add("active");
+                document.getElementById("addMoneyModal").classList.add("active");
             }
 
-            // Update transaction table
-            function updateTable() {
-                const tbody = document.getElementById("transactionTable");
-                tbody.innerHTML = "";
-
-                const start = (currentPage - 1) * itemsPerPage;
-                const end = start + itemsPerPage;
-                const paginatedTransactions = transactions.slice(start, end);
-
-                paginatedTransactions.forEach((transaction) => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${transaction.date}</td>
-                        <td>${transaction.type}</td>
-                        <td class="${transaction.amount > 0 ? "credit" : "debit"}">
-                            ${formatCurrency(Math.abs(transaction.amount))}
-                        </td>
-                        <td>${formatCurrency(transaction.balance)}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-
-                updatePagination();
-                updateBalance();
+            function closeModal() {
+                document.getElementById("modalBackdrop").classList.remove("active");
+                document.getElementById("addMoneyModal").classList.remove("active");
             }
 
-            // Update pagination controls
-            function updatePagination() {
-                const totalPages = Math.ceil(transactions.length / itemsPerPage);
-                document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${totalPages}`;
-                document.getElementById("prevButton").disabled = currentPage === 1;
-                document.getElementById("nextButton").disabled = currentPage === totalPages;
-            }
+            async function addMoney(event) {
+                event.preventDefault();
+                const amount = document.querySelector('input[name="amount"]').value;
 
-            // Update balance display
-            function updateBalance() {
-                document.getElementById("balance").textContent = formatCurrency(currentBalance);
-            }
+                try {
+                    const { data } = await axios.post("/profile/wallet/add-money", { amount });
 
-            // Event Listeners
-            document.getElementById("addMoneyForm").addEventListener("submit", function (e) {
-                e.preventDefault();
-                const input = document.getElementById("amountInput");
-                const amount = parseFloat(input.value);
+                    const options = {
+                        key: data.key,
+                        amount: amount * 100,
+                        currency: "INR",
+                        name: "Add Money to Wallet",
+                        description: "Transaction for adding money to wallet",
+                        order_id: data.orderId,
+                        handler: async function (response) {
+                            await verifyAddMoneyPayment(response, data.orderId, amount);
+                        },
+                        prefill: {
+                            name: "Your Name",
+                            email: "Your Email",
+                        },
+                        theme: {
+                            color: "#3399cc",
+                        },
+                    };
 
-                if (amount <= 0 || isNaN(amount)) return;
+                    const rzp = new Razorpay(options);
+                    rzp.open();
 
-                currentBalance += amount;
-                const newTransaction = {
-                    id: transactions.length + 1,
-                    type: "Credit",
-                    amount: amount,
-                    date: new Date().toISOString().split("T")[0],
-                    balance: currentBalance,
-                };
+                    rzp.on("payment.failed", async function (response) {
+                        await rzp.close();
 
-                transactions.unshift(newTransaction);
-                input.value = "";
-                currentPage = 1;
-                updateTable();
-            });
-
-            document.getElementById("prevButton").addEventListener("click", function () {
-                if (currentPage > 1) {
-                    currentPage--;
-                    updateTable();
+                        Swal.fire({
+                            title: "Payment Failed",
+                            text: response.error.description,
+                            icon: "error",
+                            confirmButtonText: "Okay",
+                        });
+                    });
+                } catch (error) {
+                    console.error("Error adding money to wallet:", error);
+                    Swal.fire({
+                        title: "Error",
+                        text: error?.response?.data?.message || "Failed to initiate money addition. Please try again.",
+                        icon: "error",
+                        confirmButtonText: "Okay",
+                    });
                 }
-            });
+            }
 
-            document.getElementById("nextButton").addEventListener("click", function () {
-                const totalPages = Math.ceil(transactions.length / itemsPerPage);
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    updateTable();
+            async function verifyAddMoneyPayment(paymentResponse, orderId, amount) {
+                try {
+                    console.log(paymentResponse);
+
+                    const verificationResponse = await axios.post("/profile/wallet/add-money/varify", {
+                        paymentId: paymentResponse.razorpay_payment_id,
+                        payment_signature: paymentResponse.razorpay_signature,
+                        orderId: orderId,
+                        amount: amount,
+                    });
+
+                    if (verificationResponse.status === 200) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: "Money added successfully to your wallet!",
+                            icon: "success",
+                            confirmButtonText: "Okay",
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        rz;
+                        Swal.fire({
+                            icon: "error",
+                            title: "Payment Verification Failed",
+                            text: "We couldn't verify your payment. Please contact support.",
+                            confirmButtonText: "OK",
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error verifying add money payment:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Failed to verify payment. Please try again later.",
+                    });
                 }
-            });
+            }
 
-            // Initial render
-            updateTable();
-        </script> -->
+            document.getElementById("addMoneyForm").addEventListener("submit", addMoney);
+        </script>
     </body>
 </html>

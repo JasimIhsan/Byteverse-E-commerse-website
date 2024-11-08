@@ -77,8 +77,8 @@
                         <tr>
                             <td><%= index + 1 %></td>
                             <td><%= coupon.code %></td>
-                            <td>$<%= coupon.discount.toFixed(2) %></td>
-                            <td>$<%= coupon.minimumSpend.toFixed(2) %></td>
+                            <td>₹<%= coupon.discount.toFixed(2) %></td>
+                            <td>₹<%= coupon.minimumSpend.toFixed(2) %></td>
                             <td><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
                             <td><%= coupon.usedCount %></td>
                             <td><%= coupon.usageLimit ? coupon.usageLimit : '-' %></td>
@@ -256,34 +256,31 @@
             };
 
             // Real-time validation functions
+            // Real-time validation functions
             function validateCouponCode() {
-                const couponCode = document.getElementById("couponCode").value;
+                const couponCode = document.getElementById("couponCode").value.trim();
                 const couponCodeError = document.getElementById("couponCodeError");
 
-                if (couponCode.trim().length === 0) {
+                if (!couponCode) {
                     couponCodeError.textContent = "Coupon code cannot be empty.";
                     couponCodeError.style.display = "block";
                     return false;
-                } else {
-                    couponCodeError.textContent = "";
-                    couponCodeError.style.display = "none";
-                    return true;
                 }
+                couponCodeError.style.display = "none";
+                return true;
             }
 
             function validateDiscountAmount() {
-                const discountAmount = document.getElementById("discountAmount").value;
+                const discountAmount = parseFloat(document.getElementById("discountAmount").value);
                 const discountAmountError = document.getElementById("discountAmountError");
 
-                if (discountAmount < 1) {
+                if (isNaN(discountAmount) || discountAmount < 1) {
                     discountAmountError.textContent = "Discount is required and must be at least 1.";
                     discountAmountError.style.display = "block";
                     return false;
-                } else {
-                    discountAmountError.textContent = "";
-                    discountAmountError.style.display = "none";
-                    return true;
                 }
+                discountAmountError.style.display = "none";
+                return true;
             }
 
             function validateExpiryDate() {
@@ -292,58 +289,44 @@
                 const today = new Date();
                 const expiryDateError = document.getElementById("expiryDateError");
 
-                // Check if the date field is empty
-                if (expiryDateValue.trim().length === 0) {
+                if (!expiryDateValue) {
                     expiryDateError.textContent = "Expiry date cannot be empty.";
                     expiryDateError.style.display = "block";
                     return false;
                 }
-
-                // Check if the expiry date is in the future
                 if (expiryDate <= today) {
                     expiryDateError.textContent = "Expiry date must be in the future.";
                     expiryDateError.style.display = "block";
                     return false;
-                } else {
-                    expiryDateError.textContent = "";
-                    expiryDateError.style.display = "none";
-                    return true;
                 }
+                expiryDateError.style.display = "none";
+                return true;
             }
 
             function validateUsageLimit() {
-                const usageLimit = document.getElementById("usageLimit").value;
+                const usageLimit = parseInt(document.getElementById("usageLimit").value, 10);
                 const usageLimitError = document.getElementById("usageLimitError");
 
-                // Optional field: only validate if it's provided
-                if (usageLimit && usageLimit < 1) {
+                if (!isNaN(usageLimit) && usageLimit < 1) {
                     usageLimitError.textContent = "Usage limit must be at least 1.";
                     usageLimitError.style.display = "block";
                     return false;
-                } else {
-                    usageLimitError.textContent = "";
-                    usageLimitError.style.display = "none";
-                    return true;
                 }
+                usageLimitError.style.display = "none";
+                return true;
             }
+
             function validateMinimumSpend() {
-                const minimumSpend = document.getElementById("minimumSpend").value.trim(); // Trim to remove leading and trailing spaces
+                const minimumSpend = parseFloat(document.getElementById("minimumSpend").value.trim());
                 const minimumSpendError = document.getElementById("minimumSpendError");
 
-                // Check for empty input or only spaces
-                if (minimumSpend.length === 0) {
-                    minimumSpendError.textContent = "Minimum spend cannot be empty.";
+                if (isNaN(minimumSpend) || minimumSpend < 0) {
+                    minimumSpendError.textContent = "Minimum spend is required and cannot be negative.";
                     minimumSpendError.style.display = "block";
                     return false;
-                } else if (minimumSpend < 0) {
-                    minimumSpendError.textContent = "Minimum spend cannot be negative.";
-                    minimumSpendError.style.display = "block";
-                    return false;
-                } else {
-                    minimumSpendError.textContent = "";
-                    minimumSpendError.style.display = "none";
-                    return true;
                 }
+                minimumSpendError.style.display = "none";
+                return true;
             }
 
             // Attach event listeners for real-time validation
@@ -355,7 +338,6 @@
 
             // Submit button event listener
             document.getElementById("submitCouponBtn").addEventListener("click", function () {
-                // Run all validations before submission
                 const isCouponCodeValid = validateCouponCode();
                 const isDiscountAmountValid = validateDiscountAmount();
                 const isExpiryDateValid = validateExpiryDate();
@@ -367,10 +349,9 @@
                     const couponCode = document.getElementById("couponCode").value;
                     const discountAmount = document.getElementById("discountAmount").value;
                     const expiryDate = document.getElementById("expiryDate").value;
-                    const usageLimit = document.getElementById("usageLimit").value || null; // Allow empty for optional field
+                    const usageLimit = document.getElementById("usageLimit").value || null;
                     const minimumSpend = document.getElementById("minimumSpend").value;
 
-                    // Send data via Axios
                     axios
                         .post("/admin/coupon-management/add-coupon", {
                             code: couponCode,
@@ -387,9 +368,9 @@
                                     confirmButton: "your-custom-class",
                                 },
                             }).then(() => {
-                                document.getElementById("addCouponModal").style.display = "none"; // Hide modal
-                                document.getElementById("couponForm").reset(); // Reset the form
-                                location.reload(); // Optionally reload the page to update coupon list
+                                document.getElementById("addCouponModal").style.display = "none";
+                                document.getElementById("couponForm").reset();
+                                location.reload();
                             });
                         })
                         .catch((error) => {
@@ -527,90 +508,90 @@
             }
         </script>
         <script>
-            // Validate Coupon Code
-            function validateCouponCode() {
-                const couponCodeInput = document.getElementById("couponCode");
-                const errorElement = document.getElementById("couponCodeError");
-                if (couponCodeInput.value.trim().length < 3) {
-                    errorElement.innerText = "Coupon code must be at least 3 characters long.";
-                    errorElement.style.display = "block";
-                } else {
-                    errorElement.style.display = "none";
-                }
-            }
+            // // Validate Coupon Code
+            // function validateCouponCode() {
+            //     const couponCodeInput = document.getElementById("couponCode");
+            //     const errorElement = document.getElementById("couponCodeError");
+            //     if (couponCodeInput.value.trim().length < 3) {
+            //         errorElement.innerText = "Coupon code must be at least 3 characters long.";
+            //         errorElement.style.display = "block";
+            //     } else {
+            //         errorElement.style.display = "none";
+            //     }
+            // }
 
-            // Validate Discount Amount
-            function validateDiscountAmount() {
-                const discountInput = document.getElementById("discountAmount");
-                const errorElement = document.getElementById("discountAmountError");
-                if (discountInput.value <= 0) {
-                    errorElement.innerText = "Discount must be a positive number.";
-                    errorElement.style.display = "block";
-                } else {
-                    errorElement.style.display = "none";
-                }
-            }
+            // // Validate Discount Amount
+            // function validateDiscountAmount() {
+            //     const discountInput = document.getElementById("discountAmount");
+            //     const errorElement = document.getElementById("discountAmountError");
+            //     if (discountInput.value <= 0) {
+            //         errorElement.innerText = "Discount must be a positive number.";
+            //         errorElement.style.display = "block";
+            //     } else {
+            //         errorElement.style.display = "none";
+            //     }
+            // }
 
-            // Validate Expiry Date
-            function validateExpiryDate() {
-                const expiryDateInput = document.getElementById("expiryDate");
-                const errorElement = document.getElementById("expiryDateError");
-                const today = new Date().toISOString().split("T")[0]; // Get today's date
-                if (expiryDateInput.value < today) {
-                    errorElement.innerText = "Expiry date must be in the future.";
-                    errorElement.style.display = "block";
-                } else {
-                    errorElement.style.display = "none";
-                }
-            }
+            // // Validate Expiry Date
+            // function validateExpiryDate() {
+            //     const expiryDateInput = document.getElementById("expiryDate");
+            //     const errorElement = document.getElementById("expiryDateError");
+            //     const today = new Date().toISOString().split("T")[0]; // Get today's date
+            //     if (expiryDateInput.value < today) {
+            //         errorElement.innerText = "Expiry date must be in the future.";
+            //         errorElement.style.display = "block";
+            //     } else {
+            //         errorElement.style.display = "none";
+            //     }
+            // }
 
-            // Validate Usage Limit
-            function validateUsageLimit() {
-                const usageLimitInput = document.getElementById("usageLimit");
-                const errorElement = document.getElementById("usageLimitError");
-                if (usageLimitInput.value < 0) {
-                    errorElement.innerText = "Usage limit cannot be negative.";
-                    errorElement.style.display = "block";
-                } else {
-                    errorElement.style.display = "none";
-                }
-            }
+            // // Validate Usage Limit
+            // function validateUsageLimit() {
+            //     const usageLimitInput = document.getElementById("usageLimit");
+            //     const errorElement = document.getElementById("usageLimitError");
+            //     if (usageLimitInput.value < 0) {
+            //         errorElement.innerText = "Usage limit cannot be negative.";
+            //         errorElement.style.display = "block";
+            //     } else {
+            //         errorElement.style.display = "none";
+            //     }
+            // }
 
-            // Validate Minimum Spend
-            function validateMinimumSpend() {
-                const minimumSpendInput = document.getElementById("minimumSpend");
-                const errorElement = document.getElementById("minimumSpendError");
-                if (minimumSpendInput.value < 0) {
-                    errorElement.innerText = "Minimum spend cannot be negative.";
-                    errorElement.style.display = "block";
-                } else {
-                    errorElement.style.display = "none";
-                }
-            }
+            // // Validate Minimum Spend
+            // function validateMinimumSpend() {
+            //     const minimumSpendInput = document.getElementById("minimumSpend");
+            //     const errorElement = document.getElementById("minimumSpendError");
+            //     if (minimumSpendInput.value < 0) {
+            //         errorElement.innerText = "Minimum spend cannot be negative.";
+            //         errorElement.style.display = "block";
+            //     } else {
+            //         errorElement.style.display = "none";
+            //     }
+            // }
 
-            // Submit Coupon Function
-            function submitCoupon() {
-                // Validate all fields before submission
-                validateCouponCode();
-                validateDiscountAmount();
-                validateExpiryDate();
-                validateUsageLimit();
-                validateMinimumSpend();
+            // // Submit Coupon Function
+            // function submitCoupon() {
+            //     // Validate all fields before submission
+            //     validateCouponCode();
+            //     validateDiscountAmount();
+            //     validateExpiryDate();
+            //     validateUsageLimit();
+            //     validateMinimumSpend();
 
-                // Check if any errors are visible
-                const errorElements = document.querySelectorAll(".error");
-                let hasError = false;
-                errorElements.forEach((error) => {
-                    if (error.style.display === "block") {
-                        hasError = true;
-                    }
-                });
+            //     // Check if any errors are visible
+            //     const errorElements = document.querySelectorAll(".error");
+            //     let hasError = false;
+            //     errorElements.forEach((error) => {
+            //         if (error.style.display === "block") {
+            //             hasError = true;
+            //         }
+            //     });
 
-                if (!hasError) {
-                    // Submit the form if all validations pass
-                    document.getElementById("couponForm").submit();
-                }
-            }
+            //     if (!hasError) {
+            //         // Submit the form if all validations pass
+            //         document.getElementById("couponForm").submit();
+            //     }
+            // }
 
             // Attach onkeyup and onchange events
             document.getElementById("couponCode").onkeyup = validateCouponCode;

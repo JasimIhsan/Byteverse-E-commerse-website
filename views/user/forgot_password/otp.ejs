@@ -141,48 +141,86 @@
                 const form = document.getElementById("otp-form");
                 const timerElement = document.getElementById("timer");
                 const resendButton = document.getElementById("resend-button");
-                let timer = 30;
+                let timer;
                 let interval;
 
-                // Retrieve remaining time from localStorage
-                const remainingTime = localStorage.getItem("otpTimer");
-                if (remainingTime) {
-                    timer = Math.max(0, remainingTime - Math.floor((Date.now() - parseInt(localStorage.getItem("otpStartTime"))) / 1000));
+                function initializeTimer() {
+                    const otpStartTime = localStorage.getItem("otpStartTime");
+                    if (otpStartTime) {
+                        const elapsedSeconds = Math.floor((Date.now() - parseInt(otpStartTime)) / 1000);
+                        const initialDuration = 180; // 3 minutes
+                        timer = Math.max(0, initialDuration - elapsedSeconds);
+
+                        if (timer > 0) {
+                            startTimer();
+                        } else {
+                            resetTimer();
+                        }
+                    } else {
+                        timer = 180;
+                        startTimer();
+                    }
+                }
+
+                function formatTime(seconds) {
+                    const minutes = Math.floor(seconds / 60);
+                    const remainingSeconds = seconds % 60;
+                    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
                 }
 
                 function startTimer() {
+                    // Clear any existing interval first
+                    clearInterval(interval);
+
+                    // Disable resend button
                     resendButton.disabled = true;
+
+                    // Update timer display immediately
+                    updateTimerDisplay();
+
+                    // Store start time in localStorage
+                    if (!localStorage.getItem("otpStartTime")) {
+                        localStorage.setItem("otpStartTime", Date.now().toString());
+                    }
+
                     interval = setInterval(() => {
                         timer--;
-                        localStorage.setItem("otpTimer", timer);
-                        localStorage.setItem("otpStartTime", Date.now());
 
-                        if (timer > 0) {
-                            timerElement.textContent = `Resend OTP in ${timer} seconds`;
+                        if (timer <= 0) {
+                            resetTimer();
                         } else {
-                            clearInterval(interval);
-                            timerElement.textContent = "";
-                            resendButton.disabled = false;
-                            localStorage.removeItem("otpTimer"); // Clear the timer on expiry
-                            localStorage.removeItem("otpStartTime");
+                            updateTimerDisplay();
                         }
                     }, 1000);
                 }
 
-                // Start timer only if time is greater than 0
-                if (timer > 0) {
-                    startTimer();
-                    timerElement.textContent = `Resend OTP in ${timer} seconds`;
-                } else {
-                    resendButton.disabled = false; // Enable the resend button if timer is expired
+                function updateTimerDisplay() {
+                    timerElement.textContent = `Resend OTP in ${formatTime(timer)}`;
                 }
 
+                function resetTimer() {
+                    clearInterval(interval);
+                    timerElement.textContent = "";
+                    resendButton.disabled = false;
+                    localStorage.removeItem("otpStartTime");
+                }
+
+                // Initialize timer on page load
+                initializeTimer();
+
+                // Handle OTP input navigation
                 otpInputs.forEach((input, index) => {
                     input.addEventListener("input", (e) => {
-                        if (e.target.value.length === 1) {
-                            if (index < otpInputs.length - 1) {
-                                otpInputs[index + 1].focus();
-                            }
+                        const value = e.target.value;
+
+                        // Ensure only numbers are entered
+                        if (value && !/^\d+$/.test(value)) {
+                            e.target.value = "";
+                            return;
+                        }
+
+                        if (value.length === 1 && index < otpInputs.length - 1) {
+                            otpInputs[index + 1].focus();
                         }
                     });
 
@@ -193,6 +231,7 @@
                     });
                 });
 
+                // Handle resend button click
                 resendButton.addEventListener("click", () => {
                     console.log("Resending OTP...");
 
@@ -201,14 +240,18 @@
                         .then((response) => {
                             if (response.status === 200) {
                                 console.log("OTP resent successfully:", response.data);
-                                startTimer();
+                                timer = 180; // Reset timer to 3 minutes
+                                localStorage.removeItem("otpStartTime"); // Clear existing timer
+                                startTimer(); // Start fresh timer
                             }
                         })
                         .catch((error) => {
                             console.error("Error resending OTP:", error);
+                            // Optionally show error message to user
                         });
                 });
 
+                // Handle form submission
                 form.addEventListener("submit", (e) => {
                     const otp = Array.from(otpInputs)
                         .map((input) => input.value)

@@ -129,11 +129,11 @@
                                                 <td class="price-col">
                                                     <% if (item.bestOffer) { %>
                                                     <div class="d-flex">
-                                                        <span class="original-price" style="text-decoration: line-through; color: gray">$<%= item.price.toFixed(2) %></span>
-                                                        <span class="discounted-price ml-2" style="color: green">$<%= item.finalPrice.toFixed(2) %></span>
+                                                        <span class="original-price" style="text-decoration: line-through; color: gray">₹<%= item.price.toFixed(2) %></span>
+                                                        <span class="discounted-price ml-2" style="color: green">₹<%= item.finalPrice.toFixed(2) %></span>
                                                     </div>
                                                     <% } else { %>
-                                                    <span class="original-price">$<%= item.price.toFixed(2) %></span>
+                                                    <span class="original-price">₹<%= item.price.toFixed(2) %></span>
                                                     <% } %>
                                                 </td>
                                                 <td class="quantity-col">
@@ -141,7 +141,7 @@
                                                         <input type="number" class="form-control quantity-input" value="<%= item.quantity %>" min="1" max="10" step="1" data-stock="<%= item.stock %>" />
                                                     </div>
                                                 </td>
-                                                <td class="total-col product-subtotal" id="productTotal">$<%= (item.finalPrice * item.quantity).toFixed(2) %></td>
+                                                <td class="total-col product-subtotal" id="productTotal">₹<%= (item.finalPrice * item.quantity).toFixed(2) %></td>
                                                 <td class="remove-col">
                                                     <button type="button" class="btn-remove" data-userId="<%= item.UserId %>" data-product-id="<%= item.id %>">
                                                         <i class="icon-close"></i>
@@ -160,24 +160,25 @@
                                 <!-- Cart total summary -->
                                 <aside class="col-lg-3" style="margin-top: 30px">
                                     <div class="summary summary-cart">
+                                        <% if (cartTotal > 0 ) { %>
                                         <h3 class="summary-title">Cart Total</h3>
                                         <table class="table table-summary">
                                             <tbody>
                                                 <tr class="summary-subtotal">
                                                     <td>Subtotal:</td>
-                                                    <td id="subtotal">$<%= subtotal.toFixed(2) %></td>
+                                                    <td id="subtotal">₹<%= subtotal.toFixed(2) %></td>
                                                 </tr>
                                                 <tr class="summary-shipping">
                                                     <td>Shipping:</td>
-                                                    <td id="shipping_message"><%= cartTotal > 1500 ? 'Free Shipping' : '$20.00' %></td>
+                                                    <td id="shipping_message"><%= cartTotal > 1500 ? 'Free Shipping' : '₹20.00' %></td>
                                                 </tr>
                                                 <tr class="summary-total">
                                                     <td>Cart Total:</td>
-                                                    <td id="total">$<%= cartTotal.toFixed(2) %></td>
+                                                    <td id="total">₹<%= cartTotal.toFixed(2) %></td>
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <% if (cartItems.length > 0) { %>
+                                        <% } %> <% if (cartItems.length > 0) { %>
                                         <a href="/<%= user._id %>/cart/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
                                         <% } else { %>
                                         <p class="text-center text-muted">Your cart is empty. Please <a href="/shop">choose items</a> from the shop.</p>
@@ -319,12 +320,12 @@
                         if (!response.data.success) throw new Error(response.data.message);
 
                         let shippingCost = 20;
-                        subtotalElement.textContent = "$" + response.data.subtotal;
-                        totalElement.textContent = "$" + response.data.cartTotal;
-                        shippingMessage.textContent = response.data.cartTotal > 1500 ? "Free Shipping" : "$" + shippingCost.toFixed(2);
+                        subtotalElement.textContent = "₹" + response.data.subtotal;
+                        totalElement.textContent = "₹" + response.data.cartTotal;
+                        shippingMessage.textContent = response.data.cartTotal > 1500 ? "Free Shipping" : "₹" + shippingCost.toFixed(2);
 
                         const productSubtotalElement = inputElement.closest("tr").querySelector(".product-subtotal");
-                        productSubtotalElement.textContent = "$" + (response.data.updatedProduct.price * response.data.updatedProduct.quantity).toFixed(2);
+                        productSubtotalElement.textContent = "₹" + (response.data.updatedProduct.price * response.data.updatedProduct.quantity).toFixed(2);
                     } catch (error) {
                         console.error("Error updating cart:", error);
                         Swal.fire({ title: "Error", text: error.message, icon: "error", confirmButtonText: "Try Again" });
@@ -383,12 +384,19 @@
                                     if (response.data.success) {
                                         button.closest("tr").remove();
 
-                                        // Update the UI with new subtotal and total received from server after item removal
-                                        subtotalElement.textContent = response.data.subtotal; // assuming the server returns subtotal
-                                        totalElement.textContent = response.data.cartTotal; // assuming the server returns cartTotal
-                                        shippingMessage.textContent = response.data.cartTotal > 1500 ? "$20" : "Free Shipping"; // assuming the server returns shipping message
+                                        subtotalElement.textContent = response.data.subtotal; 
+                                        totalElement.textContent = response.data.cartTotal; 
+                                        shippingMessage.textContent = response.data.cartTotal > 1500 ? "₹20" : "Free Shipping";
 
-                                        Swal.fire({ title: "Removed", text: "Item removed from the cart.", icon: "success" });
+                                        Swal.fire({
+                                            title: "Removed",
+                                            text: "Item removed from the cart.",
+                                            icon: "success",
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload();
+                                            }
+                                        });
                                     } else {
                                         throw new Error(response.data.message);
                                     }

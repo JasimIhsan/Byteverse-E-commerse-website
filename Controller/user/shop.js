@@ -3,6 +3,7 @@ const Category = require("../../model/catogory");
 const User = require("../../model/user");
 const Offers = require("../../model/offers");
 
+// function for finding best offer for each product
 function findBestOffer(product, offers) {
     let bestOffer = null;
     const currentDate = new Date();
@@ -22,17 +23,30 @@ function findBestOffer(product, offers) {
     return bestOffer;
 }
 
+// controller for getting all products with best offer in shop page - get method
 const getShop = async (req, res) => {
     try {
         const title = "Shop | Byteverse E-commerce";
         const { search = "", page = 1, sortby = "popularity", categories = [], brands = [] } = req.query;
         const limit = 8;
         const skip = (page - 1) * limit;
-        const regex = new RegExp("^" + search, "i");
         const userId = req.session.userId;
+
+        const keywords = search.split(" ").filter(Boolean);
+
+        function createDynamicRegex(keywords) {
+            const escapedKeywords = keywords.map((keyword) => keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+            const pattern = escapedKeywords.map((keyword) => `(?=.*\\b${keyword}\\b)`).join("");
+            return new RegExp(pattern, "i");
+        }
+
+        // Create regex for search
+        const regex = createDynamicRegex(keywords);
+        console.log(regex);
 
         const user = await User.findById(userId);
 
+        // Define sort options
         let sortOptions = {};
         switch (sortby) {
             case "price_low":
@@ -54,11 +68,15 @@ const getShop = async (req, res) => {
                 sortOptions = { updatedAt: -1 };
         }
 
+        // Prepare category and brand filters
         const selectedCategories = Array.isArray(categories) ? categories : [categories].filter(Boolean);
         const selectedBrands = Array.isArray(brands) ? brands : [brands].filter(Boolean);
 
-        let query = { status: "listed", name: { $regex: regex } };
+        let query = {
+            status: "listed",
+        };
 
+        // Filter by categories and brands
         if (selectedCategories.length > 0) {
             query.category = { $in: selectedCategories };
         }
@@ -67,17 +85,20 @@ const getShop = async (req, res) => {
             query.brand = { $in: selectedBrands };
         }
 
-        const products = await Products.find(query)
-            .sort(sortOptions)
-            .populate({ path: "category", match: { status: "listed" } })
-            .skip(skip)
-            .limit(limit);
+        console.log("Initial query : ", query);
 
-        const filteredProducts = products.filter((product) => product.category);
+        // First, find the filtered products
+        const filteredProducts = await Products.find(query).populate({ path: "category", match: { status: "listed" } });
 
+        // Now, filter the results by the search term
+        const searchedProducts = filteredProducts.filter((product) => regex.test(product.description));
+
+        // Apply pagination to the searched products
+        const paginatedProducts = searchedProducts.slice(skip, skip + limit);
+
+        // Get offers and best offers
         const offers = await Offers.find({ isActive: true });
-
-        const productsWithBestOffers = filteredProducts.map((product) => {
+        const productsWithBestOffers = paginatedProducts.map((product) => {
             const bestOffer = findBestOffer(product, offers);
             return {
                 ...product.toObject(),
@@ -85,7 +106,7 @@ const getShop = async (req, res) => {
             };
         });
 
-        const totalProducts = await Products.countDocuments(query);
+        const totalProducts = searchedProducts.length; // Total products after search filter
         const totalPages = Math.ceil(totalProducts / limit);
         const userLoggedIn = req.session.user ? true : false;
 
@@ -118,6 +139,7 @@ const getShop = async (req, res) => {
     }
 };
 
+// controller for getting specific product details - get method
 const getProductDetail = async (req, res) => {
     try {
         const title = "Product detail page | Byteverse E-commerce";

@@ -155,6 +155,66 @@
                     grid-template-columns: 2fr 1fr;
                 }
             }
+            .order-actions {
+                flex: 1;
+                text-align: right;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+
+            .status-badge {
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                text-transform: capitalize;
+                color: white;
+            }
+
+            .status-delivered {
+                background-color: #4caf50; /* Green */
+                border: 1px solid #43a047;
+            }
+
+            .status-pending {
+                background-color: #ff9800; /* Orange */
+                border: 1px solid #f57c00;
+            }
+
+            .status-processing {
+                background-color: #2196f3; /* Blue */
+                border: 1px solid #1e88e5;
+            }
+
+            .status-cancelled {
+                background-color: #f44336; /* Red */
+                border: 1px solid #e53935;
+            }
+
+            .status-shipped {
+                background-color: #9c27b0; /* Purple */
+                border: 1px solid #8e24aa;
+            }
+
+            .status-returned {
+                background-color: #795548; /* Brown */
+                border: 1px solid #6d4c41;
+            }
+
+            .view-details {
+                text-decoration: none;
+                color: #007bff;
+                padding: 6px 12px;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+            }
+
+            .view-details:hover {
+                background-color: #f0f0f0;
+                color: #0056b3;
+            }
         </style>
     </head>
     <body>
@@ -190,10 +250,18 @@
                     <% if (orders.length > 0) { %>
                     <ul style="list-style-type: none; padding: 0">
                         <% orders.forEach(order => { %>
-                        <li style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px">
-                            <span>Order #<%= order._id %></span>
-                            <span>$<%= order.total.toFixed(2) %></span>
-                            <span class="badge"> <%= order.deliveryStatus %> </span>
+                        <li style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; align-items: center">
+                            <div style="flex: 1">
+                                <span style="font-weight: bold">Order #<%= order._id %></span>
+                                <p style="margin: 0; font-size: 0.9em; color: #666">Placed on: <%= new Date(order.createdAt).toLocaleDateString() %></p>
+                            </div>
+                            <div style="flex: 1">
+                                <span style="font-weight: bold">Total: ₹<%= order.total.toFixed(2) %></span>
+                            </div>
+                            <div class="order-actions">
+                                <span class="status-badge <%= order.deliveryStatus.toLowerCase() === 'delivered' ? 'status-delivered' : order.deliveryStatus.toLowerCase() === 'pending' ? 'status-pending' : order.deliveryStatus.toLowerCase() === 'processing' ? 'status-processing' : order.deliveryStatus.toLowerCase() === 'shipped' ? 'status-shipped' : order.deliveryStatus.toLowerCase() === 'returned' ? 'status-returned' : 'status-cancelled' %>"> <%= order.deliveryStatus %> </span>
+                                <a href="/admin/order-management/order-detail/<%= order._id %>" class="view-details">View Details</a>
+                            </div>
                         </li>
                         <% }) %>
                     </ul>

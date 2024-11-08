@@ -151,7 +151,7 @@ h2 {
     color: #2c3e50;
 }
 
-.card {
+.card_badge {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -165,12 +165,12 @@ h2 {
     margin-bottom: 10px;
 }
 
-.grid {
+.grid-badge {
     display: grid;
     gap: 20px;
 }
 
-.grid-cols-3 {
+.grid-badge-cols-3 {
     grid-template-columns: repeat(3, 1fr);
 }
 
@@ -245,4 +245,72 @@ th {
     .grid-cols-3 {
         grid-template-columns: 1fr;
     }
+}
+
+.grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.5rem 1.5rem 0;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.card-description {
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.card-content {
+    padding: 1.5rem;
+    height: 300px;
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* CSS for Pie Chart to Make It Square */
+.card-content #brandsMarketPieChart {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.decorative-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    position: relative;
+    margin: 20px 0;
+}
+
+.dividery {
+    height: 2px; 
+    background-color: #d4d4d4;
+    margin: 20px 0; 
+    border-radius: 2px; 
 }

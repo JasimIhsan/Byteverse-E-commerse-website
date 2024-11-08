@@ -2,6 +2,7 @@ const Offers = require("../../model/offers");
 const Category = require("../../model/catogory");
 const Products = require("../../model/product");
 
+// controller for getting offer management page - get method
 const getOffer = async (req, res) => {
     try {
         const itemsPerPage = 10;
@@ -33,6 +34,7 @@ const getOffer = async (req, res) => {
     }
 };
 
+// controller for creating offer - post method
 const addOffer = async (req, res) => {
     try {
         const { title, discountAmount, offerType, minimumPrice, applicableCategories, applicableProducts, startDate, endDate } = req.body;
@@ -58,6 +60,7 @@ const addOffer = async (req, res) => {
     }
 };
 
+// controller for updating offer status - put method
 const updateOfferStatus = async (req, res) => {
     try {
         const { offerId } = req.params;
@@ -76,6 +79,7 @@ const updateOfferStatus = async (req, res) => {
     }
 };
 
+// controller for deleting the offer - delete method
 const deleteOffer = async (req, res) => {
     try {
         const { offerId } = req.params;
@@ -93,6 +97,7 @@ const deleteOffer = async (req, res) => {
     }
 };
 
+// controller for populting the existing offer details when editing offer modal popup - get method 
 const getOfferById = async (req, res) => {
     const { offerId } = req.params;
 
@@ -110,6 +115,7 @@ const getOfferById = async (req, res) => {
     }
 };
 
+// controller for editing the offer - put method
 const editOffer = async (req, res) => {
     try {
         const { offerId } = req.params;

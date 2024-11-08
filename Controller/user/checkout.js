@@ -6,8 +6,10 @@ const Address = require("../../model/Address");
 const Order = require("../../model/orders");
 const Coupon = require("../../model/coupon");
 const Offers = require("../../model/offers");
+const Wallet = require("../../model/wallet");
 
-//--------------- Find best Offer --------------------//
+//--------------- Find best Offer for the products--------------------//
+
 
 function findBestOffer(product, offers) {
     let bestOffer = null;
@@ -28,15 +30,22 @@ function findBestOffer(product, offers) {
     return bestOffer;
 }
 
+//--------------- generate order Id -------------------//
+
+function generateOrderId() {
+    const prefix = "ORD";
+    const timestamp = Date.now();
+    const randomNum = Math.floor(Math.random() * 1000);
+    return `${prefix}_${timestamp.toString().slice(-3)}${randomNum}`;
+}
+
 //--------------- cart --------------------//
 
+// controller for getting cart and sends nessessary details to the frontend - get method
 const getCart = async (req, res) => {
     try {
         const userId = req.session.userId;
         const userLoggedIn = req.session.userId ? true : false;
-
-        // const userId = "671779c18dc25b26d1f7d8ea";
-        // const userLoggedIn = true;
 
         const cart = await Cart.findOne({ userId: userId }).populate({
             path: "products.productId",
@@ -106,6 +115,7 @@ const getCart = async (req, res) => {
     }
 };
 
+// controller for adding products into the cart - post method
 const postAddtoCart = async (req, res) => {
     const { productId } = req.body;
     const userId = req.session.userId;
@@ -165,6 +175,7 @@ const postAddtoCart = async (req, res) => {
     }
 };
 
+// controller for updating cart - post method
 const updateCart = async (req, res) => {
     try {
         const { productId, quantity } = req.body;
@@ -236,6 +247,7 @@ const updateCart = async (req, res) => {
     }
 };
 
+// controller for deleting product from cart - post method
 const delete_item = async (req, res) => {
     const { productId } = req.params;
     const userId = req.session.userId;
@@ -297,6 +309,7 @@ const delete_item = async (req, res) => {
 
 //--------------- Checkout --------------------//
 
+// controller for getting checkout page - get method
 const getCheckout = async (req, res) => {
     try {
         const userId = req.session.userId;
@@ -360,9 +373,11 @@ const getCheckout = async (req, res) => {
     }
 };
 
+// controller for applying coupon - post method
 const applyCoupon = async (req, res) => {
     const { couponCode } = req.body;
     const userId = req.session.userId;
+    // const userId = "671779c18dc25b26d1f7d8ea";
 
     try {
         const coupon = await Coupon.findOne({ code: couponCode });
@@ -411,9 +426,36 @@ const applyCoupon = async (req, res) => {
     }
 };
 
+// controller for removing coupon - post method
+const removeCoupon = async (req, res) => {
+    const userId = req.session.userId;
+    // const userId = "671779c18dc25b26d1f7d8ea";
+
+    try {
+        const userCart = await Cart.findOne({ userId: userId });
+
+        if (!userCart) {
+            return res.json({ success: false, message: "Your cart is empty." });
+        }
+
+        // Reset the total to the original cart total by removing the discount
+        const originalTotal = userCart.cartTotal;
+        userCart.discountAmount = 0;
+        await userCart.save();
+
+        return res.json({ success: true, total: originalTotal });
+    } catch (error) {
+        console.error("Error removing coupon:", error);
+        return res.status(500).json({ success: false, message: "An error occurred while removing the coupon." });
+    }
+};
+
+// controller for creating order by cash on delivery and wallet payment - post method
 const creatingOrder = async (req, res) => {
     try {
         const userId = req.session.userId;
+        // const userId = "671779c18dc25b26d1f7d8ea";
+
         const { addressId, paymentMethod, couponCode, firstName, lastName, phoneNumber, street, city, state, postalCode, country, additionalInfo } = req.body;
         console.log(req.body);
 
@@ -460,9 +502,14 @@ const creatingOrder = async (req, res) => {
             });
         }
 
+        // console.log("orderItems : ", orderItems);
+
         const subtotal = orderItems.reduce((sum, item) => sum + item.price, 0);
         const deliveryCharge = subtotal > 1500 ? 0 : 20;
         let total = subtotal + deliveryCharge;
+
+        // let total = 100;
+
         let couponDiscount = 0;
 
         if (coupon) {
@@ -479,10 +526,55 @@ const creatingOrder = async (req, res) => {
             return res.status(500).json({ message: "Failed to calculate total." });
         }
 
+        let paymentStatus = "Pending";
+        let transactionDate = null;
+        let paymentId = null;
+        let razorpayOrderId = null;
+        let transactionId = null;
+
+        if (paymentMethod === "Wallet Payments") {
+            const wallet = await Wallet.findOne({ userId });
+            if (!wallet) {
+                return res.status(400).json({ message: "Wallet not found." });
+            }
+
+            console.log("Wallet balance : ", wallet.balance);
+            console.log("total : ", total);
+
+            if (wallet.balance < total) {
+                return res.status(400).json({ message: "Insufficient wallet balance." });
+            }
+
+            transactionId = `wal_${Date.now()}`;
+
+            wallet.balance -= total;
+
+            // wallet.balance -= total;
+            wallet.transactions.push({
+                transactionId,
+                type: "Debit",
+                amount: total,
+                description: "Order Payment",
+                status: "completed",
+            });
+
+            await wallet.save();
+
+            paymentStatus = "Paid";
+            transactionDate = new Date();
+            paymentId = transactionId;
+        }
+
+        const orderId = await generateOrderId();
+        console.log("OrderID : ", orderId);
+
         const order = new Order({
+            orderId,
             userId,
             products: orderItems,
+            deliveryStatus: "Processing",
             paymentMethod,
+            paymentStatus,
             total,
             shippingCost: deliveryCharge,
             address: {
@@ -499,6 +591,9 @@ const creatingOrder = async (req, res) => {
             couponCode: couponCode ? couponCode : null,
             couponDiscount,
             offerDiscount: cartDiscount,
+            paymentId,
+            razorpayOrderId,
+            transactionDate,
         });
 
         await order.save();
@@ -510,12 +605,12 @@ const creatingOrder = async (req, res) => {
 
         await User.findByIdAndUpdate(userId, { $inc: { orders: 1 } });
 
-        for (const item of orderItems) {
-            await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
-        }
+        // for (const item of orderItems) {
+        //     await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
+        // }
 
-        cart.products = [];
-        await cart.save();
+        // cart.products = [];
+        // await cart.save();
 
         req.session.orderPlaced = true;
 
@@ -541,15 +636,13 @@ const creatingOrder = async (req, res) => {
 
 //--------------- order confirmaiton --------------------//
 
+// controller for order confirmation page - get method
 const getPlaceOrder = async (req, res) => {
     try {
         const userId = req.session.userId;
         const userLoggedIn = Boolean(req.session.userLoggedIn);
-        const orderId = req.params.orderId;
-        console.log("ORDERID : ", orderId);
 
-        // const userId = "671779c18dc25b26d1f7d8ea";
-        // const userLoggedIn = true;
+        const orderId = req.params.orderId;
 
         const [user, order, cart] = await Promise.all([User.findById(userId), Order.findById(orderId).populate("products.productId"), Cart.findOne({ userId: userId })]);
 
@@ -564,22 +657,19 @@ const getPlaceOrder = async (req, res) => {
         }));
 
         const orderTotal = cart.cartTotal;
-        // const deliveryCharge = 20;
         const couponDiscount = order.couponDiscount || 0;
         const totalPrice = orderTotal - couponDiscount;
-
-        console.log("orderTotal : ", orderTotal);
-
-        console.log("totalPriice : ", totalPrice);
+        const subtotal = order.products.reduce((total, item) => total + item.price, 0);
+        console.log(subtotal);
 
         res.render("user/orderplaced", {
+            orderId,
             userId,
             user,
             orderItems,
-            subtotal: orderTotal,
+            subtotal,
             totalPrice,
-            // deliveryCharge,
-            orderNumber: order._id,
+            orderNumber: order.orderId,
             userLoggedIn,
             order,
             couponCode: order.couponCode || null,
@@ -599,4 +689,5 @@ module.exports = {
     getPlaceOrder,
     creatingOrder,
     applyCoupon,
+    removeCoupon,
 };

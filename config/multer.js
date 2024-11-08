@@ -7,7 +7,7 @@ function generateRandomFilename(originalname) {
     return `${Date.now()}_${Math.floor(Math.random() * 10000)}${ext}`; // Generates a timestamp + random number
 }
 
-
+// controller for storing the images using multer
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "uploads/"); // Directory to save uploaded images

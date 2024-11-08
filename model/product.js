@@ -54,6 +54,10 @@ const productSchema = new mongoose.Schema(
             enum: ["listed", "unlisted"],
             default: "listed",
         },
+        description: {
+            type: String,
+            required: true,
+        },
     },
     { timestamps: true }
 );

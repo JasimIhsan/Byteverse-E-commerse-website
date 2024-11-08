@@ -67,8 +67,6 @@ router.post("/order-management/update-status/:orderId", auth.checkSession, order
 
 router.get("/order-management/order-detail/:orderId", auth.checkSession, order.getOrderDetail);
 
-router.post("/order-management/order-detail/remove-order-item", auth.checkSession, order.cancelOrderItem);
-
 //----------- Coupon management -----------------//
 
 router.get("/coupon-management", auth.checkSession, coupon.getCoupon);

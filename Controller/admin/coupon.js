@@ -1,5 +1,6 @@
 const Coupon = require("../../model/coupon");
 
+// controller for getting coupon management page - get method
 const getCoupon = async (req, res) => {
     try {
         const itemsPerPage = 10;
@@ -30,6 +31,7 @@ const getCoupon = async (req, res) => {
     }
 };
 
+// controller for creating a new coupon - post method
 const addCoupon = async (req, res) => {
     console.log("add coupon controller");
 
@@ -59,6 +61,7 @@ const addCoupon = async (req, res) => {
     }
 };
 
+// controller for populating the existing data when open the edit modal - get method
 const getCouponById = async (req, res) => {
     const { couponId } = req.params;
     try {
@@ -73,6 +76,7 @@ const getCouponById = async (req, res) => {
     }
 };
 
+// controller for editing the coupon details - put method
 const updateCoupon = async (req, res) => {
     console.log("update coupon controller");
 
@@ -96,6 +100,7 @@ const updateCoupon = async (req, res) => {
     }
 };
 
+// controller for deleting the coupon - delete method
 const deleteCopon = async (req, res) => {
     try {
         const couponId = req.params.couponId;
@@ -113,6 +118,7 @@ const deleteCopon = async (req, res) => {
     }
 };
 
+// controller for updating the coupon status (activated or deactivated) - post method
 const toggleCouponStatus = async (req, res) => {
     const { couponId, newStatus } = req.body;
 

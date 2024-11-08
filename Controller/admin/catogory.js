@@ -1,5 +1,6 @@
 const Category = require("../../model/catogory");
 
+// controller for getting category management page - get method
 const getCategory = async (req, res) => {
     try {
         const { search = "", page = 1 } = req.query;
@@ -24,6 +25,7 @@ const getCategory = async (req, res) => {
     }
 };
 
+// controller for editing the category - post method
 const editCategory = async (req, res) => {
     try {
         const { id, name, description } = req.body;
@@ -42,6 +44,7 @@ const editCategory = async (req, res) => {
     }
 };
 
+// controller for adding category - post method
 const addCategory = async (req, res) => {
     try {
         const { name, description } = req.body;
@@ -66,6 +69,7 @@ const addCategory = async (req, res) => {
     }
 };
 
+// controller for updating the status of the category ( listed or unlisted) - patch method
 const editCategoryStatus = async (req, res) => {
     try {
         const categoryId = req.params.id;

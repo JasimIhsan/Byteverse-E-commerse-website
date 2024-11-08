@@ -6,6 +6,7 @@ const ExcelJS = require("exceljs");
 const fs = require("fs");
 const { format } = require("date-fns");
 
+// controller for getting admin login page - get method
 const getAdminLogin = async (req, res) => {
     try {
         const error_msg = req.query.error;
@@ -15,6 +16,7 @@ const getAdminLogin = async (req, res) => {
     }
 };
 
+// controller for checking the admin credentials like username and password - post method
 const postAdminLogin = async (req, res) => {
     try {
         const username = "admin";
@@ -35,14 +37,18 @@ const postAdminLogin = async (req, res) => {
     }
 };
 
+// controller for getting admin dashboard - get method
 const getAdminDashboard = async (req, res) => {
     try {
-        const { search = "", timeFilter = "all" } = req.query;
+        let { search = "", timeFilter = "all", startDate, endDate } = req.query;
 
-        let startDate = new Date();
-        const endDate = new Date();
+        startDate = startDate ? new Date(startDate) : new Date();
+        endDate = endDate ? new Date(endDate) : new Date();
 
-        // Handle different time filter conditions
+        console.log("time filter : ", timeFilter);
+        console.log("start Date : ", startDate.toLocaleString());
+        console.log("end Date : ", endDate.toLocaleString());
+
         if (timeFilter === "today") {
             startDate.setDate(startDate.getDate() - 1);
         } else if (timeFilter === "week") {
@@ -50,7 +56,13 @@ const getAdminDashboard = async (req, res) => {
         } else if (timeFilter === "month") {
             startDate.setMonth(startDate.getMonth() - 1);
         } else if (timeFilter === "all") {
-            startDate = new Date("1970-01-01"); // Set a very early date to include all records
+            startDate = new Date("1970-01-01");
+        } else if (timeFilter === "custom") {
+            if (!startDate || !endDate) {
+                console.error("Custom date range requires both startDate and endDate.");
+                res.status(400).send("Please provide both start and end dates for the custom filter.");
+                return;
+            }
         }
 
         const salesData = await Order.aggregate([
@@ -66,7 +78,14 @@ const getAdminDashboard = async (req, res) => {
                 $group: {
                     _id: {
                         $dateToString: {
-                            format: timeFilter === "today" ? "%Y-%m-%d" : timeFilter === "week" ? "%Y-%U" : "%Y-%m",
+                            format:
+                                timeFilter === "today"
+                                    ? "%Y-%m-%d"
+                                    : timeFilter === "week"
+                                    ? "%Y-%U"
+                                    : timeFilter === "month"
+                                    ? "%Y-%m" // For month, group by month
+                                    : "%Y-%m-%d", // For "all", group by day
                             date: "$orderDate",
                         },
                     },
@@ -97,33 +116,161 @@ const getAdminDashboard = async (req, res) => {
             },
         ]);
 
+        // console.log("salesData : ", salesData);
+
         const overallSalesCount = salesData.reduce((acc, item) => acc + item.totalOrders, 0);
         const overallOrderAmount = salesData.reduce((acc, item) => acc + item.totalAmount, 0);
         const overallCouponDiscount = salesData.reduce((acc, item) => acc + item.totalCouponDiscount, 0);
         const overallOfferDiscount = salesData.reduce((acc, item) => acc + item.totalOfferDiscount, 0);
         const overallDiscount = overallCouponDiscount + overallOfferDiscount;
 
-        // Data for chart
+        const productsData = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate,
+                    },
+                },
+            },
+            { $unwind: "$products" },
+            {
+                $group: {
+                    _id: "$products.productId",
+                    totalQuantity: { $sum: "$products.quantity" },
+                },
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "productDetails",
+                },
+            },
+            { $unwind: "$productDetails" },
+            {
+                $project: {
+                    name: "$productDetails.name",
+                    quantitySold: "$totalQuantity",
+                    _id: 0,
+                },
+            },
+            { $sort: { quantitySold: -1 } },
+            { $limit: 10 },
+        ]);
+
+        const categoriesData = await Order.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: startDate,
+                        $lt: endDate,
+                    },
+                },
+            },
+            { $unwind: "$products" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "products.productId",
+                    foreignField: "_id",
+                    as: "productDetails",
+                },
+            },
+            { $unwind: "$productDetails" },
+            {
+                $group: {
+                    _id: "$productDetails.category",
+                    totalQuantity: { $sum: "$products.quantity" },
+                },
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "categoryDetails",
+                },
+            },
+            { $unwind: { path: "$categoryDetails", preserveNullAndEmptyArrays: true } },
+            {
+                $match: {
+                    categoryDetails: { $ne: null },
+                },
+            },
+            {
+                $project: {
+                    name: "$categoryDetails.name",
+                    quantitySold: "$totalQuantity",
+                    _id: 0,
+                },
+            },
+            { $sort: { quantitySold: -1 } },
+            { $limit: 10 },
+        ]);
+
+        const brandsData = await Order.aggregate([
+            { $unwind: "$products" },
+            {
+                $match: {
+                    createdAt: { $gte: startDate, $lt: endDate },
+                },
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "products.productId",
+                    foreignField: "_id",
+                    as: "productDetails",
+                },
+            },
+            { $unwind: "$productDetails" },
+            {
+                $group: {
+                    _id: "$productDetails.brand",
+                    quantitySold: { $sum: "$products.quantity" },
+                },
+            },
+            {
+                $project: {
+                    name: { $ifNull: ["$_id", "Unknown Brand"] },
+                    quantitySold: "$quantitySold",
+                    _id: 0,
+                },
+            },
+            { $sort: { quantitySold: -1 } },
+            { $limit: 5 },
+        ]);
+
+        console.log("productData : ", productsData);
+        console.log("category data : ", categoriesData);
+        console.log("brands data   : ", brandsData);
+
         const labels = salesData.map((item) => item.date);
         const ordersData = salesData.map((item) => item.totalOrders);
         const amountData = salesData.map((item) => item.totalAmount);
-        const discountData = salesData.map((item) => item.totalDiscount); // Add discount data
+        const discountData = salesData.map((item) => item.totalDiscount);
 
         res.render("admin/dashboard", {
             search,
             salesData,
+            tableSalesData: salesData.reverse(),
             overallSalesCount,
             overallOrderAmount,
             overallCouponDiscount,
             overallOfferDiscount,
             overallDiscount,
-            labels,
-            ordersData,
-            amountData,
-            discountData, // Ensure this is included
+            productsData,
+            categoriesData,
+            brandsData,
             timeFilter,
             startDate,
             endDate,
+            labels,
+            ordersData,
+            amountData,
+            discountData,
         });
     } catch (error) {
         console.error("Error from rendering admin dashboard: \n", error);
@@ -131,6 +278,7 @@ const getAdminDashboard = async (req, res) => {
     }
 };
 
+// controller for logout from the account (destroying session) - post method
 const logout = async (req, res) => {
     try {
         req.session.destroy((err) => {
@@ -146,6 +294,7 @@ const logout = async (req, res) => {
     }
 };
 
+// controller for downloading sales report - post method
 const downloadReport = async (req, res) => {
     try {
         const { format, timeFilter = "all" } = req.query;
@@ -223,6 +372,7 @@ const downloadReport = async (req, res) => {
     }
 };
 
+// Helper function to generate PDF
 const generatePDF = (salesData, startDate, endDate, res) => {
     const doc = new PDFDocument({ margin: 50 });
     res.setHeader("Content-Type", "application/pdf");
@@ -399,7 +549,7 @@ const generatePDF = (salesData, startDate, endDate, res) => {
             doc.font("Helvetica")
                 .fillColor(amount.color)
                 .text(
-                    `$${amount.value.toLocaleString("en-US", {
+                    `₹${amount.value.toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     })}`,
@@ -451,8 +601,8 @@ const generatePDF = (salesData, startDate, endDate, res) => {
     // Summary text
     const summaryData = [
         { label: "Total Orders:", value: totalOrders.toLocaleString() },
-        { label: "Total Discounts:", value: `$${totalDiscount.toLocaleString("en-US", { minimumFractionDigits: 2 })}` },
-        { label: "Total Revenue:", value: `$${totalAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}` },
+        { label: "Total Discounts:", value: `₹${totalDiscount.toLocaleString("en-US", { minimumFractionDigits: 2 })}` },
+        { label: "Total Revenue:", value: `₹${totalAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}` },
     ];
 
     summaryData.forEach((item, index) => {
@@ -464,6 +614,7 @@ const generatePDF = (salesData, startDate, endDate, res) => {
     doc.end();
 };
 
+// Helper function to generate Excel
 const generateExcel = (salesData, startDate, endDate, res) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Sales Report");
@@ -642,10 +793,10 @@ const generateExcel = (salesData, startDate, endDate, res) => {
             } else if (i === 4) {
                 // Total Amount
                 cell.font.color = { argb: colors.positive };
-                cell.numFmt = "$#,##0.00";
+                cell.numFmt = "₹#,##0.00";
             } else {
                 // Discount columns
-                cell.numFmt = "$#,##0.00";
+                cell.numFmt = "₹#,##0.00";
             }
         }
     });
@@ -710,7 +861,7 @@ const generateExcel = (salesData, startDate, endDate, res) => {
             bold: true,
             size: 11,
         };
-        valueCell.numFmt = data[0].includes("Orders") ? "#,##0" : "$#,##0.00";
+        valueCell.numFmt = data[0].includes("Orders") ? "#,##0" : "₹#,##0.00";
         valueCell.alignment = { horizontal: "center", vertical: "middle" };
     });
 

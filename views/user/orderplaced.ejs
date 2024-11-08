@@ -1,73 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Order Placed Successfully</title>
-        <link rel="stylesheet" href="/assets/css/style.css" />
-        <link rel="stylesheet" href="/css/user/main.css" />
-        <link rel="stylesheet" href="/css/user/confirmplaceorder.css" />
-    </head>
-    <body>
-        <%- include('partials/header.ejs') %>
-        <div class="random-container" style="margin-top: 65px">
-            <div class="random-card">
-                <div class="random-card-header">
-                    <svg class="random-icon random-icon-large text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 100px; height: 100px">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <h1 class="random-card-title">Order Placed Successfully!</h1>
-                </div>
-                <div class="random-card-content">
-                    <div class="text-center">
-                        <p class="text-gray">Thank you for your purchase. Your order has been received and is being processed.</p>
-                        <p class="font-semibold mt-2">Order Number: <span class="text-blue"><%= orderNumber %></span></p>
-                    </div>
-                    <div class="border-t border-b">
-                        <h3 class="font-semibold">Order Summary</h3>
-                        <div class="space-y-2">
-                            <% orderItems.forEach(item => { %>
-                            <div class="flex justify-between">
-                                <span><%= item.productName %> (Qty: <%= item.quantity %>)</span>
-                                <span>$<%= item.price.toFixed(2) %></span>
-                            </div>
-                            <% }); %>
-                        </div>
-                    </div>
-                    <div class="border-t border-b">
-                        <div class="flex justify-between">
-                            <span class="font-semibold">Subtotal:</span>
-                            <span>$<%= subtotal.toFixed(2) %></span>
-                        </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-                        <!-- Display the coupon discount if applied -->
-                        <% if (couponDiscount > 0) { %>
-                        <div class="flex justify-between">
-                            <span class="font-semibold">Coupon (<%= couponCode %>):</span>
-                            <span class="text-red">-$<%= couponDiscount.toFixed(2) %></span>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.5;
+        }
+
+        /* Container styles */
+        .container {
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            max-width: 64rem;
+            margin: 0 auto;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header styles */
+        .card-header {
+            text-align: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .success-icon {
+            width: 5rem;
+            height: 5rem;
+            margin: 0 auto 1rem;
+            color: #10b981;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .order-number {
+            color: #4b5563;
+        }
+
+        /* Content styles */
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .status-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            padding: 1rem;
+            background-color: #f9fafb;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .status-item {
+            padding: 0.5rem;
+        }
+
+        .status-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .status-value {
+            font-weight: 600;
+        }
+
+        /* Grid layout for address and summary */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-card {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+        }
+
+        .detail-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Order items styles */
+        .order-items {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-name {
+            font-weight: 500;
+        }
+
+        .item-quantity {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .item-price {
+            font-weight: 500;
+        }
+
+        /* Summary styles */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-total {
+            border-top: 1px solid #e5e7eb;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            font-weight: 700;
+        }
+
+        /* Footer styles */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            gap: 0.5rem;
+        }
+
+        .button-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .button-secondary {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+
+        .button svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* Status colors */
+        .status-pending { color: #d97706; }
+        .status-processing { color: #2563eb; }
+        .status-shipped { color: #059669; }
+        .status-delivered { color: #065f46; }
+        .status-paid { color: #059669; }
+        .status-failed { color: #dc2626; }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .card-footer {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Header -->
+            <div class="card-header">
+                <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <img src="/images/icons/ordersuccess.png" alt="order success icon" style="width: 300px;">
+                </svg>
+                <h1 class="card-title">Order Placed Successfully!</h1>
+                <p class="order-number">Order Number: <%= orderNumber %></p>
+            </div>
+
+            <!-- Content -->
+            <div class="card-content">
+                <!-- Status Overview -->
+                <div class="status-overview">
+                    <div class="status-item">
+                        <p class="status-label">Order Status</p>
+                        <p class="status-value status-<%= order.deliveryStatus.toLowerCase() %>">
+                            <%= order.deliveryStatus %>
+                        </p>
+                    </div>
+                    <div class="status-item">
+                        <p class="status-label">Payment Method</p>
+                        <p class="status-value"><%= order.paymentMethod %></p>
+                    </div>
+                    <div class="status-item">
+                        <p class="status-label">Payment Status</p>
+                        <p class="status-value status-<%= order.paymentStatus.toLowerCase() %>">
+                            <%= order.paymentStatus %>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Details Grid -->
+                <div class="details-grid">
+                    <!-- Shipping Address -->
+                    <div class="detail-card">
+                        <h2 class="detail-title">Shipping Address</h2>
+                        <p><strong><%= order.address.firstName %> <%= order.address.lastName %></strong></p>
+                        <p><%= order.address.street %></p>
+                        <p><%= order.address.city %>, <%= order.address.state %> <%= order.address.postalCode %></p>
+                        <p><%= order.address.country %></p>
+                        <p>Phone: <%= order.address.phoneNumber %></p>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="detail-card">
+                        <h2 class="detail-title">Order Summary</h2>
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span>₹<%= subtotal.toFixed(2) %></span>
+                        </div>
+                        <% if (order.couponDiscount > 0) { %>
+                        <div class="summary-row">
+                            <span>Coupon Discount (<%= order.couponCode %>):</span>
+                            <span>-₹<%= order.couponDiscount.toFixed(2) %></span>
                         </div>
                         <% } %>
-
-                        <div class="flex justify-between">
-                            <span class="font-semibold">Shipping Charge:</span>
-                            <span><%= totalPrice < 1500 ? "$" + 20 : 'Free Shipping' %></span>
+                        <div class="summary-row">
+                            <span>Shipping:</span>
+                            <span><%= totalPrice < 1500 ? "₹" + order.shippingCost.toFixed(2) : 'Free' %></span>
                         </div>
-
-                        <div class="flex justify-between">
-                            <span class="font-semibold">Total:</span>
-                            <span>$<%= totalPrice.toFixed(2) %></span>
+                        <div class="summary-row summary-total">
+                            <span>Total:</span>
+                            <span>₹<%= totalPrice.toFixed(2) %></span>
                         </div>
                     </div>
                 </div>
 
-                <div class="random-card-footer">
-                    <a href="/shop" class="random-button">Continue Shopping</a>
+                <!-- Order Items -->
+                <div class="order-items">
+                    <h2 class="detail-title">Order Items</h2>
+                    <% orderItems.forEach(item => { %>
+                    <div class="item">
+                        <div class="item-details">
+                            <p class="item-name"><%= item.productName %></p>
+                            <p class="item-quantity">Quantity: <%= item.quantity %></p>
+                        </div>
+                        <p class="item-price">₹<%= item.price.toFixed(2) %></p>
+                    </div>
+                    <% }); %>
                 </div>
             </div>
-        </div>
 
-        <!-- Plugins JS File -->
-        <script src="/assets/js/jquery.min.js"></script>
-        <script src="/assets/js/main.js"></script>
-    </body>
+            <!-- Footer -->
+            <div class="card-footer">
+                <a href="/shop" class="button button-primary" style="text-decoration: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    Continue Shopping
+                </a>
+                <button onclick="window.print()" class="button button-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                    Print Order
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
 </html>

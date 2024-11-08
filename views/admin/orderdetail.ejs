@@ -143,7 +143,7 @@
     <body>
         <div class="container">
             <header class="header">
-                <h1>Order #<%= order._id %></h1>
+                <h1>Order #<%= order.orderId%></h1>
                 <% if (order.deliveryStatus) { %>
                 <span class="badge"><%= order.deliveryStatus.charAt(0).toUpperCase() + order.deliveryStatus.slice(1) %></span>
                 <% } else { %>
@@ -173,9 +173,10 @@
                                 <circle cx="12" cy="10" r="3"></circle>
                             </svg>
                             <address>
-                                <p><%= order.Address ? order.Address.streetAddress : 'N/A' %></p>
-                                <p><%= order.Address ? `${order.Address.city}, ${order.Address.state} ${order.Address.postalCode}` : 'N/A' %></p>
-                                <p><%= order.Address ? order.Address.country : 'N/A' %></p>
+                                <p><%= order.address.street %> <%= order.address.additionalInfo ? `(₹{order.address.additionalInfo})` : '' %></p>
+                                <p><%= order.address.city %>, <%= order.address.state %> <%= order.address.postalCode %></p>
+                                <p><%= order.address.country %></p>
+                                <p>Phone: <%= order.address.phoneNumber %></p>
                             </address>
                         </div>
                     </div>
@@ -188,20 +189,20 @@
                     <div class="card-content space-y-2">
                         <div class="flex justify-between">
                             <span class="text-muted">Subtotal</span>
-                            <span>$<%= subtotal.toFixed(2) %></span>
+                            <span>₹<%= subtotal.toFixed(2) %></span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-muted">Shipping</span>
-                            <span>$<%= order.shippingCost ? order.shippingCost.toFixed(2) : '0.00' %></span>
+                            <span>₹<%= order.shippingCost ? order.shippingCost.toFixed(2) : '0.00' %></span>
                         </div>
                         <!-- <div class="flex justify-between">
                             <span class="text-muted">Tax</span>
-                            <span>$<%= order.tax ? order.tax.toFixed(2) : '0.00' %></span>
+                            <span>₹<%= order.tax ? order.tax.toFixed(2) : '0.00' %></span>
                         </div> -->
                         <div class="separator"></div>
                         <div class="flex justify-between font-medium">
                             <span>Total</span>
-                            <span>$<%= order.total ? order.total.toFixed(2) : '0.00' %></span>
+                            <span>₹<%= order.total ? order.total.toFixed(2) : '0.00' %></span>
                         </div>
                     </div>
                 </div>
@@ -220,41 +221,31 @@
                                 <th>Quantity</th>
                                 <th>Price</th>
                                 <th>Total</th>
-                                <% if (order.deliveryStatus == 'Pending' || order.deliveryStatus == 'Processing') { %>
-                                    <th style="display: flex; justify-content: center">Action</th>
-                                <% } %>
+                                
                             </tr>
                         </thead>
                         <tbody>
-                            <% if (order.products && order.products.length > 0) { %>
-                                <% order.products.forEach(product => { %>
-                                    <tr>
-                                        <td>
-                                            <% if (product.productId.images && product.productId.images.length > 0) { %>
-                                                <img src="/<%= product.productId.images[0] %>" alt="Product Image" style="width: 50px; height: 50px" />
-                                            <% } else { %>
-                                                <img src="/path/to/default-image.jpg" alt="No Image" style="width: 50px; height: 50px" />
-                                            <% } %>
-                                        </td>
-                                        <td><%= product.productId.name ? product.productId.name : 'N/A' %></td>
-                                        <td><%= product.quantity !== undefined ? product.quantity : 0 %></td>
-                                        <td>$<%= product.price !== undefined ? product.price.toFixed(2) : '0.00' %></td>
-                                        <td>$<%= (product.quantity * product.price).toFixed(2) %></td>
-                                        <% if (order.deliveryStatus == 'Pending' || order.deliveryStatus == 'Processing') { %>
-                                            <td style="display: flex; justify-content: center; padding: 24px 0px">
-                                                <button class="btn btn-secondary" onclick="cancelOrderItem('<%= order._id %>', '<%= product.productId._id %>')">Remove</button>
-                                            </td>
-                                        <% } %>
-                                    </tr>
-                                <% }) %>
-                            <% } else { %>
-                                <tr>
-                                    <td colspan="6" style="text-align: center">No items found in this order.</td>
-                                </tr>
+                            <% if (order.products && order.products.length > 0) { %> <% order.products.forEach(product => { %>
+                            <tr>
+                                <td>
+                                    <% if (product.productId.images && product.productId.images.length > 0) { %>
+                                    <img src="/<%= product.productId.images[0] %>" alt="Product Image" style="width: 50px; height: 50px" />
+                                    <% } else { %>
+                                    <img src="/path/to/default-image.jpg" alt="No Image" style="width: 50px; height: 50px" />
+                                    <% } %>
+                                </td>
+                                <td><%= product.productId.name ? product.productId.name : 'N/A' %></td>
+                                <td><%= product.quantity !== undefined ? product.quantity : 0 %></td>
+                                <td>₹<%= product.price !== undefined ? product.price.toFixed(2) : '0.00' %></td>
+                                <td>₹<%= (product.quantity * product.price).toFixed(2) %></td>
+                            </tr>
+                            <% }) %> <% } else { %>
+                            <tr>
+                                <td colspan="6" style="text-align: center">No items found in this order.</td>
+                            </tr>
                             <% } %>
                         </tbody>
                     </table>
-                    
                 </div>
             </div>
 
@@ -277,7 +268,7 @@
                                 <circle cx="12" cy="12" r="2"></circle>
                                 <path d="M6 12h.01M18 12h.01"></path>
                             </svg>
-                            <span>$<%= order.total && order.total.toFixed(2) %></span>
+                            <span>₹<%= order.total && order.total.toFixed(2) %></span>
                         </div>
                     </div>
                 </div>
@@ -309,46 +300,5 @@
                 </div>
             </div>
         </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-        <script>
-            function cancelOrderItem(orderId, productId) {
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "You won't be able to revert this!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, delete it!",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        axios
-                            .post("/admin/order-management/order-detail/remove-order-item", { orderId, productId })
-                            .then((response) => {
-                                const message = response.data.message;
-                                Swal.fire({
-                                    title: "Deleted!",
-                                    text: message,
-                                    icon: "success",
-                                }).then(() => {
-                                    // Redirect to order management if the order was deleted
-                                    if (message.includes("Order deleted successfully")) {
-                                        window.location.href = "/admin/order-management"; // Redirect here
-                                    } else {
-                                        location.reload(); // Reload the page after confirming
-                                    }
-                                });
-                            })
-                            .catch((error) => {
-                                console.error(error);
-                                alert("Failed to remove item. Please try again.");
-                            });
-                    }
-                });
-            }
-        </script>
     </body>
 </html>
