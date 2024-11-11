@@ -37,7 +37,7 @@ app.use(
         resave: false,
         saveUninitialized: true,
         store: MongoStore.create({
-            mongoUrl: "mongodb://localhost:27017/Byteverse_E-commerse",
+            mongoUrl: process.env.MONGODB_URI,
             collectionName: "sessions",
         }),
         cookie: {
