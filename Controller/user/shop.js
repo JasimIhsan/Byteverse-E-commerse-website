@@ -40,13 +40,10 @@ const getShop = async (req, res) => {
             return new RegExp(pattern, "i");
         }
 
-        // Create regex for search
         const regex = createDynamicRegex(keywords);
-        console.log(regex);
 
         const user = await User.findById(userId);
 
-        // Define sort options
         let sortOptions = {};
         switch (sortby) {
             case "price_low":
@@ -68,7 +65,6 @@ const getShop = async (req, res) => {
                 sortOptions = { updatedAt: -1 };
         }
 
-        // Prepare category and brand filters
         const selectedCategories = Array.isArray(categories) ? categories : [categories].filter(Boolean);
         const selectedBrands = Array.isArray(brands) ? brands : [brands].filter(Boolean);
 
@@ -76,7 +72,6 @@ const getShop = async (req, res) => {
             status: "listed",
         };
 
-        // Filter by categories and brands
         if (selectedCategories.length > 0) {
             query.category = { $in: selectedCategories };
         }
@@ -85,18 +80,15 @@ const getShop = async (req, res) => {
             query.brand = { $in: selectedBrands };
         }
 
-        console.log("Initial query : ", query);
+        // const filteredProducts = await Products.find(query).populate({ path: "category", match: { status: "listed" } });
+        const filteredProducts = await Products.find({status: "listed"});
 
-        // First, find the filtered products
-        const filteredProducts = await Products.find(query).populate({ path: "category", match: { status: "listed" } });
+        console.log(filteredProducts)
 
-        // Now, filter the results by the search term
         const searchedProducts = filteredProducts.filter((product) => regex.test(product.description));
 
-        // Apply pagination to the searched products
         const paginatedProducts = searchedProducts.slice(skip, skip + limit);
 
-        // Get offers and best offers
         const offers = await Offers.find({ isActive: true });
         const productsWithBestOffers = paginatedProducts.map((product) => {
             const bestOffer = findBestOffer(product, offers);
@@ -106,7 +98,7 @@ const getShop = async (req, res) => {
             };
         });
 
-        const totalProducts = searchedProducts.length; // Total products after search filter
+        const totalProducts = searchedProducts.length;
         const totalPages = Math.ceil(totalProducts / limit);
         const userLoggedIn = req.session.user ? true : false;
 
@@ -118,6 +110,21 @@ const getShop = async (req, res) => {
                 return { ...category.toObject(), productCount: count };
             })
         );
+
+        // console.log({
+        //     userLoggedIn,
+        //     user,
+        //     search,
+        //     products: productsWithBestOffers,
+        //     currentPage: Number(page),
+        //     totalPages,
+        //     title,
+        //     categories: categoriesList,
+        //     categoriesWithCounts,
+        //     sortby,
+        //     selectedCategories,
+        //     selectedBrands,
+        // })
 
         res.render("user/shop", {
             userLoggedIn,

@@ -163,6 +163,9 @@ const postLogin = async (req, res) => {
 
         const user = await User.findOne({ email });
 
+        console.log(user);
+        
+
         if (user) {
             // console.log("User found:", user);
 

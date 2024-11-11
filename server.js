@@ -67,6 +67,6 @@ app.use((req, res) => {
 connectDB();
 
 app.listen(port, () => {
-    console.log("===============================");
-    console.log("http://localhost:3000 ✅");
+    console.log("==========================");
+    console.log("http://localhost3000 : ✅");
 });

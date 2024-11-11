@@ -10,7 +10,6 @@ const Wallet = require("../../model/wallet");
 
 //--------------- Find best Offer for the products--------------------//
 
-
 function findBestOffer(product, offers) {
     let bestOffer = null;
     const currentDate = new Date();
@@ -182,7 +181,6 @@ const updateCart = async (req, res) => {
         // console.log("update productId : ", productId);
 
         const userId = req.session.userId;
-        // const userId = "671779c18dc25b26d1f7d8ea";
 
         if (quantity < 1) {
             return res.status(400).json({ success: false, message: "Quantity must be at least 1." });

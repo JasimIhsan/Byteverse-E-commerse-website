@@ -529,6 +529,7 @@
                             document.getElementById("original-price").innerText = `₹${originalTotal.toFixed(2)}`;
                             document.getElementById("total-amount").innerText = `₹${newTotal.toFixed(2)}`;
 
+                            document.getElementById("apply-coupon-btn").style.display = "none";
                             document.getElementById("remove-coupon-btn").style.display = "inline-block";
                         } else {
                             console.error("Error: Discount amount or new total is null or undefined.");
@@ -564,6 +565,7 @@
                     if (response.data.success) {
                         document.getElementById("coupon-code-row").style.display = "none";
                         document.getElementById("remove-coupon-btn").style.display = "none";
+                        document.getElementById('apply-coupon-btn').style.display = 'inline-block'
 
                         const originalTotal = response.data.total;
                         document.getElementById("total-amount").innerText = `₹${originalTotal.toFixed(2)}`;

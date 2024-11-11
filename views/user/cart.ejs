@@ -313,6 +313,7 @@
 
                 const updateCart = async (productId, quantity, inputElement) => {
                     try {
+                        
                         const response = await axios.post("/cart/update", { productId, quantity });
 
                         console.log(response);
@@ -337,7 +338,6 @@
                         const stock = Number(input.getAttribute("data-stock"));
                         let quantity = parseInt(input.value, 10);
                         const productId = input.closest("tr").getAttribute("data-product-id");
-                        console.log("STOCK : ", stock);
 
                         if (quantity > stock) {
                             Swal.fire({
