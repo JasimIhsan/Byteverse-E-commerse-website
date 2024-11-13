@@ -480,7 +480,8 @@ const Logout = async (req, res) => {
 const about = async (req, res) => {
     try {
         const userLoggedIn = Boolean(req.session.userId);
-        res.render("user/about", { userLoggedIn });
+        const user = await User.findOne({ _id: req.session.userId });
+        res.render("user/about", { userLoggedIn , user });
     } catch (error) {
         console.error("Error from get about page : ", error);
     }
@@ -490,7 +491,9 @@ const about = async (req, res) => {
 const getHelpAndContact = async (req, res) => {
     try {
         const userLoggedIn = Boolean(req.session.userId);
-        res.render("user/help", { userLoggedIn });
+        const user = await User.findOne({ _id: req.session.userId });
+
+        res.render("user/help", { userLoggedIn , user});
     } catch (error) {
         console.error("Error from get contact page : ", error);
     }
