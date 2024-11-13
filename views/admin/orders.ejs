@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Byteverse | User Management</title>
     <link rel="stylesheet" href="/css/admin/user-management.css" />
+    <link rel="shortcut icon" href="/assets/images/icons/favicon.ico" />
     <!-- Include SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
     <!-- Include SweetAlert2 JS -->
@@ -26,8 +27,7 @@
                 <li><a href="/admin/category-management">Categories</a></li>
                 <li><a href="/admin/coupon-management">Coupon</a></li>
                 <li><a href="/admin/offer-management">Offers</a></li>
-                <li><a href="#">Support</a></li>
-                <li><a href="#">Settings</a></li>
+        
             </ul>
         </aside>
 
@@ -66,13 +66,13 @@
                             <td>₹<%= order.total.toFixed(2) %></td>
                             <td><%= order.paymentMethod %></td>
                             <td>
-                                <select style="height: 30px; border-radius: 4px;" name="deliveryStatus" onchange="updateDeliveryStatus('<%= order._id %>', this.value)">
-                                    <option value="Pending" <%= order.deliveryStatus === "Pending" ? "selected" : "" %>>Pending</option>
-                                    <option value="Processing" <%= order.deliveryStatus === "Processing" ? "selected" : "" %>>Processing</option>
-                                    <option value="Shipped" <%= order.deliveryStatus === "Shipped" ? "selected" : "" %>>Shipped</option>
-                                    <option value="Delivered" <%= order.deliveryStatus === "Delivered" ? "selected" : "" %>>Delivered</option>
-                                    <option value="Cancelled" <%= order.deliveryStatus === "Cancelled" ? "selected" : "" %>>Cancelled</option>
-                                    <option value="Returned" <%= order.deliveryStatus === "Returned" ? "selected" : "" %>>Returned</option>
+                                <select style="height: 30px; border-radius: 4px;" name="deliveryStatus" onchange="updateDeliveryStatus('<%= order._id %>', this.value)" data-order-id="<%= order._id %>">
+                                    <option value="Pending" <%= order.deliveryStatus === "Pending" ? "selected" : "" %> style="font-weight: bold; color: #000;" >Pending</option>
+                                    <option value="Processing" <%= order.deliveryStatus === "Processing" ? "selected" : "" %> style="font-weight: bold; color: #3E2723;" >Processing</option>
+                                    <option value="Shipped" <%= order.deliveryStatus === "Shipped" ? "selected" : "" %> style="font-weight: bold; color: #006064;" >Shipped</option>
+                                    <option value="Delivered" <%= order.deliveryStatus === "Delivered" ? "selected" : "" %> style="font-weight: bold; color: #1B5E20;" >Delivered</option>
+                                    <option value="Cancelled" <%= order.deliveryStatus === "Cancelled" ? "selected" : "" %> style="font-weight: bold; color: #900404;" >Cancelled</option>
+                                    <option value="Returned" <%= order.deliveryStatus === "Returned" ? "selected" : "" %> style="font-weight: bold; color: #D32F2F;" >Returned</option>
                                 </select>
                             </td>
                             <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
@@ -109,10 +109,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        const validTransitions = {
+            Pending: ['Pending', "Processing", "Shipped", "Delivered", "Cancelled"],
+            Processing: ['Processing', "Shipped", "Delivered", "Cancelled"],
+            Shipped: ['Shipped', "Delivered", "Cancelled"],
+            Delivered: ['Delivered', "Returned"],
+            Cancelled: ['Cancelled'],
+            Returned: ['Returned']
+        };
+    
         function updateDeliveryStatus(orderId, status) {
             axios.post(`/admin/order-management/update-status/${orderId}`, {
-                deliveryStatus: status,
-
+                deliveryStatus: status
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -139,48 +147,92 @@
                 });
             });
         }
-
-        document.querySelectorAll("select[name='deliveryStatus']").forEach(selectElement => {
-            updateBackgroundColor(selectElement);
-
-            selectElement.addEventListener('change', function() {
-                updateBackgroundColor(selectElement);
+    
+        function disableInvalidOptions(orderId) {
+            const dropdown = document.querySelector(`[name="deliveryStatus"][data-order-id="${orderId}"]`);
+            const currentStatus = dropdown.value;
+    
+            Array.from(dropdown.options).forEach(option => {
+                option.disabled = true;
+                option.style.color = "#D3D3D3";
+                option.style.backgroundColor = "#fff";
             });
-        });
-
-        function updateBackgroundColor(selectElement) {
-            const status = selectElement.value;
-            switch (status) {
-                case "Pending":
-                selectElement.style.backgroundColor = "#FFF9C4"; // Light yellow background
-                    selectElement.style.color = "#000"; // Orange text
-                    break;
-                case "Processing":
-                    selectElement.style.backgroundColor = "#D7CCC8";
-                    selectElement.style.color = "#3E2723"
-                    break;
-                case "Shipped":
-                    selectElement.style.backgroundColor = "#B2EBF2"; // blue for Shipped
-                    selectElement.style.color = "#006064"
-                    break;
-                case "Delivered":
-                    selectElement.style.backgroundColor = "#81C784"; // green for Delivered
-                    selectElement.style.color = "#1B5E20"
-                    break;
-                case "Cancelled":
-                    selectElement.style.backgroundColor = "#FFCCBC"; // red for Cancelled
-                    selectElement.style.color = "#900404"
-                    break;
-                case 'Returned':
-                    selectElement.style.backgroundColor = "red"; // red for Cancelled
-                    selectElement.style.color = "white"
-                    break;
-                default:
-                    selectElement.style.backgroundColor = ""; // default color
-                    break;
+    
+            const validOptions = validTransitions[currentStatus];
+            Array.from(dropdown.options).forEach(option => {
+                if (validOptions.includes(option.value)) {
+                    option.disabled = false;
+    
+                    switch (option.value) {
+                        case "Pending":
+                            option.style.color = "#000";
+                            option.style.backgroundColor = "#FFF9C4";
+                            break;
+                        case "Processing":
+                            option.style.color = "#3E2723";
+                            option.style.backgroundColor = "#D7CCC8";
+                            break;
+                        case "Shipped":
+                            option.style.color = "#006064";
+                            option.style.backgroundColor = "#B2EBF2";
+                            break;
+                        case "Delivered":
+                            option.style.color = "#1B5E20";
+                            option.style.backgroundColor = "#81C784";
+                            break;
+                        case "Cancelled":
+                            option.style.color = "#900404";
+                            option.style.backgroundColor = "#FFCCBC";
+                            break;
+                        case "Returned":
+                            option.style.color = "#D32F2F";
+                            option.style.backgroundColor = "#FFCDD2";
+                            break;
+                    }
+                }
+            });
+    
+            const selectedOption = dropdown.options[dropdown.selectedIndex];
+            if (selectedOption && !selectedOption.disabled) {
+                switch (selectedOption.value) {
+                    case "Pending":
+                        dropdown.style.color = "#000";
+                        dropdown.style.backgroundColor = "#FFF9C4";
+                        break;
+                    case "Processing":
+                        dropdown.style.color = "#3E2723";
+                        dropdown.style.backgroundColor = "#D7CCC8";
+                        break;
+                    case "Shipped":
+                        dropdown.style.color = "#006064";
+                        dropdown.style.backgroundColor = "#B2EBF2";
+                        break;
+                    case "Delivered":
+                        dropdown.style.color = "#1B5E20";
+                        dropdown.style.backgroundColor = "#81C784";
+                        break;
+                    case "Cancelled":
+                        dropdown.style.color = "#900404";
+                        dropdown.style.backgroundColor = "#FFCCBC";
+                        break;
+                    case "Returned":
+                        dropdown.style.color = "#D32F2F";
+                        dropdown.style.backgroundColor = "#FFCDD2";
+                        break;
+                }
             }
         }
-
+    
+        document.querySelectorAll("select[name='deliveryStatus']").forEach(selectElement => {
+            disableInvalidOptions(selectElement.getAttribute('data-order-id'));
+    
+            selectElement.addEventListener('change', function() {
+                disableInvalidOptions(selectElement.getAttribute('data-order-id'));
+            });
+        });
     </script>
+    
+    
+    
 </body>
 </html>

@@ -71,6 +71,11 @@ router.get("/auth/google/callback", auth.isLogged, (req, res, next) => {
     })(req, res, next);
 });
 
+router.get('/about', home.about);
+
+router.get('/help-contact', home.getHelpAndContact);
+
+
 // ----------------------------- shope ----------------------------------------------//
 
 router.get("/shop", shop.getShop);

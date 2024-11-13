@@ -12,7 +12,8 @@ const getProduts = async (req, res) => {
         const prds = await Products.find({ name: { $regex: regex } })
             .populate("category")
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .sort({ createdAt: -1 });
 
         // console.log(prds.category);
 
@@ -27,7 +28,7 @@ const getProduts = async (req, res) => {
     }
 };
 
-// controller for updating product status (listed or unlisted) - patch method 
+// controller for updating product status (listed or unlisted) - patch method
 const updateProductStatus = async (req, res) => {
     try {
         const productId = req.params.id;

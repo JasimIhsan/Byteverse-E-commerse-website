@@ -281,7 +281,7 @@ const downloadInvoice = async (req, res) => {
 
         // Set response headers
         res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", `attachment; filename=invoice-${orderId}.pdf`);
+        res.setHeader("Content-Disposition", `attachment; filename=Invoice-Byteverse_${order.orderId}.pdf`);
 
         // Generate and pipe the PDF
         const doc = await generateInvoice(order);
@@ -338,7 +338,7 @@ const generateInvoice = async (
     // Invoice Number and Date - Centered under heading
     doc.fontSize(10)
         .font("Helvetica")
-        .text(`Invoice No: ${order._id}`, leftMargin, 85, {
+        .text(`Invoice No: ${order.orderId}`, leftMargin, 85, {
             width: contentWidth,
             align: "center",
         })
@@ -433,9 +433,9 @@ const generateInvoice = async (
     doc.fontSize(10)
         .font("Helvetica")
         .text("Subtotal:", summaryLabelX, summaryStartY)
-        .text(`$${order.total.toFixed(2)}`, summaryValueX, summaryStartY);
+        .text(`$${((order.total + order.offerDiscount + order.couponDiscount) - order.shippingCost).toFixed(2)}`, summaryValueX, summaryStartY);
 
-    doc.text("Shipping:", summaryLabelX, summaryStartY + 20).text(`$${order.shippingCost.toFixed(2)}`, summaryValueX, summaryStartY + 20);
+    doc.text("Shipping:", summaryLabelX, summaryStartY + 20).text(order.shippingCost == 0 ? 'Free shipping' : `$${order.shippingCost.toFixed(2)}`, summaryValueX, summaryStartY + 20);
 
     let summaryOffset = 40;
     if (order.couponDiscount > 0) {
@@ -451,11 +451,10 @@ const generateInvoice = async (
     // Final total with separator
     drawHorizontalLine(summaryStartY + summaryOffset + 10);
 
-    const finalTotal = order.total + order.shippingCost - order.couponDiscount - order.offerDiscount;
     doc.fontSize(12)
         .font("Helvetica-Bold")
         .text("Total:", summaryLabelX, summaryStartY + summaryOffset + 20)
-        .text(`$${finalTotal.toFixed(2)}`, summaryValueX, summaryStartY + summaryOffset + 20);
+        .text(`$${order.total.toFixed(2)}`, summaryValueX, summaryStartY + summaryOffset + 20);
 
     // Footer - Centered at bottom of page
     const footerY = doc.page.height - 100;
@@ -560,19 +559,12 @@ const deleteAddress = async (req, res) => {
         const addressId = req.params.addressId;
         const sessionUserId = req.session.userId;
 
-        // console.log("sessionuserid : ", sessionUserId);
-        // console.log("param         : ", user);
-        // console.log("addressId     : ", addressId);
-
-        // console.log("here");
-
         const result = await Address.findOneAndDelete({ _id: addressId, userId });
         console.log(result);
 
         if (!result) {
             return res.redirect(`/${userId}/profile/address?error=Address not found`);
         }
-        // console.log("at");
 
         res.redirect(`/${userId}/profile/address?success=Address deleted successfully`);
     } catch (error) {
@@ -802,7 +794,7 @@ const getWallet = async (req, res) => {
 
 //WALLET ADD MONEY IN RAZORPAY PAGE
 
-module.exports = { 
+module.exports = {
     getProfile,
     updateProfile,
     changePassword,

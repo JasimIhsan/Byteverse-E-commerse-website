@@ -19,12 +19,12 @@ const getAdminLogin = async (req, res) => {
 // controller for checking the admin credentials like username and password - post method
 const postAdminLogin = async (req, res) => {
     try {
-        const username = "admin";
-        const password = "123456";
+        const username = process.env.ADMIN_USERNAME;
+        const password = process.env.ADMIN_PASSWORD;
 
         const { adminUsername, adminPassword } = req.body;
-        console.log(adminUsername);
-        console.log(adminPassword);
+        console.log(username);
+        console.log(password);
 
         if (adminUsername == username && adminPassword == password) {
             req.session.admin = true;
@@ -44,10 +44,6 @@ const getAdminDashboard = async (req, res) => {
 
         startDate = startDate ? new Date(startDate) : new Date();
         endDate = endDate ? new Date(endDate) : new Date();
-
-        console.log("time filter : ", timeFilter);
-        console.log("start Date : ", startDate.toLocaleString());
-        console.log("end Date : ", endDate.toLocaleString());
 
         if (timeFilter === "today") {
             startDate.setDate(startDate.getDate() - 1);
@@ -242,10 +238,6 @@ const getAdminDashboard = async (req, res) => {
             { $sort: { quantitySold: -1 } },
             { $limit: 5 },
         ]);
-
-        console.log("productData : ", productsData);
-        console.log("category data : ", categoriesData);
-        console.log("brands data   : ", brandsData);
 
         const labels = salesData.map((item) => item.date);
         const ordersData = salesData.map((item) => item.totalOrders);

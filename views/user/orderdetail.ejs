@@ -11,7 +11,7 @@
         <!-- Favicon -->
         <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/favicon-16x16.png" />
+        <link rel="icon" type="image/png" href="/assets/images/icons/favicon-16x16.png" />
         <link rel="manifest" href="/assets/images/icons/site.html" />
         <link rel="mask-icon" href="/assets/images/icons/safari-pinned-tab.svg" color="#666666" />
         <link rel="shortcut icon" href="/assets/images/icons/favicon.ico" />
@@ -351,13 +351,10 @@
                                         <a href="/shop">Shop</a>
                                     </li>
                                     <li>
-                                        <a href="#">About</a>
+                                        <a href="/about">About</a>
                                     </li>
                                     <li>
-                                        <a href="#">Contact</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Help</a>
+                                        <a href="/help-contact">Help & Support</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -493,7 +490,7 @@
                                                             <p style="color: #555;"><%= order.paymentId %></p>
                                                         </div>
                                                         <% } %>
-                                                        <% if (order.paymentStatus === 'Failed') { %>
+                                                        <% if (order.paymentStatus === 'Failed' || order.paymentStatus === 'Pending') { %>
                                                             <div class="payment-action">
                                                                 <button class="retry-payment-button" onclick="retryPayment('<%= order._id %>')">Retry Payment</button>
                                                             </div>
@@ -512,9 +509,10 @@
                                                     <img class="product-image" src="/<%= product.productId.images[0] %>" alt="Product Image" />
                                                     <div class="product-details flex-grow-1">
                                                         <div class="d-flex justify-content-between align-items-center">
-                                                            <h4 class="mb-0"><%= product.productId.name %></h4>
+                                                            <p class="mb-0" style="font-size: medium; font-weight: 500"><%= product.productId.name %></p>
                                                             <p class="mb-0">Quantity: <%= product.quantity %></p>
                                                             <p class="mb-0">Price: ₹<%= product.productId.price.toFixed(2) %></p>
+                                                            
                                                         </div>
                                                     </div>
                                                 </div>
@@ -524,14 +522,10 @@
                                             <div class="price-details">
                                                 <div class="price-row">
                                                     <span>Subtotal</span>
-                                                    <span>₹<%= (order.total + order.couponDiscount + order.offerDiscount - order.shippingCost).toFixed(2) %></span>
+                                                    
+                                                    <span>₹<%= ((order.couponDiscount + order.offerDiscount + order.total) - order.shippingCost).toFixed(2) %></span>
                                                 </div>
-                                                <% if (order.shippingCost > 0) { %>
-                                                <div class="price-row">
-                                                    <span>Shipping Cost</span>
-                                                    <span>₹<%= order.shippingCost.toFixed(2) %></span>
-                                                </div>
-                                                <% } %> <% if (order.couponCode) { %>
+                                                 <% if (order.couponCode) { %>
                                                 <div class="price-row text-success">
                                                     <span>Coupon Discount (<%= order.couponCode %>)</span>
                                                     <span>-₹<%= order.couponDiscount.toFixed(2) %></span>
@@ -541,6 +535,17 @@
                                                     <span>Offer Discount</span>
                                                     <span>-₹<%= order.offerDiscount.toFixed(2) %></span>
                                                 </div>
+                                                <% } %>
+                                                <% if (order.shippingCost > 0) { %>
+                                                    <div class="price-row">
+                                                        <span>Shipping Cost</span>
+                                                        <span>₹<%= order.shippingCost.toFixed(2) %></span>
+                                                    </div>
+                                                <% } else { %>
+                                                    <div class="price-row">
+                                                        <span>Shipping Cost</span>
+                                                        <span style="color: green;">Free Shipping</span>
+                                                    </div>
                                                 <% } %>
                                                 <div class="price-row price-total">
                                                     <span>Total Amount</span>

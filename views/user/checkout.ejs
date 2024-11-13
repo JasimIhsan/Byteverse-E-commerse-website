@@ -83,14 +83,12 @@
                                     <li>
                                         <a href="/shop">Shop</a>
                                     </li>
+                                    
                                     <li>
-                                        <a href="#">About</a>
+                                        <a href="/about">About</a>
                                     </li>
                                     <li>
-                                        <a href="#">Contact</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Help</a>
+                                        <a href="/help-contact">Help & Support</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -565,7 +563,7 @@
                     if (response.data.success) {
                         document.getElementById("coupon-code-row").style.display = "none";
                         document.getElementById("remove-coupon-btn").style.display = "none";
-                        document.getElementById('apply-coupon-btn').style.display = 'inline-block'
+                        document.getElementById("apply-coupon-btn").style.display = "inline-block";
 
                         const originalTotal = response.data.total;
                         document.getElementById("total-amount").innerText = `₹${originalTotal.toFixed(2)}`;
@@ -724,7 +722,29 @@
                     });
                 } catch (error) {
                     console.error(error);
-                    alert("Error creating order. Please try again.");
+                    if (error.response.data.message == "Cart is empty.") {
+                        Swal.fire({
+                            title: "Payment Failed",
+                            text: "Unfortunately, the payment failed. Please try again in order history.",
+                            icon: "error",
+                            confirmButtonText: "Okay",
+                        }).then(async (result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error creating order",
+                            text: error.response.data.message,
+                            icon: "error",
+                            confirmButtonText: "Okay",
+                        }).then(async (result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
+                        });
+                    }
                 }
             } else if (selectedPaymentMethod == "Wallet Payments") {
                 console.log("qweqweqw ");

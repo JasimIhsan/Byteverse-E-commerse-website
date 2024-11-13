@@ -54,8 +54,6 @@ const createOrder = async (req, res) => {
         const deliveryCharge = subtotal > 1500 ? 0 : 20;
         let total = subtotal + deliveryCharge;
 
-        // let total = 1;
-
         let couponDiscount = 0;
         if (coupon) {
             couponDiscount = coupon.discount;
@@ -105,6 +103,19 @@ const createOrder = async (req, res) => {
         });
 
         await newOrder.save();
+
+        console.log(coupon);
+
+        if (coupon) {
+            await User.findByIdAndUpdate(userId, {
+                $inc: { orders: 1 },
+                $push: { usedCoupons: coupon._id },
+            });
+        } else {
+            await User.findByIdAndUpdate(userId, {
+                $inc: { orders: 1 },
+            });
+        }
 
         await Cart.findOneAndUpdate({ userId }, { products: [] });
 

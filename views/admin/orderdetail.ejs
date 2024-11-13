@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" href="/assets/images/icons/favicon.ico" />
         <title>Order Detail #1234</title>
         <style>
             body {
@@ -173,7 +174,7 @@
                                 <circle cx="12" cy="10" r="3"></circle>
                             </svg>
                             <address>
-                                <p><%= order.address.street %> <%= order.address.additionalInfo ? `(₹{order.address.additionalInfo})` : '' %></p>
+                                <p><%= order.address.street %> <%= order.address.additionalInfo ? `(${order.address.additionalInfo})` : '' %></p>
                                 <p><%= order.address.city %>, <%= order.address.state %> <%= order.address.postalCode %></p>
                                 <p><%= order.address.country %></p>
                                 <p>Phone: <%= order.address.phoneNumber %></p>
@@ -195,10 +196,12 @@
                             <span class="text-muted">Shipping</span>
                             <span>₹<%= order.shippingCost ? order.shippingCost.toFixed(2) : '0.00' %></span>
                         </div>
-                        <!-- <div class="flex justify-between">
-                            <span class="text-muted">Tax</span>
-                            <span>₹<%= order.tax ? order.tax.toFixed(2) : '0.00' %></span>
-                        </div> -->
+                        <% if(order.offerDiscount) {%>
+                        <div class="flex justify-between">
+                            <span class="text-muted">Offers</span>
+                            <span style="color: green;">-₹<%= order.offerDiscount.toFixed(2) %></span>
+                        </div>
+                        <% } %>
                         <div class="separator"></div>
                         <div class="flex justify-between font-medium">
                             <span>Total</span>

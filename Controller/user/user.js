@@ -158,36 +158,23 @@ const postLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        console.log(email);
-        console.log(password);
-
         const user = await User.findOne({ email });
 
-        console.log(user);
-        
-
         if (user) {
-            // console.log("User found:", user);
-
             if (user.status == "Blocked") {
-                // console.log("User is blocked");
                 return res.redirect("/login?error=User is Blocked");
             }
 
             const isMatched = await bcrypt.compare(password, user.password);
-            // console.log("Password match:", isMatched);
 
             if (isMatched) {
                 req.session.user = true;
                 req.session.userId = user._id;
-                // console.log("User logged in:", user._id);
                 return res.redirect("/");
             } else {
-                // console.log("Incorrect password");
                 return res.redirect("/login?error=Incorrect email or password");
             }
         } else {
-            // console.log("User does not exist");
             return res.redirect("/login?error=User does not exist");
         }
     } catch (error) {
@@ -487,6 +474,28 @@ const Logout = async (req, res) => {
     }
 };
 
+//--------------------------- other pages -------------------------------//
+
+// controller for handling the about page - get method
+const about = async (req, res) => {
+    try {
+        const userLoggedIn = Boolean(req.session.userId);
+        res.render("user/about", { userLoggedIn });
+    } catch (error) {
+        console.error("Error from get about page : ", error);
+    }
+};
+
+// controller for handling the contact page - get method
+const getHelpAndContact = async (req, res) => {
+    try {
+        const userLoggedIn = Boolean(req.session.userId);
+        res.render("user/help", { userLoggedIn });
+    } catch (error) {
+        console.error("Error from get contact page : ", error);
+    }
+};
+
 module.exports = {
     getHome,
     getLogin,
@@ -504,4 +513,6 @@ module.exports = {
     verifyForgotPasswordOTP,
     getNewPassword,
     postNewPassword,
+    about,
+    getHelpAndContact,
 };

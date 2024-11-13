@@ -80,10 +80,7 @@ const getShop = async (req, res) => {
             query.brand = { $in: selectedBrands };
         }
 
-        // const filteredProducts = await Products.find(query).populate({ path: "category", match: { status: "listed" } });
-        const filteredProducts = await Products.find({status: "listed"});
-
-        console.log(filteredProducts)
+        const filteredProducts = await Products.find(query).populate({ path: "category", match: { status: "listed" } });
 
         const searchedProducts = filteredProducts.filter((product) => regex.test(product.description));
 
@@ -110,21 +107,6 @@ const getShop = async (req, res) => {
                 return { ...category.toObject(), productCount: count };
             })
         );
-
-        // console.log({
-        //     userLoggedIn,
-        //     user,
-        //     search,
-        //     products: productsWithBestOffers,
-        //     currentPage: Number(page),
-        //     totalPages,
-        //     title,
-        //     categories: categoriesList,
-        //     categoriesWithCounts,
-        //     sortby,
-        //     selectedCategories,
-        //     selectedBrands,
-        // })
 
         res.render("user/shop", {
             userLoggedIn,

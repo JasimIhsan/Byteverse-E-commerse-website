@@ -325,13 +325,10 @@
                                         <a href="/shop">Shop</a>
                                     </li>
                                     <li>
-                                        <a href="#">About</a>
+                                        <a href="/about">About</a>
                                     </li>
                                     <li>
-                                        <a href="#">Contact</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Help</a>
+                                        <a href="/help-contact">Help & Support</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -462,8 +459,11 @@
                                                                 <p class="order-total">Total: ₹<%= order.total.toFixed(2) %></p>
                                                                 <p class="order-items"><%= order.products.length %> item(s)</p>
                                                             </div>
-                                                            <div>
+                                                            <div style="display: flex; flex-direction: column; justify-content: center; align-items: end;">
                                                                 <span class="order-status status-<%= order.deliveryStatus.toLowerCase() %>"><%= order.deliveryStatus %></span>
+                                                                <% if(order.paymentStatus == "Failed") {%>
+                                                                <span style="color: red; font-weight: 500; ">Payment failed please try again</span>
+                                                                <% } %>
                                                             </div>
                                                         </div>
                                                         <ul class="item-list">

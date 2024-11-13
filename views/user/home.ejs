@@ -311,8 +311,8 @@
                                 <div class="unique-product-price-rating" style="flex-direction: column; justify-content: center; align-items: start">
                                     <div>
                                         <% if (product.bestOffer) { %>
-                                        <div style="display: flex;">
-                                            <p class="unique-product-price original-price" style="text-decoration: line-through; color: gray; margin-right: 10px;">₹<%= product.price.toFixed(2) %></p>
+                                        <div style="display: flex">
+                                            <p class="unique-product-price original-price" style="text-decoration: line-through; color: gray; margin-right: 10px">₹<%= product.price.toFixed(2) %></p>
                                             <p class="unique-product-price discounted-price" style="color: green">₹<%= (product.price - product.bestOffer.discountAmount).toFixed(2) %></p>
                                         </div>
                                         <% } else { %>
@@ -331,7 +331,16 @@
                             </div>
                         </a>
                         <div>
-                            <button style="margin-bottom: 5px" class="btn-add-wishlist unique-add-to-cart-btn" data-product-id="<%= product._id %>">Add to Wishlist</button>
+                            <% if (userLoggedIn) { %>
+                                <button style="margin-bottom: 5px" class="btn-add-wishlist unique-add-to-cart-btn" data-product-id="<%= product._id %>">Add to Wishlist</button>
+                                
+                            <% } else { %>
+                                <form action="/login" method="get">
+                                    <input type="hidden" name="productId" value="<%= product._id %>" />
+                                    <button type="submit" style="margin-bottom: 5px" class="btn-add-wishlist unique-add-to-cart-btn">Add to Wishlist</button>
+                                </form>
+                            <% } %>
+
 
                             <!-- Form for adding to cart -->
                             <% if (userLoggedIn) { %>
@@ -340,7 +349,7 @@
                                 <button type="submit" class="unique-add-to-cart-btn">Add to Cart</button>
                             </form>
                             <% } else { %>
-                            <form class="unique-add-to-cart-form" action="/login" method="get">
+                            <form action="/login" method="get">
                                 <input type="hidden" name="productId" value="<%= product._id %>" />
                                 <button type="submit" class="unique-add-to-cart-btn">Add to Cart</button>
                             </form>
@@ -626,13 +635,15 @@
                 const formData = new FormData(form);
                 const actionUrl = form.action;
 
-                // Convert FormData to a regular object for Axios
+                console.log("formData ; ", formData);
+
                 const data = Object.fromEntries(formData.entries());
+                console.log("data : ", data);
 
                 axios
                     .post(actionUrl, data)
                     .then((response) => {
-                        // console.log("Response received:", response);
+                        console.log("Response received:", response);
                         // console.log("Message:", response.data.message);
 
                         if (response.data.success) {

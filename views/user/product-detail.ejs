@@ -93,7 +93,7 @@
                                     </div>
                                 </div>
                             </div>
-                    
+                            
                             <!-- Add to Cart Button -->
                             <div class="flex-w flex-r-m p-b-10">
                                 <div class="size-204 flex-column flex-m respon6-next align-items-center">
@@ -261,7 +261,7 @@
                     <% relatedProducts.forEach(product => { %>
                         <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item <%= product.category %>">
                             <div class="unique-container">
-                                <a href="/product-detail/<%= product._id %>" class="unique-product-card">
+                                <a href="/shop/product-detail/<%= product._id %>" class="unique-product-card">
                                     <!-- Link to product detail page -->
                                     <div class="unique-product-image">
                                         <img src="/<%= product.images[0] %>" alt="Product Image" />
@@ -284,14 +284,12 @@
                                             <span class="unique-rating-value">(4.5)</span>
                                         </div>
                                     </div>
-                                    <button class="unique-add-to-cart-btn">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px">
-                                            <circle cx="9" cy="21" r="1"></circle>
-                                            <circle cx="20" cy="21" r="1"></circle>
-                                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                        </svg>
-                                        Add to Cart
-                                    </button>
+                                    
+                                    <form class="add-to-cart-form" data-user-id="<%= user ? user._id : '' %>">
+                                        <input type="hidden" name="productId" value="<%= product._id %>">
+                                        <button type="submit" class="unique-add-to-cart-btn">Add to Cart</button>
+                                    </form>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -445,6 +443,71 @@
                 });
             });
         });
+
+        document.querySelectorAll('.add-to-cart-form').forEach(form => {
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault(); 
+
+                    const userId = form.getAttribute('data-user-id'); 
+                    const productId = form.querySelector('input[name="productId"]').value;
+
+                    if (!userId) {
+                        Swal.fire({
+                            title: 'Please Log In',
+                            text: 'You need to be logged in to add products to the cart!',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Log In',
+                            cancelButtonText: 'Cancel'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '/login';
+                            }
+                        });
+                    } else {
+                        try {
+                            const response = await axios.post(`/${userId}/add-to-cart`, { productId });
+
+                            if (response.data.success) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: response.data.message,
+                                    icon: 'success',
+                                    confirmButtonText: 'Ok'
+                                });
+                            } else if (response.data.exists) {
+                                Swal.fire({
+                                    title: 'Already in Cart',
+                                    text: 'This product is already in your cart. Would you like to go to the cart?',
+                                    icon: 'info',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Go to Cart',
+                                    cancelButtonText: 'Continue Shopping'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = '/cart'; 
+                                    }
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: response.data.message || 'Something went wrong!',
+                                    icon: 'error',
+                                    confirmButtonText: 'Ok'
+                                });
+                            }
+                        } catch (error) {
+                            console.error('Error adding product to cart:', error);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: error.response?.data?.message || 'Failed to add product to cart.',
+                                icon: 'error',
+                                confirmButtonText: 'Ok'
+                            });
+                        }
+                    }
+                });
+            });
         </script>
 
 

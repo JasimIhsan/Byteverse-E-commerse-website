@@ -313,8 +313,7 @@ const getCheckout = async (req, res) => {
         const userId = req.session.userId;
         const userLoggedIn = req.session.userLoggedIn ? true : false;
 
-        // const userId = "671779c18dc25b26d1f7d8ea";
-        // const userLoggedIn = true;
+    
 
         const user = await User.findById(userId);
         const addresses = await Address.find({ userId: userId });
@@ -452,10 +451,8 @@ const removeCoupon = async (req, res) => {
 const creatingOrder = async (req, res) => {
     try {
         const userId = req.session.userId;
-        // const userId = "671779c18dc25b26d1f7d8ea";
 
         const { addressId, paymentMethod, couponCode, firstName, lastName, phoneNumber, street, city, state, postalCode, country, additionalInfo } = req.body;
-        console.log(req.body);
 
         const [user, cart, address, coupon] = await Promise.all([
             User.findById(userId),
@@ -500,13 +497,9 @@ const creatingOrder = async (req, res) => {
             });
         }
 
-        // console.log("orderItems : ", orderItems);
-
         const subtotal = orderItems.reduce((sum, item) => sum + item.price, 0);
         const deliveryCharge = subtotal > 1500 ? 0 : 20;
         let total = subtotal + deliveryCharge;
-
-        // let total = 100;
 
         let couponDiscount = 0;
 
@@ -544,10 +537,7 @@ const creatingOrder = async (req, res) => {
             }
 
             transactionId = `wal_${Date.now()}`;
-
             wallet.balance -= total;
-
-            // wallet.balance -= total;
             wallet.transactions.push({
                 transactionId,
                 type: "Debit",
@@ -564,7 +554,6 @@ const creatingOrder = async (req, res) => {
         }
 
         const orderId = await generateOrderId();
-        console.log("OrderID : ", orderId);
 
         const order = new Order({
             orderId,
@@ -601,16 +590,25 @@ const creatingOrder = async (req, res) => {
             await coupon.save();
         }
 
-        await User.findByIdAndUpdate(userId, { $inc: { orders: 1 } });
+        for (const item of orderItems) {
+            await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
+        }
 
-        // for (const item of orderItems) {
-        //     await Product.findByIdAndUpdate(item.productId, { $inc: { stock: -item.quantity } });
-        // }
-
-        // cart.products = [];
-        // await cart.save();
+        cart.products = [];
+        await cart.save();
 
         req.session.orderPlaced = true;
+
+        if (coupon) {
+            await User.findByIdAndUpdate(userId, {
+                $inc: { orders: 1 },
+                $push: { usedCoupons: coupon._id },
+            });
+        } else {
+            await User.findByIdAndUpdate(userId, {
+                $inc: { orders: 1 },
+            });
+        }
 
         res.status(200).json({
             message: "Order placed successfully.",
